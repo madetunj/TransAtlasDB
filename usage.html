@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>TransAtlasDB</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <a href="index.html"><h1>TransAtlasDB</h1></a>
+        <p>An Informatics system for Transcriptome Analysis Data</p>
+        <br>
+        <ul class="icons">
+          <a href="index.html"><strong><center>What is TransAtlasDB?</center></strong></a>
+        </ul>
+        <ul class="icons">
+          <a class="select" href="usage.html"><strong><center>Toolkit</center></strong></a>
+        </ul>
+        <ul class="icons">
+          <a href="tutorial.html"><strong>Tutorial</strong></a>
+        </ul>
+        <br>
+        <p class="view"><a href="https://github.com/amodupe/TransAtlasDB">View the Project on GitHub <small></small></a></p>  
+        <nav>
+       <ul><h1><font color="#8f4724" size="5px">Navigation:</font></h1></ul>
+       <ul><h2><A href="#tadinstall">Installation</a></h2></ul>
+       <ul><h2><A href="#tadimport">Data import</a></h2></ul>
+       <ul><h2><A href="#tadexport"><h2>Data retrieval</a></h2></ul>
+      </nav><br>
+        <ul>
+          <li><a href="https://github.com/amodupe/TransAtlasDB/zipball/gh-pages">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/amodupe/TransAtlasDB/tarball/gh-pages">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/amodupe/TransAtlasDB">View On <strong>GitHub</strong></a></li>
+        </ul>       
+      </header>
+      <br>
+      <section>
+        <h2>TransAtlasDB ToolKit</h2>
+        <p>The TransAtlasDB toolkit is written in Perl and can be run on diverse hardware systems where the standard Perl modules have been installed.</p>
+        <p>This Perl toolkit requires the <a href="http://search.cpan.org/~capttofu/DBD-mysql/lib/DBD/mysql.pm" target="_blank">Perl-DBD module</a> to be installed on the local system.</p>
+        <p>Module dependencies used can be found <a href="tutorial.html#modules">here</a>.</p>
+        <hr>
+        <h3>The package consist of the following files:</h3>        
+        <div class="pushit">
+          <A name="tadinstall" href="tutorial.html#tadinstall"><h4>INSTALL-tad.pL</h4></a>
+        <blockquote>
+          <p class="summary">install TransAtlasDB system</p>
+        </blockquote>
+        
+        <A name="tadinstall" href="tutorial.html#tadinstall"><h4>connect-tad.pL</h4></a>
+        <blockquote>
+          <p class="summary">verify connection details or create connection details (used only when requested)</p>
+        </blockquote>
+
+        <A name="tadimport" href="tutorial.html#tadimport"><h4>tad-import.pl</h4></a>
+        <blockquote>
+          <p class="summary">import samples metadata and RNAseq data into the database</p>
+        </blockquote>
+
+        <A name="tadexport" href="tutorial.html#tadexport"><h4>tad-export.pl</h4></a>
+        <blockquote>
+          <p class="summary">view or export reports based on user-defined queries</p>
+        </blockquote>
+      
+        <A name="tadexport" href="tutorial.html#tadexport"><h4>tad-interact.pl</h4></a>      
+        <blockquote>
+          <p class="summary">interactive interface to explore database content</p>
+        </blockquote>
+        <br>
+
+        <strong><font color=#494949>other folders includes:</font></strong><br>
+        <blockquote>
+          <p class="sub">schema/</p>
+          <p class="summary">&emsp;&emsp;contains the TransAtlasDB relational database schema</p>
+          <p class="sub">example/</p>
+          <p class="summary">&emsp;&emsp;contains sample files and templates</p>
+          <p class="sub">lib/</p>
+          <p class="summary">&emsp;&emsp;contains required routines and modules</p>
+        </blockquote>
+        </div>
+        <p>Please click the menu items to navigate through this repository. If you have questions, comments and bug reports, please <a href="mailto:amodupe@udel.edu">email me </a>directly. </p>
+        <p>Thank you very much for your help and support!</p>
+      </section>
+      <br>
+      <footer>
+        <p>This project is maintained by <a href="https://modupeore.github.io" target=_blank>Modupeore</a></p>
+      </footer>
+    </div>
+    <script src="/TransAtlasDB/assets/js/scale.fix.js"></script>
+  </body>
+</html>

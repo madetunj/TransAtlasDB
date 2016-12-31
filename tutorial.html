@@ -1,0 +1,241 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>TransAtlasDB</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <a href="index.html"><h1>TransAtlasDB</h1></a>
+        <p>An Informatics system for Transcriptome Analysis Data</p>
+        <br>
+        <ul class="icons">
+          <a href="index.html"><strong><center>What is TransAtlasDB?</center></strong></a>
+        </ul>
+        <ul class="icons">
+          <a href="usage.html"><strong><center>Toolkit</center></strong></a>
+        </ul>
+        <ul class="icons">
+          <a class="select" href="tutorial.html"><strong>Tutorial</strong></a>
+        </ul>
+        <br>
+        <p class="view"><a href="https://github.com/amodupe/TransAtlasDB">View the Project on GitHub <small></small></a></p>  
+        <nav>
+       <ul><h1><font color="#8f4724" size="5px">Navigation:</font></h1></ul>
+       <ul><h2><A href="#tadinstall">Installation</a></h2></ul>
+       <ul><h2><A href="#tadimport">Data import</a></h2></ul>
+       <ul><h2><A href="#tadexport"><h2>Data retrieval</a></h2></ul>
+      </nav><br>
+        <ul>
+          <li><a href="https://github.com/amodupe/TransAtlasDB/zipball/gh-pages">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/amodupe/TransAtlasDB/tarball/gh-pages">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/amodupe/TransAtlasDB">View On <strong>GitHub</strong></a></li>
+        </ul>       
+      </header>
+      <br>
+      <section>
+        <h2>TransAtlasDB Quick Start Guide</h2>
+        <p>This is the quick start guide.</p>
+        <p>TransAtlasDB is a sophisticated bioinformatics system, which incorporates both the Relational Database and NoSQL Database system.</p>
+        <p>The relational database, <a href="https://www.mysql.com" target=_blank><b color="red">MySQL</b></a>, enforces data assurance and integrity and the NoSQL database system, <a href="https://sdm.lbl.gov/fastbit/" target=_blank><b>FastBit</b></a>, ensures rapid performance for querying big data.<br>
+        Hence, both database systems are required to be installed and added to the systems’ or users’ executable path.</p>
+        
+        <hr>
+        <A name="tadinstall"><h3>INSTALLATION</h3></a>
+        <div class="pushit">
+          <p>The TransAtlasDB database system and necessary components need to be installed to a local disk using <b><font color="#000"><i>INSTALL-tad.pL</i></font></b>.</p>
+          <p>Only the <d>–password</d> argument is required if the user has root or admin privileges to the MySQL server.
+        </div>
+        <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for installing TransAtlasDB using defaults and mysql password as 'mysql-password'.</span>
+  <span class="k">INSTALL-tad.pL</span> <span class="o">-</span><span class="nb">password</span> <span class="s">mysql-password</span>
+</code></pre></div>
+          <div class="pushit">
+            <p>Otherwise, additional arguments; such as the mysql username <d>-username</d> is required and optionally the database name <d>-databasename</d>, else the default name <i><font color="#d14">transatlasdb</font></i> will be assigned.</p>
+          </div>
+          <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for installing TransAtlasDB specifying username as 'mysql-username' and databasename as 'mysql-databasename'.</span>
+  <span class="k">INSTALL-tad.pL</span> <span class="o">-</span><span class="nb">p</span> <span class="s">mysql-password</span>  <span class="o">-</span><span class="nb">username</span> <span class="s">mysql-username</span> <span class="o">-</span><span class="nb">databasename</span> <span class="s">mysql-databasename</span>
+</code></pre></div>
+          <div class="pushit">
+          <p>The NoSQL folder-name <d>-fastbitname</d> and system's path <d>-location</d> can be optionally specified, if not, a default folder <i><font color="#d14">transatlasfb</font></i> will be created in the working directory.</p></div>
+          <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for installing TransAtlasDB specifying username as 'mysql-username' and databasename as 'mysql-databasename' with nosql folder 'nosqlfolder'.</span>
+  <span class="k">INSTALL-tad.pL</span> <span class="o">-</span><span class="nb">p</span> <span class="s">mysql-password</span>  <span class="o">-</span><span class="nb">u</span> <span class="s">mysql-username</span> <span class="o">-</span><span class="nb">d</span> <span class="s">mysql-databasename</span> <span class="o">-</span><span class="nb">fastbitname</span> <span class="s"><i>nosqlfolder</i></span>
+</code></pre></div>
+          <div class="pushit"><h4>Connecting to the database using <font color="#000"><i>connect-tad.pL</i></font></h4>
+<p>The installational module needs to be carried out once per local disk to prevent database access conflict. However, if such conflict arises user settings can be viewed and/or corrected for using <b><i>connect-tad.pL</i></b>.</p></div>
+<div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for viewing user installation details.</span>
+  <span class="k">connect-tad.pL</span></code>
+<code><span class="c1"># Syntax for setting existing user installation details. Parameters are the same as the INSTALL-tad.pL script.</span>
+  <span class="k">connect-tad.pL</span> <span class="o">-</span><span class="nb">p</span> <span class="s">mysql-password</span>  <span class="o">-</span><span class="nb">u</span> <span class="s">mysql-username</span> <span class="o">-</span><span class="nb">d</span> <span class="s">mysql-databasename</span> <span class="o">-</span><span class="nb">fastbitname</span> <span class="s">nosqlfolder</span>
+</code></pre></div><hr/>
+
+        <A name="tadimport"><h3>DATA IMPORT</h3></a>
+        <div class="pushit">
+          <p>Transcriptome analysis data can be imported using <b><font color="#000"><i>tad-import.pl</i></font></b>.</p>
+          <h4>Importing Samples Metadata</h4>
+          <p>The samples information, commonly known as, samples metadata consists of the relevant details to uniquely identify each specimen used for RNAseq.<br>
+          The samples metadata can be imported via <d>-metadata</d> folowed by the FAANG sample submission spreadsheet or the template tab-delimited file. Instructions on samples metadata requirements can be found <a href="sample.html">here</a>.</p>
+        </div>
+        <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for importing Samples metadata from FAANG metadata file 'faang.xls'.</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">metadata</span> <span class="s">faang.xls</span>
+</code><code><span class="c1"># Syntax for importing Samples metadata from tab-delimited template 'faang-template.txt'.</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">metadata</span> <span class="o">-</span><span class="nb">t</span> <span class="s">faang-template.txt</span>
+</code></pre></div>
+          <div class="pushit">
+            <h4>Importing Transcriptome Analysis Data</h4>
+            <p>Transcriptome analysis results can be inserted using <d>-data2db</d>. The transcriptome profiling data or variant analysis data van be imported together via <d>-all</d> or separately using <d>-gene</d> for expresion profiling results or <d>-variant</d> for variant analysis results.</p>
+          </div>
+        <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for importing all RNASeq expression and variant results in for sample 'GGA_UD_1004'.</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">all</span> <span class="s">GGA_UD_1004</span>
+<span class="c1"># Syntax for importing RNASeq expression profiling information in for sample 'GGA_UD_1004'.</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">gene</span> <span class="s">GGA_UD_1004</span>
+<span class="c1"># Syntax for importing RNASeq variant results in for sample 'GGA_UD_1004'.</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">variant</span> <span class="s">GGA_UD_1004</span>
+</code></pre></div>
+        
+        <div class="pushit">
+            <h4>Importing Variant Annotation information</h4>
+            <p>The variant functional annotations predicted from either VEP or ANNOVAR can also be imported using additional flags <d>-vep</d> or <d>-annovar</d> respectively and must be in their default tab-delimited format. If VEP, the filename should end with <i><font color="#d14">.vep.txt</font></i>, or else if ANNOVAR, the file having suffix <i><font color="#d14">.multianno.txt</font></i> will be accepted.</p>
+          </div>
+        <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for importing RNASeq variant results with VEP annotations for sample 'GGA_UD_1004'.</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">variant</span> <span class="o">-</span><span class="nb">vep</span> <span class="s">GGA_UD_1004</span>
+<span class="c1"># Syntax for importing RNASeq data with ANNOVAR annotations for sample 'GGA_UD_1004'.</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">all</span> <span class="s">GGA_UD_1004</span> <span class="o">-</span><span class="nb">annovar</span>
+</code></pre></div>
+        <div class="pushit"><p><strong>NOTE </strong>: The analysis data should be stored in a single folder for each sample and the folder-name must be the same <b><i>sample name</i></b> as represented in the samples metadata. A typical folder directory structure is shown <a href="sample.html#folder">here</a>.</p>
+        <h4>Deleting data </h4>
+        <p>Sample results can only be imported once to ensure data integrity, nonetheless, previously imported data can be cautiously deleted using <d>-delete</d> followed by sample name.
+        </div>
+        <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for deleting sample 'GGA_UD_1004' from the database.</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">delete</span> <span class="s">GGA_UD_1004</span>
+</code></pre></div>
+        <center><figure><img src="images/import.png">
+        <figcaption>Data import procedure for samples metadata (A) and RNAseq data (B) respectively.</figcaption></figure></center>
+        <hr/>
+        <A name="tadexport"><h3>DATA RETRIEVAL</h3></a>
+        <div class="pushit">
+          <p>Transcriptome analysis data previously stored can be retrieved using <b><font color="#000"><i>tad-export.pl</i></font></b>.</p>
+          <p>The export module offers two methods of extracting data from the database; one by performing data manipulation language (DML) SQL statements using <d>-query</d> and the second method consisstin of pre-defined queries of research interest using <d>-db2data</d>.</p>
+          <h4>Performing DML Statements</h4>
+          <p>Users can execute direct SQL statements via <d>-query</d> to the relational database and the query must be wrapped with single quotation.<br>
+          For instance, executing <i><font color="#d14">'show tables'</font></i> will retrieve all the rows currently in the database, which can be stored as a tab-delimited file.</p>
+        </div>
+        <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax to view all the tables in the database.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">query</span> <span class="s">'show tables'</span>
+</code><code><span class="c1"># Syntax to retrieve all the rows in the Samples table and stored the results in a tab-delimited file 'output.txt'.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">query</span> <span class="s">'select * from Samples'</span> <span class="o">-</span><span class="nb">output</span> <span class="s">output.txt</span>
+</code></pre></div>
+        
+          <div class="pushit">
+          <h4>Executing Pre-defined Queries of Research Interest</h4>
+          <p>The pre-defined user statements can be accessed via <d>-db2data</d>.</p>
+          This method entails four options, that are of research interest: 
+          <ol>
+            <li>Average expression values of specified genes organized by the different tissues.</li>
+            <h5>Average expression values via <i><font color="black">--avgfpkm</font></i> flag</h5>
+            View the average, maximum and minimum expression (FPKM) values of specified genes given species and/or tissue(s) of interest.
+          </ol></div>
+            <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax to view the expression values of genes 'MST' and 'GDF' for the 'Gallus gallus' specie in the database.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">avgfpkm</span> <span class="o">-</span><span class="nb">gene</span> <span class="s">'MST,GDF'</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span>
+</code><code><span class="c1"># To export prior syntax as a tab-delimited file 'output.txt'.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">avgfpkm</span> <span class="o">-</span><span class="nb">gene</span> <span class="s">'MST,GDF'</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span> <span class="o">-</span><span class="nb">o</span> <span class="s">output.txt</span>
+</code></pre></div>
+            
+          <div class="pushit">
+            <ol start="2">
+            <li>Gene expression profiles across the different samples of the same organism. Specific samples can be selected.</li>
+            <h5>Gene expression profiles via <i><font color="black">--genexp</font></i> flag</h5>
+            View expression values of individual genes per sample.
+            This is done to easily compare expression profiles of the different samples.
+            </ol></div>
+          <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax to view all the genes of all samples in the database for 'Gallus gallus' organism.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">genexp</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span>
+</code><code><span class="c1"># To export prior syntax as a tab-delimited file 'output.txt'.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">genexp</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span> <span class="o">-</span><span class="nb">o</span> <span class="s">output.txt</span>
+</code><code><span class="c1"># Syntax to view expression profiles of genes 'OPTN' and 'GDF' for samples 'GGA_UD_1004'.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">genexp</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span> <span class="o">-</span><span class="nb">gene</span> <span class="s">'OPTN,GDF'</span> <span class="o">-</span><span class="nb">sample</span> <span class="s">'GGA_UD_1004'</span> <span class="o">-</span><span class="nb">o</span> <span class="s">output.txt</span>
+</code></pre></div>
+          
+          <div class="pushit">
+            <ol start="3">
+            <li>Variant distribution of all, or selected chromosomes for individual samples in the database.</li>
+            <h5>Variant distribution of chromosomes via <i><font color="black">--chrvar</font></i> flag</h5>
+            Summary counts of the different variant types per chromosome for each sample.
+            </ol></div>
+          <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax to view chromosome variant counts for all samples in the database for 'Gallus gallus' organism.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">chrvar</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span>
+</code><code><span class="c1"># To export prior syntax as a tab-delimited file 'output.txt'.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">chrvar</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span> <span class="o">-</span><span class="nb">o</span> <span class="s">output.txt</span>
+</code><code><span class="c1"># Syntax to view variant count fo expression profiles of chromosomes 'chr1, chr2, chr3' for all samples.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">chrvar</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span> <span class="o">-</span><span class="nb">chromosome</span> <span class="s">'chr1,chr2,chr3'</span> <span class="o">-</span><span class="nb">o</span> <span class="s">output.txt</span>
+</code><code><span class="c1"># Syntax to view variant count fo expression profiles of chromosomes 'chr1, chr2, chr3' for sample 'GGA_UD_1004'.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">chrvar</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span> <span class="o">-</span><span class="nb">chromosome</span> <span class="s">'chr1,chr2,chr3'</span> <span class="o">-</span><span class="nb">sample</span> <span class="s">'GGA_UD_1004'</span> <span class="o">-</span><span class="nb">o</span> <span class="s">output.txt</span>
+</code></pre></div>
+          
+          <div class="pushit">
+            <ol start="4">
+            <li>Variants and predicted functional annotations found in the organism or selected genes or chromosomes.</li>
+            <h5>Variants and functional annotations via <i><font color="black">--varanno</font></i> flag</h5>
+            View gene-associated variants and chromosomal region-associated variants with respective annotation information.
+            and annotation information.
+            </ol></div>
+          <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax to view associated variants with respective annotation information for 'OPTN' gene in 'Gallus gallus' organism.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">varanno</span> <span class="o">-</span><span class="nb">gene</span> <span class="s">'OPTN'</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span>
+</code><code><span class="c1"># Syntax to view associated variants with respective annotation for chromosomes 'chr1,chr4,chr7' in 'Gallus gallus' organism.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">varanno</span> <span class="o">-</span><span class="nb">chromosome</span> <span class="s">'chr1, chr4, chr7'</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span>
+</code><code><span class="c1"># Syntax to view associated variants with respective annotation for chr1:50000-900000 in 'Gallus gallus' organism.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">varanno</span> <span class="o">-</span><span class="nb">chromosome</span> <span class="s">'chr1'</span> <span class="o">-</span><span class="nb">region</span> <span class="s">50000-900000</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span>
+</code><code><span class="c1"># To export prior syntax as a tab-delimited file 'output.txt'.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">varanno</span> <span class="o">-</span><span class="nb">chromosome</span> <span class="s">'chr1'</span> <span class="o">-</span><span class="nb">region</span> <span class="s">50000-900000</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span> <span class="o">-</span><span class="nb">o</span> <span class="s">output.txt</span>
+</code><code><span class="c1"># To export prior syntax as a vcf file 'output.vcf'.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">varanno</span> <span class="o">-</span><span class="nb">chromosome</span> <span class="s">'chr1'</span> <span class="o">-</span><span class="nb">region</span> <span class="s">50000-900000</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span> <span class="o">-</span><span class="nb">o</span> <span class="o">-</span><span class="nb">vcf</span> <span class="s">output.vcf</span>
+</code></pre></div>
+          <div class="pushit">
+            <h4>Interacting with TransAtlasDB using <font color="#000"><i>tad-interact.pl</i></font></h4>
+          <p>If uncertain on how to proceed with the export module, the interaction module provides an easy-to-use menu-driven interface.<br>
+          The menu offers seven choices of exploratory research interest and provides a detailed description of what can be done from the module.</p>
+          <p>However, the interaction module only outputs a small subset of results, nevertheless, further instructions on how to export the complete results will be displayed.</p>
+        
+        <center><figure><img src="images/export.png">
+        <figcaption>Data retrieval procedure.</figcaption></figure></center>
+        
+        <hr/>
+        <A name="modules"><h3>MODULE DEPENDENCIES</h3></a>
+        <div class="pushit">
+          The following modules have been already configured in the package for Mac OSX nd Unbuntu systems except DBD::mysql.
+          <div class="pushit">
+            <ol start="i">
+            <li><strong><a href="http://search.cpan.org/~capttofu/DBD-mysql/lib/DBD/mysql.pm" target="_blank">DBD::mysql</a></strong></li>
+            Version: 4.038
+            <li><strong><a href="http://search.cpan.org/~hmbrand/Spreadsheet-Read-0.66/Read.pm" target="_blank">Spreadsheet::Read</a></strong></li>
+            Version: 0.66
+            <li><strong><a href="http://search.cpan.org/~dougw/Spreadsheet-ParseExcel-0.65/lib/Spreadsheet/ParseExcel.pm" target="_blank">Spreadsheet::ParseExcel</a></strong></li>
+            Version: 0.65
+            <li><strong><a href="http://search.cpan.org/~dmow/Spreadsheet-XLSX/lib/Spreadsheet/XLSX.pm" target="_blank">Spreadsheet::XLSX</a></strong></li>
+            Version: 0.15
+            <li><strong><a href="http://search.cpan.org/~darren/Text-TabularDisplay/TabularDisplay.pm" target="_blank">Text::TabularDisplay</a></strong></li>
+            Version: 1.38
+            <li><strong><a href="http://search.cpan.org/~salva/Sort-Key-1.33/lib/Sort/Key.pm" target="_blank">Sort::Key</a></strong></li>
+            Version: 1.33
+          </ol>
+          </div>
+        </div>
+        <hr>
+   
+        <p>Please click the menu items to navigate through this repository. If you have questions, comments and bug reports, please <a href="mailto:amodupe@udel.edu">email me </a>directly. </p>
+        <p>Thank you very much for your help and support!</p>
+      </section>
+      <br>
+      <footer>
+        <p>This project is maintained by <a href="https://modupeore.github.io" target=_blank>Modupeore</a></p>
+      </footer>
+    </div>
+    <script src="/TransAtlasDB/assets/js/scale.fix.js"></script>
+  </body>
+</html>

@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>TransAtlasDB</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <a href="index.html"><h1>TransAtlasDB</h1></a>
+        <p>An Informatics system for Transcriptome Analysis Data</p>
+        <br>
+        <ul class="icons">
+          <a href="index.html"><strong><center>What is TransAtlasDB?</center></strong></a>
+        </ul>
+        <ul class="icons">
+          <a href="usage.html"><strong><center>Toolkit</center></strong></a>
+        </ul>
+        <ul class="icons">
+          <a href="tutorial.html"><strong>Tutorial</strong></a>
+        </ul>
+        <br>
+        <p class="view"><a href="https://github.com/modupeore/TransAtlasDB">View the Project on GitHub <small></small></a></p>       
+        <ul>
+          <li><a href="https://github.com/modupeore/TransAtlasDB/zipball/gh-pages">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/modupeore/TransAtlasDB/tarball/gh-pages">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/modupeore/TransAtlasDB">View On <strong>GitHub</strong></a></li>
+        </ul>       
+      </header>
+      <br>
+      <section>
+        <h2>TransAtlasDB Sample Format</h2>
+        <p>This section discusses TransAtlasDB input data format and output formats.</p>
+        <hr>
+        <h3>INPUT FORMAT</h3>
+        <div class="pushit">
+          <p>TransAtlasDB accepts input data from the different software required for differential expression analysis. <br>
+          The current prototype accepts outputs from the Tuxedo Suite - TopHat and Cufflinks. </p>
+          Thus, the following information is required for successful utilization of TransAtlasDB;
+          <ol type= "a">
+            <li><strong>Sample Information.</strong></li>
+            <p>The Sample information, or samples metadata, is the reference point of the corresponding results from RNAseq data and therefore important for data archival and retrieval of the various transcriptome analysis. TransAtlasDB preferably accepts the sample information through the <a href="www.faang.org" target="_blank">FAANG</a> sample submission spreadsheet template to <a href="https://www.ebi.ac.uk/biosamples/" target="_blank">BioSamples</a>. Details are provided <a href="https://www.ebi.ac.uk/seqdb/confluence/display/FAANG/Submission+of+samples+to+BioSamples" target="_blank">here</a>.<br>
+            The FAANG sample submission spreadsheet template provides a detailed questionnaire for each sample and hence our database system was modeled to accept the FAANG excel template. However, the required fields in the spreadsheet are the Animal and Specimen sheets; with the Animal-‘Sample Name’, Animal-‘Organism’, Specimen-‘Sample Name’ and Specimen-‘Organism Part’ column filled. Also, the Specimen-‘Derived from’ should be the same as the Animal-‘Sample Name’ column of each sample.</p>
+            The database system also accepts a tab-delimited file with the minimum required columns shown below: 
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Header</th>
+      <th style="text-align: left">Status</th>
+      <th style="text-align: left">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Sample name</td>
+      <td style="text-align: left"><code class="highlighter-rouge">required</code></td>
+      <td style="text-align: left">Sample identification number</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Sample description</td>
+      <td style="text-align: left"><code class="highlighter-rouge">optional</code></td>
+      <td style="text-align: left">Description of sample</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Derived from</td>
+      <td style="text-align: left"><code class="highlighter-rouge">required</code></td>
+      <td style="text-align: left">Animal identification number</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Organism</td>
+      <td style="text-align: left"><code class="highlighter-rouge">required</code></td>
+      <td style="text-align: left">Species name</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Organism part</td>
+      <td style="text-align: left"><code class="highlighter-rouge">required</code></td>
+      <td style="text-align: left">Name of tissue</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">First name</td>
+      <td style="text-align: left"><code class="highlighter-rouge">optional</code></td>
+      <td style="text-align: left">Person's first name</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Middle initial</td>
+      <td style="text-align: left"><code class="highlighter-rouge">optional</code></td>
+      <td style="text-align: left">Person's middle initial</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Last name</td>
+      <td style="text-align: left"><code class="highlighter-rouge">optional</code></td>
+      <td style="text-align: left">Person's last name</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Organization</td>
+      <td style="text-align: left"><code class="highlighter-rouge">optional</code></td>
+      <td style="text-align: left">Institutional name</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>To download the template click <a href="samples-template.txt" target="_blank" download="template.txt">here</a>.</strong><br>
+Otherwise, the sample information can be manually inserted using SQL insert statements.
+            <li><strong>Alignment Information.</strong></li>
+            <p>
+              The Alignment information is comprised of the alignment BAM file, summary file and bed files obtained from the RNAseq read mapper, TopHat2.
+            </p>
+            <li><strong>Expression Information.</strong></li>
+            <p>
+              The Expression information consists of the genes and isoforms normalized abundance, FPKM (Fragments Per Kilobase of transcript per mill, files generated using Cufflinks.
+            </p>
+            <li><strong>Variant Information.</strong></li>
+            <p>
+              The Variant information includes the variant VCF (variant call format) file from variant callers, such as GATK, SAMtools, and many more. Optionally, the functional annotations of variants predicted by different bioinformatics tools can also be provided in a tab-delimited format. TransAtlasDB currently accepts functional annotations from two annotation software; Ensembl Variant Effect Predictor, or commonly known as VEP, and ANNOVAR. 
+            </p>
+          </ol>
+          The input data should be stored in a single folder for each sample, shown below. The folder name must be the sample name as denoted in the metadata.
+          <center><figure><A name="folder"><img src="images/sampledir.png"></a>
+        <figcaption>Directory structure layout for each sample. Output files from the specified software for RNAseq analysis can be stored in the parent folder, otherwise, can be reorganized in subfolders as listed.</figcaption></figure></center>
+        </div>
+        <hr/>
+        <h3>OUTPUT FORMAT</h3></a>
+        <div class="pushit">
+          <p>
+            TransAtlasDB outputs user-defined queries as a tab-delimited table.
+          </p>
+          <p>
+            This table is the default output format which is accepted by most text editors or statistics tools such as Microsoft Excel, R and JMP software. <br>
+            Asides from the tab-delimited format for exporting results, the variant information can be generated as a VCF output using the <d>-vcf</d> flag.</p>
+          <h4>Variant Call Format</h4>
+          <p>Predicted functional annotations and sample metadata are added in the INFO field of the VCF file, using the key “CSQ” and “MTD” respectively. <br>
+          Data fields are encoded separated by “|”; the order of fields is written in the VCF header. <br>
+          VCFs produced by TransAtlasDB follow the standard VCF version 4 file format, and can be used for further downstream analysis or visualization using various variant viewers such as the University of California Santa Cruz (UCSC) Genome Browser, Integrative Genomics Viewer (IGV), and other programs that accept VCF files.
+          </p>
+          
+          </div>
+          <hr>
+   
+        <p>Please click the menu items to navigate through this repository. If you have questions, comments and bug reports, please <a href="mailto:amodupe@udel.edu">email me </a>directly. </p>
+        <p>Thank you very much for your help and support!</p>
+      </section>
+      <br>
+      <footer>
+        <p>This project is maintained by <a href="https://modupeore.github.io" target=_blank>Modupeore</a></p>
+      </footer>
+    </div>
+    <script src="/TransAtlasDB/assets/js/scale.fix.js"></script>
+  </body>
+</html>
