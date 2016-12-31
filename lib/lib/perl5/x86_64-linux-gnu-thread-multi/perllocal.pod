@@ -1,0 +1,22 @@
+=head2 Tue Dec 13 14:13:25 2016: C<Module> L<Sort::Key|Sort::Key>
+
+=over 4
+
+=item *
+
+C<installed into: /home/modupe/TAD/lib//lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.33>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+

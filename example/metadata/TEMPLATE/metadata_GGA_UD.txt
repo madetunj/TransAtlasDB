@@ -1,0 +1,4 @@
+Sample Name	Sample description	Derived from	Organism	Organism Part	First name	Middle Initial	Last name	Organization
+GGA_UD_1004	21 day male Ross 708	GGA_UD_1004	Gallus gallus	Pituitary gland	Elizabeth	M	Pritchett	University of Delaware
+GGA_UD_1014	21 day male Ross 708	GGA_UD_1014	Gallus gallus	Pituitary gland	Elizabeth	M	Pritchett	University of Delaware
+

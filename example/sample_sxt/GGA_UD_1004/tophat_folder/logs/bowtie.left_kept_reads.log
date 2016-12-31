@@ -1,0 +1,6 @@
+250000 reads; of these:
+  250000 (100.00%) were unpaired; of these:
+    73637 (29.45%) aligned 0 times
+    142654 (57.06%) aligned exactly 1 time
+    33709 (13.48%) aligned >1 times
+70.55% overall alignment rate
