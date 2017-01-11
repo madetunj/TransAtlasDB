@@ -35,6 +35,9 @@
         <ul class="icons">
           <a href="tutorial.html"><strong>Tutorial</strong></a>
         </ul>
+        <ul class="icons">
+          <a class="select" href="sample.html"><strong>Sample Files format</strong></a>
+        </ul>
         <br>
         <p class="view"><a href="https://github.com/modupeore/TransAtlasDB">View the Project on GitHub <small></small></a></p>       
         <ul>
@@ -56,7 +59,7 @@
           <ol type= "a">
             <li><strong>Sample Information.</strong></li>
             <p>The Sample information, or samples metadata, is the reference point of the corresponding results from RNAseq data and therefore important for data archival and retrieval of the various transcriptome analysis. TransAtlasDB preferably accepts the sample information through the <a href="www.faang.org" target="_blank">FAANG</a> sample submission spreadsheet template to <a href="https://www.ebi.ac.uk/biosamples/" target="_blank">BioSamples</a>. Details are provided <a href="https://www.ebi.ac.uk/seqdb/confluence/display/FAANG/Submission+of+samples+to+BioSamples" target="_blank">here</a>.<br>
-            The FAANG sample submission spreadsheet template provides a detailed questionnaire for each sample and hence our database system was modeled to accept the FAANG excel template. However, the required fields in the spreadsheet are the Animal and Specimen sheets; with the Animal-‘Sample Name’, Animal-‘Organism’, Specimen-‘Sample Name’ and Specimen-‘Organism Part’ column filled. Also, the Specimen-‘Derived from’ should be the same as the Animal-‘Sample Name’ column of each sample.</p>
+            The FAANG sample submission spreadsheet template provides a detailed questionnaire for each sample and hence our database system was modeled to accept the FAANG excel template. However, the required fields in the spreadsheet are the Animal and Specimen sheets; with the <font color=#333>Animal-‘Sample Name’</font>, <font color=#333>Animal-‘Organism’</font>, <font color=#333>Specimen-‘Sample Name’</font> and <font color=#333>Specimen-‘Organism Part’</font> column filled. Also, the <font color=#333>Specimen-‘Derived from’</font> should be the same as the <font color=#333>Animal-‘Sample Name’</font> column of each sample.</p>
             The database system also accepts a tab-delimited file with the minimum required columns shown below: 
 <table>
   <thead>
@@ -115,23 +118,45 @@
   </tbody>
 </table>
 <p><strong>To download the template click <a href="samples-template.txt" target="_blank" download="template.txt">here</a>.</strong><br>
-Otherwise, the sample information can be manually inserted using SQL insert statements.
-            <li><strong>Alignment Information.</strong></li>
-            <p>
-              The Alignment information is comprised of the alignment BAM file, summary file and bed files obtained from the RNAseq read mapper, TopHat2.
-            </p>
+Otherwise, the sample information can be manually inserted using SQL insert statements.</p> </ol>
+            <ol type= "a" start=2>
+              <li><strong>Alignment Information.</strong></li>
+              The Alignment information is comprised of the alignment files generated from either RNAseq read mappers; TopHat2 or HISAT2.
+              Depending on the RNAseq read mapper used, the expected files are;<br>
+              <ol type="i"><li>
+              <b>HISAT2</b></li>
+              <ul class="tools"><li>Align sam file ( suffix: <i><font color="#d14">.sam</font></i> )</li>
+              <li>Summary file ( i.e. <i><font color="#d14">align_summary.txt</font></i> )</li>
+              <font size="2pt" color=#333><i>NOTE</i>: The alignment summary, produced as stardard output at default, must be saved as 'align_summary.txt' file</font></ul>
+              
+              <li><b>TopHat2 </b></li>
+              <ul class="tools"><li>Alignment Bam file ( suffix: <i><font color="#d14">.bam</font></i> )</li>
+              <li>Summary file ( i.e. <i><font color="#d14">align_summary.txt</font></i> )</li>
+              <li>Bed files ( i.e. <i><font color="#d14">deletions.bed</font></i> , <i><font color="#d14">insertions.bed</font></i> , <i><font color="#d14">junctions.bed</font></i> )</li>
+              <li><i><font color="#d14">logs</font></i> folder</li></ul></ol>
+            </ol><p></p>
+            <ol type= "a" start=3>
             <li><strong>Expression Information.</strong></li>
-            <p>
-              The Expression information consists of the genes and isoforms normalized abundance, FPKM (Fragments Per Kilobase of transcript per mill, files generated using Cufflinks.
-            </p>
+              The Expression information consists of the genes FPKM (Fragments Per Kilobase of transcript per million) file generated using Cufflinks or StringTie, the required files are;<br>
+              <ol type="i"><li>
+             <b> StringTie</b></li>
+              <ul class="tools"><li>Transcripts GTF ( suffix: <i><font color="#d14">.gtf</font></i> )</li>
+              <font size="2pt" color=#333><i>NOTE</i>: The transcripts details should be saved with the suffix '.gtf'</font></ul>
+              
+              <li><b>Cufflinks </b></li>
+              <ul class="tools"><li>Genes fpkm tracking table ( i.e. <i><font color="#d14">genes.fpkm_tracking</font></i> ), or </li>
+              <li>Transcripts GTF ( i.e. <i><font color="#d14">transcripts.gtf</font></i> )</li></ul></ol>
+            </ol><p></p>
+            <ol type= "a" start=4>
             <li><strong>Variant Information.</strong></li>
-            <p>
-              The Variant information includes the variant VCF (variant call format) file from variant callers, such as GATK, SAMtools, and many more. Optionally, the functional annotations of variants predicted by different bioinformatics tools can also be provided in a tab-delimited format. TransAtlasDB currently accepts functional annotations from two annotation software; Ensembl Variant Effect Predictor, or commonly known as VEP, and ANNOVAR. 
-            </p>
+              The Variant information includes the variant VCF file ( suffix: <i><font color="#d14">.vcf</font></i> ) from variant callers, such as GATK, SAMtools (BCFtools).<br>
+              Optionally, the functional annotations of variants predicted by different bioinformatics tools can also be provided in a tab-delimited format. TransAtlasDB currently accepts functional annotations from two annotation software;
+              <ul type="square"><li>Ensembl Variant Effect Predictor (VEP) : The output file should be named with suffix: <i><font color="#d14">.vep.txt</font></i>.</li>
+              <li>ANNOVAR : The default output file with suffix: <i><font color="#d14">multianno.txt</font></i> will be imported. </li></ul>
           </ol>
           The input data should be stored in a single folder for each sample, shown below. The folder name must be the sample name as denoted in the metadata.
           <center><figure><A name="folder"><img src="images/sampledir.png"></a>
-        <figcaption>Directory structure layout for each sample. Output files from the specified software for RNAseq analysis can be stored in the parent folder, otherwise, can be reorganized in subfolders as listed.</figcaption></figure></center>
+        <figcaption>Directory structure layout for each sample. The Folder Name must be the sample name as denoted in the metadata. Output files from the specified software for RNAseq analysis, TopHat and Cufflinks (A), or HISAT and StringTie (B) can be stored in the parent folder, otherwise, can be reorganized in subfolders listed. The solid-line boxes are required, while the optional files are represented in dashed-line boxes.</figcaption></figure></center>
         </div>
         <hr/>
         <h3>OUTPUT FORMAT</h3></a>
