@@ -178,7 +178,7 @@ sub TRANSCRIPT {
 	print colored("C.\tTRANSCRIPTOME ANALYSIS SUMMARY OF SAMPLES.", 'bright_red on_black'),"\n";
 	print LOG "C.\tTRANSCRIPTOME ANALYSIS SUMMARY OF SAMPLES.\n";
 	$dbh = $_[0]; 
-	$t = Text::TabularDisplay->new(qw(SampleID	Organism Tissue TotalReads MappedReads	Genes(total) Isoforms(total) Variants(total) SNVs(total) InDELs(total))); #header
+	$t = Text::TabularDisplay->new(qw(SampleID	Organism Tissue TotalReads MappedReads	AlignmentRate(%) Genes(total) Variants(total) SNVs(total) InDELs(total))); #header
 	$precount = 0; $precount = $dbh->selectrow_array("select count(*) from vw_sampleinfo"); #count all info in processed samples
 	my $indent = "";
 	$count = $precount;
