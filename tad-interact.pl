@@ -173,7 +173,7 @@ sub OPTIONS {
 	  tad-interact.pl -summary
 
 
- Version: $Date: 2016-10-28 15:50:08 (Fri, 28 Oct 2016) $
+ Version: $ Date: 2016-10-28 15:50:08 (Fri, 28 Oct 2016) $
 
 =head1 OPTIONS
 
@@ -231,57 +231,20 @@ profiling from numerous amounts of RNAseq data.
 TransAtlasDB toolkit comprises of a suite of Perl script for easy archival and 
 retrival of transcriptome profiling and genetic variants.
 
-TransAtlasDB requires all analysis be stored in a single folder location for 
-successful processing.
+Detailed documentation for TransAtlasDB should be viewed on https://modupeore.github.io/TransAtlasDB/.
 
-Detailed documentation for TransAtlasDB should be viewed on github.
+=over 8
 
-=over 8 
+=item * B<output format>
 
-=item * B<directory/folder structure>
-A sample directory structure contains file output from TopHat2 software, 
-Cufflinks software, variant file from any bioinformatics variant analysis package
-such as GATK, SAMtools, and (optional) variant annotation results from ANNOVAR 
-or Ensembl VEP in tab-delimited format having suffix '.multianno.txt' and '.vep.txt' 
-respectively. An example is shown below:
-
-	/sample_name/
-	/sample_name/tophat_folder/
-	/sample_name/tophat_folder/accepted_hits.bam
-	/sample_name/tophat_folder/align_summary.txt
-	/sample_name/tophat_folder/deletions.bed
-	/sample_name/tophat_folder/insertions.bed
-	/sample_name/tophat_folder/junctions.bed
-	/sample_name/tophat_folder/prep_reads.info
-	/sample_name/tophat_folder/unmapped.bam
-	/sample_name/cufflinks_folder/
-  /sample_name/cufflinks_folder/genes.fpkm_tracking
-	/sample_name/cufflinks_folder/isoforms.fpkm_tracking
-	/sample_name/cufflinks_folder/skipped.gtf
-	/sample_name/cufflinks_folder/transcripts.gtf
-	/sample_name/variant_folder/
-	/sample_name/variant_folder/<filename>.vcf
-	/sample_name/variant_folder/<filename>.multianno.txt
-	/sample_name/variant_folder/<filename>.vep.txt
-
-=item * B<variant file format>
-
-A sample variant file contains one variant per line, with the fields being chr,
-start, end, reference allele, observed allele, other information. The other
-information can be anything (for example, it may contain sample identifiers for
-the corresponding variant.) An example is shown below:
-
-        16      49303427        49303427        C       T       rs2066844       R702W (NOD2)
-        16      49314041        49314041        G       C       rs2066845       G908R (NOD2)
-        16      49321279        49321279        -       C       rs2066847       c.3016_3017insC (NOD2)
-        16      49290897        49290897        C       T       rs9999999       intronic (NOD2)
-        16      49288500        49288500        A       T       rs8888888       intergenic (NOD2)
-        16      49288552        49288552        T       -       rs7777777       UTR5 (NOD2)
-        18      56190256        56190256        C       T       rs2229616       V103I (MC4R)
+TransAtlasDB prints results as a table to the screen.
+Results can be stored in a tab-delimited format or VCF file for variants.
+The tab-delimited file is compartible with most text-editors or statistics package.
+The VCF file is compartible with most text-editors or downstream analysis that accepts VCFs.
 
 =item * B<invalid input>
 
-If any of the files input contain invalid arguments or format, TransAtlasDB
+If any of the files input contain invalid arguments or format, TransAtlasDB 
 will terminate the program and the invalid input with the outputted. 
 Users should manually examine this file and identify sources of error.
 

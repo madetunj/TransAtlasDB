@@ -1043,12 +1043,14 @@ sub MTD {
 					
 	  #variants and annotation information of genes 'OPTN' and 'GDF' in Gallus gallus organism
           tad-export.pl --db2data --varanno --species 'Gallus gallus' --gene 'OPTN,GDF'
-	  tad-export.pl --db2data --varanno --species 'Gallus gallus' --gene 'OPTN,GDF' -o output.txt
 					
 	  #variants and annotation information of chromosomes 'chr1,chr2' in Gallus gallus organism
-          tad-export.pl --db2data --varanno --species 'Gallus gallus' --chromosome 'chr1'
-	  tad-export.pl --db2data --varanno --species 'Gallus gallus' --chromosome 'chr1' -o output.txt
-	  tad-export.pl --db2data --varanno --species 'Gallus gallus' --chromosome 'chr1' -o -vcf vcfoutput.vcf
+          tad-export.pl --db2data --varanno --species 'Gallus gallus' --chromosome 'chr1,chr2'
+	  tad-export.pl --db2data --varanno --species 'Gallus gallus' --chromosome 'chr1,chr2' -o output.txt
+	  tad-export.pl --db2data --varanno --species 'Gallus gallus' --chromosome 'chr1,chr2' -o -vcf vcfoutput.vcf
+		
+	  #variants and annotation information of chromosomal region 'chr1:50000-900000' in Gallus gallus organism
+          tad-export.pl --db2data --varanno --species 'Gallus gallus' --chromosome 'chr1' -region 50000-900000
 					
 	  #average fpkm values for genes 'OPTN' and 'GDF' in all tissues of Gallus gallus organism
           tad-export.pl --db2data --avgfpkm --species 'Gallus gallus' --gene 'OPTN,GDF'
@@ -1056,10 +1058,9 @@ sub MTD {
 					
 	  #average fpkm values for genes 'OPTN' and 'GDF' in the pituitary gland of Gallus gallus organism
 	  tad-export.pl --db2data --avgfpkm --species 'Gallus gallus' --gene 'OPTN,GDF' --tissue 'pituitary gland'
-	  tad-export.pl --db2data --avgfpkm --species 'Gallus gallus' --gene 'OPTN,GDF' --tissue 'pituitary gland' -o output.txt
 
 
- Version: $Date: 2016-12-05 15:50:08 (Mon, 05 Dec 2016) $
+ Version: $ Date: 2016-12-05 15:50:08 (Mon, 05 Dec 2016) $
 
 =head1 OPTIONS
 
@@ -1148,57 +1149,20 @@ profiling from numerous amounts of RNAseq data.
 TransAtlasDB toolkit comprises of a suite of Perl script for easy archival and 
 retrival of transcriptome profiling and genetic variants.
 
-TransAtlasDB requires all analysis be stored in a single folder location for 
-successful processing.
+Detailed documentation for TransAtlasDB should be viewed on https://modupeore.github.io/TransAtlasDB/.
 
-Detailed documentation for TransAtlasDB should be viewed on github.
+=over 8
 
-=over 8 
+=item * B<output format>
 
-=item * B<directory/folder structure>
-A sample directory structure contains file output from TopHat2 software, 
-Cufflinks software, variant file from any bioinformatics variant analysis package
-such as GATK, SAMtools, and (optional) variant annotation results from ANNOVAR 
-or Ensembl VEP in tab-delimited format having suffix '.multianno.txt' and '.vep.txt' 
-respectively. An example is shown below:
-
-	/sample_name/
-	/sample_name/tophat_folder/
-	/sample_name/tophat_folder/accepted_hits.bam
-	/sample_name/tophat_folder/align_summary.txt
-	/sample_name/tophat_folder/deletions.bed
-	/sample_name/tophat_folder/insertions.bed
-	/sample_name/tophat_folder/junctions.bed
-	/sample_name/tophat_folder/prep_reads.info
-	/sample_name/tophat_folder/unmapped.bam
-	/sample_name/cufflinks_folder/
-	/sample_name/cufflinks_folder/genes.fpkm_tracking
-	/sample_name/cufflinks_folder/isoforms.fpkm_tracking
-	/sample_name/cufflinks_folder/skipped.gtf
-	/sample_name/cufflinks_folder/transcripts.gtf
-	/sample_name/variant_folder/
-	/sample_name/variant_folder/<filename>.vcf
-	/sample_name/variant_folder/<filename>.multianno.txt
-	/sample_name/variant_folder/<filename>.vep.txt
-
-=item * B<variant file format>
-
-A sample variant file contains one variant per line, with the fields being chr,
-start, end, reference allele, observed allele, other information. The other
-information can be anything (for example, it may contain sample identifiers for
-the corresponding variant.) An example is shown below:
-
-        chr16      49303427        C       T       rs2066844       R702W (NOD2)
-        chr16      49314041        G       C       .       G908R (NOD2)
-        chr16      49321279        -       C       rs2066847       c.3016_3017insC (NOD2)
-        chr16      49290897        C       T       rs9999999       intronic (NOD2)
-        chr16      49288500        A       T       rs8888888       intergenic (NOD2)
-        chr16      49288552        T       -       rs7777777       UTR5 (NOD2)
-        chr18      56190256        C       T       .       V103I (MC4R)
+TransAtlasDB prints results as a table to the screen.
+Results can be stored in a tab-delimited format or VCF file for variants.
+The tab-delimited file is compartible with most text-editors or statistics package.
+The VCF file is compartible with most text-editors or downstream analysis that accepts VCFs.
 
 =item * B<invalid input>
 
-If any of the files input contain invalid arguments or format, TransAtlas 
+If any of the files input contain invalid arguments or format, TransAtlasDB 
 will terminate the program and the invalid input with the outputted. 
 Users should manually examine this file and identify sources of error.
 
@@ -1212,5 +1176,3 @@ TransAtlasDB is free for academic, personal and non-profit use.
 For questions or comments, please contact $ Author: Modupe Adetunji <amodupe@udel.edu> $.
 
 =cut
-
-

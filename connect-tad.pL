@@ -120,7 +120,7 @@ sub processArguments {
 	  #store connection details to existing TransAtlasDB with username:root, password:root, databasename:testmysql, fastbitname:testfastbit
           connect-tad.pL -u root -p root -d testmysql -n testfastbit
 
- Version: $Date: 2016-10-25 13:19:08 (Tue, 25 Oct 2016) $
+ Version: $ Date: 2016-10-25 13:19:08 (Tue, 25 Oct 2016) $
 
 =head1 OPTIONS
 
@@ -172,37 +172,88 @@ retrival of transcriptome profiling and genetic variants.
 TransAtlasDB requires all analysis be stored in a single folder location for 
 successful processing.
 
-Detailed documentation for TransAtlasDB should be viewed on github.
+Detailed documentation for TransAtlasDB should be viewed on https://modupeore.github.io/TransAtlasDB/.
 
-=over 8 
+=over 8
 
-=item * B<directory/folder structure>
-A sample directory structure contains file output from TopHat2 software, 
-Cufflinks software, variant file from any bioinformatics variant analysis package
+=item * B<invalid input>
+
+If any of the files input contain invalid arguments or format, TransAtlasDB 
+will terminate the program and the invalid input with the outputted. 
+Users should manually examine this file and identify sources of error.
+
+=back
+
+=head2 Sample Tab-delimited file
+
+A sample tab-delimited file contains one sample per line, with the fields being sample name,
+derived from, organism, organism part, sample description, first name, middle initial,
+last name, organization. The 1st four fields (sample name, derived from, organism, organism part)
+are required, while the other five fields may contain optional details in regards to the sample.
+The 'sample name' must be a word and can be alphanumeric. An example is shown below.
+
+  Sample Name	Derived from	Organism	Organism Part	Sample description	Organization
+  GGA_UD_1004	GGA_UD_1004	Gallus gallus	Pituitary gland	21 day male Ross 708	University of Delaware
+  GGA_UD_1014	GGA_UD_1014	Gallus gallus	Pituitary gland	21 day male Ross 708	University of Delaware
+
+=head2 Directory/Folder structure
+
+A sample directory structure contains all the files required for successful utilization
+of TransAtlasDB, such as the mapping file outputs from either the TopHat2 or
+HISAT2 software; expression file outputs from either the Cufflinks or StringTie software;
+variant file from any bioinformatics variant analysis package
 such as GATK, SAMtools, and (optional) variant annotation results from ANNOVAR 
 or Ensembl VEP in tab-delimited format having suffix '.multianno.txt' and '.vep.txt' 
-respectively. An example is shown below:
+respectively.
+The sample directory must be named the same 'sample_name' as with it's corresponding 'sample_name'
+in the sample information previously imported.
+
+=over 8
+
+=item * B<TopHat2 and Cufflinks directory structure>
+The default naming scheme from the above software are required.
+The sub_folders <tophat_folder>,  <cufflinks_folder>, <variant_folder> are optional.
+All files pertaining to such 'sample_name' must be in the same folder.
+An example of TopHat and Cufflinks results directory is shown below:
 
 	/sample_name/
-	/sample_name/tophat_folder/
-	/sample_name/tophat_folder/accepted_hits.bam
-	/sample_name/tophat_folder/align_summary.txt
-	/sample_name/tophat_folder/deletions.bed
-	/sample_name/tophat_folder/insertions.bed
-	/sample_name/tophat_folder/junctions.bed
-	/sample_name/tophat_folder/prep_reads.info
-	/sample_name/tophat_folder/unmapped.bam
-	/sample_name/cufflinks_folder/
-  	/sample_name/cufflinks_folder/genes.fpkm_tracking
-	/sample_name/cufflinks_folder/isoforms.fpkm_tracking
-	/sample_name/cufflinks_folder/skipped.gtf
-	/sample_name/cufflinks_folder/transcripts.gtf
-	/sample_name/variant_folder/
-	/sample_name/variant_folder/<filename>.vcf
-	/sample_name/variant_folder/<filename>.multianno.txt
-	/sample_name/variant_folder/<filename>.vep.txt
+	/sample_name/<tophat_folder>/
+	/sample_name/<tophat_folder>/accepted_hits.bam
+	/sample_name/<tophat_folder>/align_summary.txt
+	/sample_name/<tophat_folder>/deletions.bed
+	/sample_name/<tophat_folder>/insertions.bed
+	/sample_name/<tophat_folder>/junctions.bed
+	/sample_name/<cufflinks_folder>/
+	/sample_name/<cufflinks_folder>/genes.fpkm_tracking
+	/sample_name/<cufflinks_folder>/transcripts.gtf
+	/sample_name/<variant_folder>/
+	/sample_name/<variant_folder>/<filename>.vcf
+	/sample_name/<variant_folder>/<filename>.multianno.txt
+	/sample_name/<variant_folder>/<filename>.vep.txt
+	
+=item * B<HISAT2 and StringTie directory structure>
+The required files from HISAT2 are the SAM mapping file (suffix = '.sam') and the
+alignment summary details. The alignment summary is generated as a standard
+output, which should be stored in a file named 'align_summary.txt'.
+The required file from StringTie is the transcripts file with suffix = '.gtf').
+The sub_folders <hisat_folder>,  <stringtie_folder>, <variant_folder> are optional.
+All files pertaining to such 'sample_name' must be in the same folder.
+An example of HiSAT2 and Stringtie results directory is shown below:
 
-=item * B<variant file format>
+	/sample_name/
+	/sample_name/<hisat_folder>/
+	/sample_name/<hisat_folder>/align_summary.txt
+	/sample_name/<hisat_folder>/<filename>.sam
+	/sample_name/<stringtie_folder>/
+	/sample_name/<stringtie_folder>/<filename>.gtf
+	/sample_name/<variant_folder>/
+	/sample_name/<variant_folder>/<filename>.vcf
+	/sample_name/<variant_folder>/<filename>.multianno.txt
+	/sample_name/<variant_folder>/<filename>.vep.txt
+
+=back
+
+=head2 Variant file format (VCF)
 
 A sample variant file contains one variant per line, with the fields being chr,
 start, end, reference allele, observed allele, other information. The other
@@ -216,22 +267,17 @@ the corresponding variant.) An example is shown below:
         16      49288500        49288500        A       T       rs8888888       intergenic (NOD2)
         16      49288552        49288552        T       -       rs7777777       UTR5 (NOD2)
         18      56190256        56190256        C       T       rs2229616       V103I (MC4R)
+				
+TransAtlasDB accepts variants file from GATK and SAMtools (BCFtools)
 
-=item * B<invalid input>
-
-If any of the files input contain invalid arguments or format, TransAtlas 
-will terminate the program and the invalid input with the outputted. 
-Users should manually examine this file and identify sources of error.
+=over 8
 
 =back
-
 
 --------------------------------------------------------------------------------
 
 TransAtlasDB is free for academic, personal and non-profit use.
 
-For questions or comments, please contact $Author: Modupe Adetunji <amodupe@udel.edu> $.
+For questions or comments, please contact $ Author: Modupe Adetunji <amodupe@udel.edu> $.
 
 =cut
-
-
