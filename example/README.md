@@ -8,29 +8,29 @@ This folder provides an example of the different types of information required b
 The different types of information can be broadly grouped into four categories which are listed below, with their applicable software.
 
 1. Sample Information, or commonly known as the samples metadata.
-	* FAANG
-	* Tab-delimited file
+  * FAANG
+  * Tab-delimited file
 
 2. Alignment (Mapping) Information.
-	* TopHat2
-	* HISAT2
+  * TopHat2
+  * HISAT2
 
 3. Expression Information.
-	* Cufflinks
-	* StringTie
+  * Cufflinks
+  * StringTie
 
 4. Variant Information.
-	* GATK 
-	* SAMtools (BCFtools)
+  * GATK 
+  * SAMtools (BCFtools)
 
 All required input files should be stored in a single folder, which should be named the _Sample Name_ of the corresponding sample in the samples metadata, as shown.
 
 ###Folder details:
 * _**metadata**_ : contains the samples information for GGA_UD_1014 and GGA_UD_1004 using either the tab-delimited file or the FAANG biosamples spreadsheet.
 
-* _**sample_sxt**_ : contains the mapping, expression and variant information for GGA_UD_1004 and GGA_UD_1014 generated from different softwares to showcase the versatility of TransAtlasDB
+* _**sample_sxt**_ : contains the mapping, expression and variant information for GGA_UD_1004 and GGA_UD_1014 generated from different tools to showcase the versatility of TransAtlasDB.
 
-| **Software**          | GGA_UD_1014    | GGA_UD_1004    |
+| **Software**          | GGA_UD_1004    | GGA_UD_1014    |
 |:----------------------|:---------------|:---------------|
 | Mapping               | TopHat2        | HISAT2         |
 | Expression            | Cufflinks      | StringTie      |
