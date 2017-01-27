@@ -392,9 +392,10 @@ if ($datadb) {
   	if ($found) { # if sample is not in the database    
     		$sth = $dbh->prepare("select sampleid from MapStats where sampleid = '$dataid'"); $sth->execute(); $found = $sth->fetch();
     		LOGFILE();
-				unless ($found) {
+				unless ($found) { 
 						#open alignment summary file
       			if ($alignfile) {
+							`head -n 1 $alignfile` =~ /^(\d+)\sreads/; $total = $1;
 							open(ALIGN,"<", $alignfile) or die "\nFAILED:\t Can not open Alignment summary file '$alignfile'\n";
         			while (<ALIGN>){
           				chomp;
@@ -416,7 +417,6 @@ if ($datadb) {
 									}
 							} close ALIGN;
 							$mapped = ceil($total * $alignrate/100);
-							$alignrate .= "%";
       			} else {die "\nFAILED:\t Can not find Alignment summary file as 'align_summary.txt'\n";}
      				$deletions = undef; $insertions = undef; $junctions = undef;
 						if ($deletionsfile){ $deletions = `cat $deletionsfile | wc -l`; $deletions--; } 
@@ -444,13 +444,13 @@ if ($datadb) {
           				#variant annotation specifications
           				if ($vep) {
             					printerr "TASK:\t Importing Variant annotation from VEP => $file2consider\n"; #status
-  	    					printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnno table ...";
+  	    					printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnnotation table ...";
             					VEPVARIANT($vepfile, $dataid); printerr " Done\n";
 						NOSQL($dataid);
           				}
           				if ($annovar) {
             					printerr "TASK:\t Importing Variant annotation from ANNOVAR => $file2consider\n"; #status
-  	    					printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnno table ...";
+  	    					printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnnotation table ...";
             					ANNOVARIANT($annofile, $dataid); printerr " Done\n";
 						NOSQL($dataid);
           				}
@@ -462,13 +462,13 @@ if ($datadb) {
 			        #variant annotation specifications
 		        	if ($vep) {
 					printerr "TASK:\t Importing Variant annotation from VEP => $file2consider\n"; #status
-				        printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnno table ...";
+				        printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnnotation table ...";
 	          			VEPVARIANT($vepfile, $dataid); printerr " Done\n";
 					NOSQL($dataid);
         			}
         			if ($annovar) {
           				printerr "TASK:\t Importing Variant annotation from ANNOVAR => $file2consider\n"; #status
-			  		printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnno table ...";
+			  		printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnnotation table ...";
 			          	ANNOVARIANT($annofile, $dataid); printerr " Done\n";
 					NOSQL($dataid);
         			}
@@ -491,7 +491,7 @@ if ($datadb) {
           				my $variantstatus = $dbh->selectrow_array("select status from VarSummary where sampleid = '$dataid' and status = 'done'");
           				unless ($variantstatus){ #checking if completed in VarSummary table
             					$verbose and printerr "NOTICE:\t Removed incomplete records for $dataid in all Variants tables\n";
-					        $sth = $dbh->prepare("delete from VarAnno where sampleid = '$dataid'"); $sth->execute();
+					        $sth = $dbh->prepare("delete from VarAnnotation where sampleid = '$dataid'"); $sth->execute();
 	            				$sth = $dbh->prepare("delete from VarResult where sampleid = '$dataid'"); $sth->execute();
             					$sth = $dbh->prepare("delete from VarSummary where sampleid = '$dataid'"); $sth->execute();
 											DBVARIANT($variantfile, $dataid);
@@ -499,13 +499,13 @@ if ($datadb) {
         	    				#variant annotation specifications
 	            				if ($vep) {
 	      						printerr "TASK:\t Importing Variant annotation from VEP => $file2consider\n"; #status
-              						printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnno table ...";
+              						printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnnotation table ...";
              		 				VEPVARIANT($vepfile, $dataid); printerr " Done\n";
 							NOSQL($dataid);
             					}
         	    				if ($annovar) {
 		      					printerr "TASK:\t Importing Variant annotation from ANNOVAR => $file2consider\n"; #status
-              						printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnno table ...";
+              						printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnnotation table ...";
               						ANNOVARIANT($annofile, $dataid); printerr " Done\n";
 							NOSQL($dataid);
             					}
@@ -516,22 +516,22 @@ if ($datadb) {
               						my $variantstatus = $dbh->selectrow_array("select annversion from VarSummary where sampleid = '$dataid'");
 							my $nosqlstatus = $dbh->selectrow_array("select nosql from VarSummary where sampleid = '$dataid'");
 							unless ($variantstatus && $nosqlstatus){ #if annversion or nosqlstatus is not specified
-                						$verbose and printerr "NOTICE:\t Removed incomplete records for $dataid in VarAnno table\n";
-                						$sth = $dbh->prepare("delete from VarAnno where sampleid = '$dataid'"); $sth->execute();
+                						$verbose and printerr "NOTICE:\t Removed incomplete records for $dataid in VarAnnotation table\n";
+                						$sth = $dbh->prepare("delete from VarAnnotation where sampleid = '$dataid'"); $sth->execute();
         	        					if ($vep) {
 									printerr "TASK:\t Importing Variant annotation from VEP => $file2consider\n"; #status
-                                                			printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnno table ...";
+                                                			printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnnotation table ...";
                                                 			VEPVARIANT($vepfile, $dataid); printerr " Done\n";
                                                 			NOSQL($dataid);
                                         			}
 		                	                        if ($annovar) {
 	                	                        	        printerr "TASK:\t Importing Variant annotation from ANNOVAR => $file2consider\n"; #status
-        	                	                        	printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnno table ...";
+        	                	                        	printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnnotation table ...";
 	        	                        	                ANNOVARIANT($annofile, $dataid); printerr " Done\n";
         	        	                        	        NOSQL($dataid);
                 	        	                	}
 				        		} else { #end unless annversion is previously specified
-                						printerr "NOTICE:\t $dataid already in VarAnno table... Moving on\n";
+                						printerr "NOTICE:\t $dataid already in VarAnnotation table... Moving on\n";
 	              					}
         	    				} #end if annversion is previously specified
 																	$additional .=  "Optional: To delete '$dataid' Variant information ; Execute: tad-import.pl -delete $dataid \n";
@@ -543,7 +543,7 @@ if ($datadb) {
         			my $variantstatus = $dbh->selectrow_array("select status from VarSummary where sampleid = '$dataid' and status = 'done'");
         			unless ($variantstatus){ #checking if completed in VarSummary table
 					$verbose and printerr "NOTICE:\t Removed incomplete records for $dataid in all Variants tables\n";
-			          	$sth = $dbh->prepare("delete from VarAnno where sampleid = '$dataid'"); $sth->execute();
+			          	$sth = $dbh->prepare("delete from VarAnnotation where sampleid = '$dataid'"); $sth->execute();
 		          		$sth = $dbh->prepare("delete from VarResult where sampleid = '$dataid'"); $sth->execute();
 		        	  	$sth = $dbh->prepare("delete from VarSummary where sampleid = '$dataid'"); $sth->execute();
 			          	DBVARIANT($variantfile, $dataid);
@@ -551,13 +551,13 @@ if ($datadb) {
 		          		#variant annotation specifications
 		        	  	if ($vep) {
 			            		printerr "TASK:\t Importing Variant annotation from VEP => $file2consider\n"; #status
-			            		printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnno table ...";
+			            		printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnnotation table ...";
 			            		VEPVARIANT($vepfile, $dataid); printerr " Done\n";
 						NOSQL($dataid);
           				}
 					if ($annovar) {
             					printerr "TASK:\t Importing Variant annotation from ANNOVAR => $file2consider\n"; #status
-            					printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnno table ...";
+            					printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnnotation table ...";
            			 		ANNOVARIANT($annofile, $dataid); printerr " Done\n";
 						NOSQL($dataid);
           				}
@@ -568,21 +568,21 @@ if ($datadb) {
 						my $nosqlstatus = $dbh->selectrow_array("select nosql from VarSummary where sampleid = '$dataid'");
             					unless ($variantstatus && $nosqlstatus){ #if annversion or nosqlstatus is not specified
 					              	$verbose and printerr "NOTICE:\t Removed incomplete records for $dataid in all Variant Annotation tables\n";
-					              	$sth = $dbh->prepare("delete from VarAnno where sampleid = '$dataid'"); $sth->execute();
+					              	$sth = $dbh->prepare("delete from VarAnnotation where sampleid = '$dataid'"); $sth->execute();
 					              	if ($vep) {
 						                printerr "TASK:\t Importing Variant annotation from VEP => $file2consider\n"; #status
-						                printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnno table ...";
+						                printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnnotation table ...";
 						                VEPVARIANT($vepfile, $dataid); printerr " Done\n";
 								NOSQL($dataid);
               						}
 					              	if ($annovar) {
 						                printerr "TASK:\t Importing Variant annotation from ANNOVAR => $file2consider\n"; #status
-						                printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnno table ...";
+						                printerr "NOTICE:\t Importing $dataid - Variant Annotation to VarAnnotation table ...";
 						                ANNOVARIANT($annofile, $dataid); printerr " Done\n";
 								NOSQL($dataid);
               						}
             					} else { #end unless annversion is previously specified
-              						printerr "NOTICE:\t $dataid already in VarAnno table... Moving on \n";
+              						printerr "NOTICE:\t $dataid already in VarAnnotation table... Moving on \n";
             					}
           				} #end if annversion is previously specified
 								$additional .=  "Optional: To delete '$dataid' Variant information ; Execute: tad-import.pl -delete $dataid \n";
@@ -632,49 +632,106 @@ if ($delete){
 					printerr "NOTICE:\t Deleting $KEYDELETE{$verdict}\n";
 					if ($verdict == 0) {$alldelete = 1;}
 					if ($KEYDELETE{$verdict} =~ /^Variant/ || $alldelete == 1) {
-						my $ffastbit = fastbit($all_details{'FastBit-path'}, $all_details{'FastBit-foldername'});  #connect to fastbit
-						printerr "NOTICE:\t Deleting records for $delete in Variant tables ";
-						$sth = $dbh->prepare("delete from VarAnno where sampleid = '$delete'"); $sth->execute(); printerr ".";
-						$sth = $dbh->prepare("delete from VarResult where sampleid = '$delete'"); $sth->execute(); printerr ".";
-						$sth = $dbh->prepare("delete from VarSummary where sampleid = '$delete'"); $sth->execute(); printerr ".";
-						my $execute = "ibis -d $ffastbit -y \"sampleid = '$delete'\" -z";
-						`$execute 2>> $efile`; printerr ".";
-						printerr " Done\n";
+						if ($alldelete == 1){
+							if ($KEYDELETE{$i} =~ /^Variant/) { $i--;
+								my $ffastbit = fastbit($all_details{'FastBit-path'}, $all_details{'FastBit-foldername'});  #connect to fastbit
+								printerr "NOTICE:\t Deleting records for $delete in Variant tables ";
+								$sth = $dbh->prepare("delete from VarAnnotation where sampleid = '$delete'"); $sth->execute(); printerr ".";
+								$sth = $dbh->prepare("delete from VarResult where sampleid = '$delete'"); $sth->execute(); printerr ".";
+								$sth = $dbh->prepare("delete from VarSummary where sampleid = '$delete'"); $sth->execute(); printerr ".";
+								my $execute = "ibis -d $ffastbit -y \"sampleid = '$delete'\" -z";
+								`$execute 2>> $efile`; printerr ".";
+								printerr " Done\n";
+							}
+						} else {
+							my $ffastbit = fastbit($all_details{'FastBit-path'}, $all_details{'FastBit-foldername'});  #connect to fastbit
+							printerr "NOTICE:\t Deleting records for $delete in Variant tables ";
+							$sth = $dbh->prepare("delete from VarAnnotation where sampleid = '$delete'"); $sth->execute(); printerr ".";
+							$sth = $dbh->prepare("delete from VarResult where sampleid = '$delete'"); $sth->execute(); printerr ".";
+							$sth = $dbh->prepare("delete from VarSummary where sampleid = '$delete'"); $sth->execute(); printerr ".";
+							my $execute = "ibis -d $ffastbit -y \"sampleid = '$delete'\" -z";
+							`$execute 2>> $efile`; printerr ".";
+							printerr " Done\n";
+						}
 					}
 					if ($KEYDELETE{$verdict} =~ /^Expression/ || $alldelete ==1 ) {
-						printerr "NOTICE:\t Deleting records for $delete in Gene tables ";
-						$sth = $dbh->prepare("delete from GenesFpkm where sampleid = '$delete'"); $sth->execute(); printerr ".";
-						$sth = $dbh->prepare("delete from GeneStats where sampleid = '$delete'"); $sth->execute(); printerr ".";
-						printerr " Done\n";
+						if ($alldelete == 1){
+							if ($KEYDELETE{$i} =~ /^Expression/) { $i--;
+								printerr "NOTICE:\t Deleting records for $delete in Gene tables ";
+								$sth = $dbh->prepare("delete from GenesFpkm where sampleid = '$delete'"); $sth->execute(); printerr ".";
+								$sth = $dbh->prepare("delete from GeneStats where sampleid = '$delete'"); $sth->execute(); printerr ".";
+								printerr " Done\n";
+							}
+						} else {
+							printerr "NOTICE:\t Deleting records for $delete in Gene tables ";
+							$sth = $dbh->prepare("delete from GenesFpkm where sampleid = '$delete'"); $sth->execute(); printerr ".";
+							$sth = $dbh->prepare("delete from GeneStats where sampleid = '$delete'"); $sth->execute(); printerr ".";
+							printerr " Done\n";
+						}
 					}
 					if ($KEYDELETE{$verdict} =~ /^Alignment/ || $alldelete ==1 ) {
-						$sth = $dbh->prepare("select sampleid from GeneStats where sampleid = '$delete'"); $sth->execute(); $found = $sth->fetch();
-						unless ($found) {
-							$sth = $dbh->prepare("select sampleid from VarSummary where sampleid = '$delete'"); $sth->execute(); $found = $sth->fetch();
-							unless ($found) {
-								printerr "NOTICE:\t Deleting records for $delete in Mapping tables .";
-								$sth = $dbh->prepare("delete from Metadata where sampleid = '$delete'"); $sth->execute(); printerr ".";
-								$sth = $dbh->prepare("delete from MapStats where sampleid = '$delete'"); $sth->execute();  printerr ".";
-								printerr " Done\n";
-							} else { printerr "ERROR:\t Variant Information relating to '$delete' is in the database. Delete Variant Information first\n";}
-						} else { printerr "ERROR:\t Expression Information Relating to '$delete' still present in the database. Delete Expression Information first\n";}
-					}
-					if ($KEYDELETE{$verdict} =~ /^Sample/ || $alldelete ==1 ) {
-						$sth = $dbh->prepare("select sampleid from MapStats where sampleid = '$delete'"); $sth->execute(); $found = $sth->fetch();
-						unless ($found) {
+						if ($alldelete == 1){
+							if ($KEYDELETE{$i} =~ /^Alignment/) { $i--;
+								$sth = $dbh->prepare("select sampleid from GeneStats where sampleid = '$delete'"); $sth->execute(); $found = $sth->fetch();
+								unless ($found) {
+									$sth = $dbh->prepare("select sampleid from VarSummary where sampleid = '$delete'"); $sth->execute(); $found = $sth->fetch();
+									unless ($found) {
+										printerr "NOTICE:\t Deleting records for $delete in Mapping tables .";
+										$sth = $dbh->prepare("delete from Metadata where sampleid = '$delete'"); $sth->execute(); printerr ".";
+										$sth = $dbh->prepare("delete from MapStats where sampleid = '$delete'"); $sth->execute();  printerr ".";
+										printerr " Done\n";
+									} else { printerr "ERROR:\t Variant Information relating to '$delete' is in the database. Delete Variant Information first\n";}
+								} else { printerr "ERROR:\t Expression Information Relating to '$delete' still present in the database. Delete Expression Information first\n";}
+							}
+						} else {
 							$sth = $dbh->prepare("select sampleid from GeneStats where sampleid = '$delete'"); $sth->execute(); $found = $sth->fetch();
 							unless ($found) {
 								$sth = $dbh->prepare("select sampleid from VarSummary where sampleid = '$delete'"); $sth->execute(); $found = $sth->fetch();
 								unless ($found) {
-									printerr "NOTICE:\t Deleting records for $delete in Sample tables ";
-									$sth = $dbh->prepare("delete from SampleStats where sampleid = '$delete'"); $sth->execute(); printerr ".";
-									$sth = $dbh->prepare("delete from SampleOrganization where sampleid = '$delete'"); $sth->execute(); printerr ".";
-									$sth = $dbh->prepare("delete from SamplePerson where sampleid = '$delete'"); $sth->execute(); printerr ".";
-									$sth = $dbh->prepare("delete from Sample where sampleid = '$delete'"); $sth->execute();  printerr ".";
+									printerr "NOTICE:\t Deleting records for $delete in Mapping tables .";
+									$sth = $dbh->prepare("delete from Metadata where sampleid = '$delete'"); $sth->execute(); printerr ".";
+									$sth = $dbh->prepare("delete from MapStats where sampleid = '$delete'"); $sth->execute();  printerr ".";
 									printerr " Done\n";
-								} else { printerr "ERROR:\t Variant Information for '$delete' is in the database. Delete Variant Information first\n"; }
-							} else { printerr "ERROR:\t Expression Information for '$delete' still present in the database. Delete Expression Information first\n"; }
-						} else { printerr "ERROR:\t Alignment Information for '$delete' is in the database. Delete Alignment Information first\n"; }
+								} else { printerr "ERROR:\t Variant Information relating to '$delete' is in the database. Delete Variant Information first\n";}
+							} else { printerr "ERROR:\t Expression Information Relating to '$delete' still present in the database. Delete Expression Information first\n";}
+						}
+					}
+					if ($KEYDELETE{$verdict} =~ /^Sample/ || $alldelete ==1 ) {
+						if ($alldelete == 1){
+							if ($KEYDELETE{$i} =~ /^Sample/) { $i--;
+								$sth = $dbh->prepare("select sampleid from MapStats where sampleid = '$delete'"); $sth->execute(); $found = $sth->fetch();
+								unless ($found) {
+									$sth = $dbh->prepare("select sampleid from GeneStats where sampleid = '$delete'"); $sth->execute(); $found = $sth->fetch();
+									unless ($found) {
+										$sth = $dbh->prepare("select sampleid from VarSummary where sampleid = '$delete'"); $sth->execute(); $found = $sth->fetch();
+										unless ($found) {
+											printerr "NOTICE:\t Deleting records for $delete in Sample tables ";
+											$sth = $dbh->prepare("delete from SampleStats where sampleid = '$delete'"); $sth->execute(); printerr ".";
+											$sth = $dbh->prepare("delete from SampleOrganization where sampleid = '$delete'"); $sth->execute(); printerr ".";
+											$sth = $dbh->prepare("delete from SamplePerson where sampleid = '$delete'"); $sth->execute(); printerr ".";
+											$sth = $dbh->prepare("delete from Sample where sampleid = '$delete'"); $sth->execute();  printerr ".";
+											printerr " Done\n";
+										} else { printerr "ERROR:\t Variant Information for '$delete' is in the database. Delete Variant Information first\n"; }
+									} else { printerr "ERROR:\t Expression Information for '$delete' still present in the database. Delete Expression Information first\n"; }
+								} else { printerr "ERROR:\t Alignment Information for '$delete' is in the database. Delete Alignment Information first\n"; }
+							}
+						} else {
+							$sth = $dbh->prepare("select sampleid from MapStats where sampleid = '$delete'"); $sth->execute(); $found = $sth->fetch();
+							unless ($found) {
+								$sth = $dbh->prepare("select sampleid from GeneStats where sampleid = '$delete'"); $sth->execute(); $found = $sth->fetch();
+								unless ($found) {
+									$sth = $dbh->prepare("select sampleid from VarSummary where sampleid = '$delete'"); $sth->execute(); $found = $sth->fetch();
+									unless ($found) {
+										printerr "NOTICE:\t Deleting records for $delete in Sample tables ";
+										$sth = $dbh->prepare("delete from SampleStats where sampleid = '$delete'"); $sth->execute(); printerr ".";
+										$sth = $dbh->prepare("delete from SampleOrganization where sampleid = '$delete'"); $sth->execute(); printerr ".";
+										$sth = $dbh->prepare("delete from SamplePerson where sampleid = '$delete'"); $sth->execute(); printerr ".";
+										$sth = $dbh->prepare("delete from Sample where sampleid = '$delete'"); $sth->execute();  printerr ".";
+										printerr " Done\n";
+									} else { printerr "ERROR:\t Variant Information for '$delete' is in the database. Delete Variant Information first\n"; }
+								} else { printerr "ERROR:\t Expression Information for '$delete' still present in the database. Delete Expression Information first\n"; }
+							} else { printerr "ERROR:\t Alignment Information for '$delete' is in the database. Delete Alignment Information first\n"; }
+						}
 					}
 				} else { printerr "ERROR:\t $verdict is an INVALID OPTION\n"; }
 			}
@@ -1111,9 +1168,9 @@ sub VEPVARIANT {
 					unless ( $VEPhash{$locate} eq $locate ){ die "\nERROR:\t Duplicate annotation in VEP file, consult documentation\n"; }
 				} else {
 					$VEPhash{$locate} = $locate;
-					$sth = $dbh->prepare("insert into VarAnno ( sampleid, chrom, position, consequence, source, geneid, genename, transcript, feature, genetype,proteinposition, aachange, codonchange ) values (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+					$sth = $dbh->prepare("insert into VarAnnotation ( sampleid, chrom, position, consequence, source, geneid, genename, transcript, feature, genetype,proteinposition, aachange, codonchange ) values (?,?,?,?,?,?,?,?,?,?,?,?,?)");
 					if (exists $extra{'SYMBOL'}) { $extra{'SYMBOL'} = uc($extra{'SYMBOL'}); }
-					$sth ->execute($_[1], $chrom, $position, $consequence, $extra{'SOURCE'}, $geneid, $extra{'SYMBOL'}, $transcriptid, $featuretype, $extra{'BIOTYPE'} , $pposition, $aminoacid, $codons) or die "\nERROR:\t Complication in VarAnno table, consult documentation\n";
+					$sth ->execute($_[1], $chrom, $position, $consequence, $extra{'SOURCE'}, $geneid, $extra{'SYMBOL'}, $transcriptid, $featuretype, $extra{'BIOTYPE'} , $pposition, $aminoacid, $codons) or die "\nERROR:\t Complication in VarAnnotation table, consult documentation\n";
 					$sth = $dbh->prepare("update VarResult set variantclass = '$extra{'VARIANT_CLASS'}' where sampleid = '$_[1]' and chrom = '$chrom' and position = $position"); $sth ->execute() or die "\nERROR:\t Complication in updating VarResult table, consult documentation\n";
 					
 					#NOSQL portion
@@ -1218,8 +1275,8 @@ sub ANNOVARIANT {
 				unless ( $ANNOhash{$locate} eq $locate ){ die "\nERROR:\t Duplicate annotation in ANNOVAR file, contact $AUTHOR\n"; }
 			} else {
 				$ANNOhash{$locate} = $locate;
-				$sth = $dbh->prepare("insert into VarAnno ( sampleid, chrom, position, consequence, source, geneid, transcript,proteinposition, aachange, codonchange ) values (?,?,?,?,?,?,?,?,?,?)");
-				$sth ->execute($_[1], $CONTENT{$newno}{'chr'}, $CONTENT{$newno}{'position'}, $consequence, 'Ensembl', $CONTENT{$newno}{$ENSGENE{'gene'}}, $transcript, $pposition, $aminoacid, $codons) or die "\nERROR:\t Complication in VarAnno table, consult documentation \n";
+				$sth = $dbh->prepare("insert into VarAnnotation ( sampleid, chrom, position, consequence, source, geneid, transcript,proteinposition, aachange, codonchange ) values (?,?,?,?,?,?,?,?,?,?)");
+				$sth ->execute($_[1], $CONTENT{$newno}{'chr'}, $CONTENT{$newno}{'position'}, $consequence, 'Ensembl', $CONTENT{$newno}{$ENSGENE{'gene'}}, $transcript, $pposition, $aminoacid, $codons) or die "\nERROR:\t Complication in VarAnnotation table, consult documentation \n";
 
 				#NOSQL portion
 				@nosqlrow = $dbh->selectrow_array("select * from vw_nosql where sampleid = '$_[1]' and chrom = '$CONTENT{$newno}{'chr'}' and position = $CONTENT{$newno}{'position'} and consequence = '$consequence' and geneid = '$CONTENT{$newno}{$ENSGENE{'gene'}}' and proteinposition = '$pposition'");
@@ -1282,9 +1339,9 @@ sub ANNOVARIANT {
 				unless ( $ANNOhash{$locate} eq $locate ){ die "\nERROR:\t Duplicate annotation in ANNOVAR file, contact $AUTHOR\n"; }
 			} else {
 				$ANNOhash{$locate} = $locate;
-				$sth = $dbh->prepare("insert into VarAnno ( sampleid, chrom, position, consequence, source, genename, geneid, transcript,proteinposition, aachange, codonchange ) values (?,?,?,?,?,?,?,?,?,?,?)");
+				$sth = $dbh->prepare("insert into VarAnnotation ( sampleid, chrom, position, consequence, source, genename, geneid, transcript,proteinposition, aachange, codonchange ) values (?,?,?,?,?,?,?,?,?,?,?)");
 				if (exists $CONTENT{$newno}{$REFGENE{'gene'}}) { $CONTENT{$newno}{$REFGENE{'gene'}} = uc($CONTENT{$newno}{$REFGENE{'gene'}}); }
-				$sth ->execute($_[1], $CONTENT{$newno}{'chr'}, $CONTENT{$newno}{'position'}, $consequence, 'RefSeq', $CONTENT{$newno}{$REFGENE{'gene'}}, $CONTENT{$newno}{$REFGENE{'gene'}}, $transcript, $pposition, $aminoacid, $codons) or die "\nERROR:\t Complication in VarAnno table, consult documentation\n";
+				$sth ->execute($_[1], $CONTENT{$newno}{'chr'}, $CONTENT{$newno}{'position'}, $consequence, 'RefSeq', $CONTENT{$newno}{$REFGENE{'gene'}}, $CONTENT{$newno}{$REFGENE{'gene'}}, $transcript, $pposition, $aminoacid, $codons) or die "\nERROR:\t Complication in VarAnnotation table, consult documentation\n";
 
 				#NOSQL portion
 				@nosqlrow = $dbh->selectrow_array("select * from vw_nosql where sampleid = '$_[1]' and chrom = '$CONTENT{$newno}{'chr'}' and position = $CONTENT{$newno}{'position'} and consequence = '$consequence' and geneid = '$CONTENT{$newno}{$REFGENE{'gene'}}' and proteinposition = '$pposition'");
@@ -1312,10 +1369,15 @@ sub NOSQL {
 	printerr "TASK:\t Importing Variant annotation for $_[0] to NoSQL platform\n"; #status
 	my $ffastbit = fastbit($all_details{'FastBit-path'}, $all_details{'FastBit-foldername'});  #connect to fastbit
 	printerr "NOTICE:\t Importing $_[0] - Variant Annotation to NoSQL '$ffastbit' ...";
-	my $execute = "ardea -d $ffastbit -m 'variantclass:key,zygosity:key,dbsnpvariant:text,consequence:text,geneid:text,genename:text,transcript:text,feature:text,genetype:text,refallele:char,altallele:char,tissue:text,chrom:key,aachange:text,codonchange:text,organism:key,sampleid:text,quality:double,position:int,proteinposition:int' -t $nosql";
+	my $execute = "ardea -d $ffastbit -m 'variantclass:key,zygosity:key,dbsnpvariant:text,source:text,consequence:text,geneid:text,genename:text,transcript:text,feature:text,genetype:text,refallele:char,altallele:char,tissue:text,chrom:key,aachange:text,codonchange:text,organism:key,sampleid:text,quality:double,position:int,proteinposition:int' -t $nosql";
 	`$execute 2>> $efile` or die "\nERROR\t: Complication importing to FastBit, contact $AUTHOR\n";
 	`rm -rf $nosql`;
 	$sth = $dbh->prepare("update VarSummary set nosql = 'done' where sampleid = '$_[0]'"); $sth ->execute(); #update database nosql : DONE
+	
+	#removing records from MySQL
+	$sth = $dbh->prepare("delete from VarAnnotation where sampleid = '$_[0]'"); $sth->execute();
+
+	#declare done
 	printerr " Done\n";
 }
 #--------------------------------------------------------------------------------
