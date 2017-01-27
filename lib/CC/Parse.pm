@@ -12,6 +12,7 @@ use Sort::Key::Natural qw(natsort);
 my ($sth, $dbh, $t, $fastbit);
 my ($precount, $count, $verdict);
 sub excelcontent { #read excel content
+	unless($_[0] =~ /\.xls/){pod2usage("Error: File \"$_[0]\" is not an excel file.");}
   my $workbook = ReadData($_[0]) or pod2usage("Error: Could not open excel file \"$_[0]\"");
   my ($odacontent, $source_cell);
   foreach my $source_sheet_number (1..length($workbook)) {
@@ -34,7 +35,7 @@ sub excelcontent { #read excel content
 }
 
 sub tabcontent { #read tadcontent
-  open (BOOK,"<",$_[0]) or pod2usuage ("Error: Could not open source file \"$_[0]\"");
+  open (BOOK,"<",$_[0]) or pod2usage ("Error: Could not open source file \"$_[0]\"");
   my @content = <BOOK>; close (BOOK); chomp @content;
   our (%INDEX, %columnpos);
   my @header = split("\t", $content[0]);

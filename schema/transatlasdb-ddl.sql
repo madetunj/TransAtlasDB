@@ -40,7 +40,7 @@ DROP TABLE IF EXISTS `Metadata`;
 DROP TABLE IF EXISTS `GenesFpkm`;
 DROP TABLE IF EXISTS `VarSummary`;
 DROP TABLE IF EXISTS `VarResult`;
-DROP TABLE IF EXISTS `VarAnno`;
+DROP TABLE IF EXISTS `VarAnnotation`;
 -- -----------------------------------------------------
 -- Table structure for table `Person`
 -- -----------------------------------------------------
@@ -147,10 +147,10 @@ CREATE TABLE `VarSummary` (`sampleid` VARCHAR(150) NOT NULL, `totalvariants` INT
 DROP TABLE IF EXISTS `VarResult`;
 CREATE TABLE `VarResult` ( `sampleid` VARCHAR(150) NOT NULL, `chrom` VARCHAR(100) NOT NULL DEFAULT '', `position` INT(11) NOT NULL DEFAULT '0', `refallele` VARCHAR(100) NULL DEFAULT NULL, `altallele` VARCHAR(100) NULL DEFAULT NULL, `quality` DOUBLE(20,5) NULL DEFAULT NULL, `variantclass` VARCHAR(100) NULL DEFAULT NULL, `zygosity` VARCHAR(100) NULL DEFAULT NULL, `dbsnpvariant` VARCHAR(100) NULL DEFAULT NULL, PRIMARY KEY (`sampleid`, `chrom`, `position`), CONSTRAINT `varresult_ibfk_1` FOREIGN KEY (`sampleid`) REFERENCES `VarSummary` (`sampleid`)) ENGINE = InnoDB DEFAULT CHARACTER SET = latin1;
 -- -----------------------------------------------------
--- Table structure for table `VarAnno`
+-- Table structure for table `VarAnnotation`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `VarAnno`;
-CREATE TABLE `VarAnno` (`sampleid` VARCHAR(150) NOT NULL, `chrom` VARCHAR(100) NOT NULL DEFAULT '', `position` INT(11) NOT NULL DEFAULT '0', `consequence` VARCHAR(100) NOT NULL DEFAULT '', `source` VARCHAR(100) NULL DEFAULT NULL, `geneid` VARCHAR(100) NOT NULL DEFAULT '', `genename` VARCHAR(100) NULL DEFAULT NULL, `transcript` VARCHAR(250) NULL DEFAULT NULL, `feature` VARCHAR(100) NULL DEFAULT NULL, `genetype` VARCHAR(250) NULL DEFAULT NULL, `proteinposition` VARCHAR(100) NOT NULL DEFAULT '', `aachange` VARCHAR(100) NULL DEFAULT NULL, `codonchange` VARCHAR(100) NULL DEFAULT NULL, PRIMARY KEY (`consequence`, `geneid`, `proteinposition`, `sampleid`, `chrom`, `position`), INDEX `varanno_indx_genename` (`genename` ASC), CONSTRAINT `varanno_ibfk_1` FOREIGN KEY (`sampleid` , `chrom` , `position`) REFERENCES `VarResult` (`sampleid` , `chrom` , `position`)) ENGINE = InnoDB DEFAULT CHARACTER SET = latin1;
+DROP TABLE IF EXISTS `VarAnnotation`;
+CREATE TABLE `VarAnnotation` (`sampleid` VARCHAR(150) NOT NULL, `chrom` VARCHAR(100) NOT NULL DEFAULT '', `position` INT(11) NOT NULL DEFAULT '0', `consequence` VARCHAR(100) NOT NULL DEFAULT '', `source` VARCHAR(100) NULL DEFAULT NULL, `geneid` VARCHAR(100) NOT NULL DEFAULT '', `genename` VARCHAR(100) NULL DEFAULT NULL, `transcript` VARCHAR(250) NULL DEFAULT NULL, `feature` VARCHAR(100) NULL DEFAULT NULL, `genetype` VARCHAR(250) NULL DEFAULT NULL, `proteinposition` VARCHAR(100) NOT NULL DEFAULT '', `aachange` VARCHAR(100) NULL DEFAULT NULL, `codonchange` VARCHAR(100) NULL DEFAULT NULL, PRIMARY KEY (`consequence`, `geneid`, `proteinposition`, `sampleid`, `chrom`, `position`), INDEX `varannotation_indx_genename` (`genename` ASC), CONSTRAINT `varannotation_ibfk_1` FOREIGN KEY (`sampleid` , `chrom` , `position`) REFERENCES `VarResult` (`sampleid` , `chrom` , `position`)) ENGINE = InnoDB DEFAULT CHARACTER SET = latin1;
 -- -----------------------------------------------------
 -- procedure usp_gdtissue
 -- -----------------------------------------------------
@@ -200,10 +200,10 @@ CREATE VIEW `vw_sampleinfo` AS select `a`.`sampleid` AS `sampleid`, `e`.`organis
 -- -----------------------------------------------------
 DROP VIEW IF EXISTS `vw_nosql`;
 DROP TABLE IF EXISTS `vw_nosql`;
-CREATE TABLE `vw_nosql` (`variantclass` INT,`zygosity` INT,`dbsnpvariant` INT,`consequence` INT,`geneid` INT,`genename` INT,`transcript` INT,`feature` INT,`genetype` INT,`refallele` INT,`altallele` INT,`tissue` INT,`chrom` INT,`aachange` INT,`codonchange` INT,`organism` INT,`sampleid` INT,`quality` INT,`position` INT,`proteinposition` INT);
+CREATE TABLE `vw_nosql` (`variantclass` INT,`zygosity` INT,`dbsnpvariant` INT,`source` INT,`consequence` INT,`geneid` INT,`genename` INT,`transcript` INT,`feature` INT,`genetype` INT,`refallele` INT,`altallele` INT,`tissue` INT,`chrom` INT,`aachange` INT,`codonchange` INT,`organism` INT,`sampleid` INT,`quality` INT,`position` INT,`proteinposition` INT);
 DROP VIEW IF EXISTS `vw_nosql` ;
 DROP TABLE IF EXISTS `vw_nosql`;
-CREATE VIEW `vw_nosql` AS select `a`.`variantclass` AS `variantclass`,`a`.`zygosity` AS `zygosity`,`a`.`dbsnpvariant` AS `dbsnpvariant`,`b`.`consequence` AS `consequence`,`b`.`geneid` AS `geneid`,`b`.`genename` AS `genename`,`b`.`transcript` AS `transcript`,`b`.`feature` AS `feature`,`b`.`genetype` AS `genetype`,`a`.`refallele` AS `refallele`,`a`.`altallele` AS `altallele`,`c`.`tissue` AS `tissue`,`a`.`chrom` AS `chrom`,`b`.`aachange` AS `aachange`,`b`.`codonchange` AS `codonchange`,`d`.`organism` AS `organism`,`a`.`sampleid` AS `sampleid`,`a`.`quality` AS `quality`,`a`.`position` AS `position`,`b`.`proteinposition` AS `proteinposition` from (((`VarResult` `a` join `VarAnno` `b` on (((`a`.`sampleid` = `b`.`sampleid`) and (`a`.`chrom` = `b`.`chrom`) and (`a`.`position` = `b`.`position`)))) join Sample `c` on ((`a`.`sampleid` = `c`.`sampleid`))) join Animal `d` on ((`c`.`derivedfrom` = `d`.`animalid`)));
+CREATE VIEW `vw_nosql` AS select `a`.`variantclass` AS `variantclass`,`a`.`zygosity` AS `zygosity`,`a`.`dbsnpvariant` AS `dbsnpvariant`,`b`.`source` AS `source`,`b`.`consequence` AS `consequence`,`b`.`geneid` AS `geneid`,`b`.`genename` AS `genename`,`b`.`transcript` AS `transcript`,`b`.`feature` AS `feature`,`b`.`genetype` AS `genetype`,`a`.`refallele` AS `refallele`,`a`.`altallele` AS `altallele`,`c`.`tissue` AS `tissue`,`a`.`chrom` AS `chrom`,`b`.`aachange` AS `aachange`,`b`.`codonchange` AS `codonchange`,`d`.`organism` AS `organism`,`a`.`sampleid` AS `sampleid`,`a`.`quality` AS `quality`,`a`.`position` AS `position`,`b`.`proteinposition` AS `proteinposition` from (((`VarResult` `a` join `VarAnnotation` `b` on (((`a`.`sampleid` = `b`.`sampleid`) and (`a`.`chrom` = `b`.`chrom`) and (`a`.`position` = `b`.`position`)))) join Sample `c` on ((`a`.`sampleid` = `c`.`sampleid`))) join Animal `d` on ((`c`.`derivedfrom` = `d`.`animalid`)));
 -- -----------------------------------------------------
 -- View `vw_metadata`
 -- -----------------------------------------------------
@@ -221,7 +221,7 @@ DROP TABLE IF EXISTS `vw_vanno`;
 CREATE TABLE `vw_vanno` (`chrom` INT, `position` INT, `refallele` INT, `altallele` INT, `variantclass` INT, `consequence` INT, `genename` INT, `dbsnpvariant` INT, `sampleid` INT);
 DROP VIEW IF EXISTS `vw_vanno` ;
 DROP TABLE IF EXISTS `vw_vanno`;
-CREATE VIEW `vw_vanno` AS select `a`.sampleid, `a`.`chrom` AS `chrom`,`a`.`position` AS `position`,`a`.`refallele` AS `refallele`,`a`.`altallele` AS `altallele`,`a`.`variantclass` AS `variantclass`,ifnull(`b`.`consequence`,'-') AS `consequence`,`b`.`genename` AS `genename`,`a`.`dbsnpvariant` AS `dbsnpvariant` from (`VarResult` `a` left outer join `VarAnno` `b` on(((`a`.`sampleid` = `b`.`sampleid`) and (`a`.`chrom` = `b`.`chrom`) and (`a`.`position` = `b`.`position`)))) group by `a`.`sampleid`, `a`.`chrom`,`a`.`position`,`b`.`consequence`,`b`.`genename`;
+CREATE VIEW `vw_vanno` AS select `a`.sampleid, `a`.`chrom` AS `chrom`,`a`.`position` AS `position`,`a`.`refallele` AS `refallele`,`a`.`altallele` AS `altallele`,`a`.`variantclass` AS `variantclass`,ifnull(`b`.`consequence`,'-') AS `consequence`,`b`.`genename` AS `genename`,`a`.`dbsnpvariant` AS `dbsnpvariant` from (`VarResult` `a` left outer join `VarAnnotation` `b` on(((`a`.`sampleid` = `b`.`sampleid`) and (`a`.`chrom` = `b`.`chrom`) and (`a`.`position` = `b`.`position`)))) group by `a`.`sampleid`, `a`.`chrom`,`a`.`position`,`b`.`consequence`,`b`.`genename`;
 -- -----------------------------------------------------
 -- View `vw_vvcf`
 -- -----------------------------------------------------
@@ -230,5 +230,5 @@ DROP TABLE IF EXISTS `vw_vvcf`;
 CREATE TABLE `vw_vvcf` (`sampleid` INT, `chrom` INT, `position` INT, `refallele` INT, `altallele` INT, `quality` INT, `consequence` INT, `genename` INT, `geneid` INT, `feature` INT, `transcript` INT, `genetype` INT, `proteinposition` INT, `aachange` INT, `codonchange` INT, `dbnpvariant` INT, `variantclass` INT, `zygosity` INT, `tissue` INT, `organism` INT);
 DROP VIEW IF EXISTS `vw_vvcf` ;
 DROP TABLE IF EXISTS `vw_vvcf`;
-CREATE VIEW `vw_vvcf` AS select `a`.`sampleid` as `sampleid`, `a`.`chrom` AS `chrom`,`a`.`position` AS `position`,`a`.`refallele` AS `refallele`,`a`.`altallele` AS `altallele`,`a`.`quality` as `quality`, `b`.`consequence` as `consequence`, `b`.`genename` AS `genename`,`b`.`geneid` AS `geneid`,`b`.`feature` AS `feature`,`b`.`transcript` AS `transcript`,`b`.`genetype` AS `genetype`,`b`.`proteinposition` AS `proteinposition`,`b`.`aachange` AS `aachange`,`b`.`codonchange` AS `codonchange`,`a`.`dbsnpvariant` AS `dbsnpvariant`,`a`.`variantclass` AS `variantclass`,`a`.`zygosity` AS `zygosity`,`c`.`tissue` AS `tissue`, `c`.`organism` AS `organism` from ((`VarResult` `a` left outer join `VarAnno` `b` on (((`a`.`sampleid` = `b`.`sampleid`) and (`a`.`chrom` = `b`.`chrom`) and (`a`.`position` = `b`.`position`)))) join `vw_sampleinfo` `c` on ((`a`.`sampleid` = `c`.`sampleid`))) order by `a`.`sampleid`, `a`.`chrom`,`a`.`position`, `b`.`consequence`;
+CREATE VIEW `vw_vvcf` AS select `a`.`sampleid` as `sampleid`, `a`.`chrom` AS `chrom`,`a`.`position` AS `position`,`a`.`refallele` AS `refallele`,`a`.`altallele` AS `altallele`,`a`.`quality` as `quality`, `b`.`consequence` as `consequence`, `b`.`genename` AS `genename`,`b`.`geneid` AS `geneid`,`b`.`feature` AS `feature`,`b`.`transcript` AS `transcript`,`b`.`genetype` AS `genetype`,`b`.`proteinposition` AS `proteinposition`,`b`.`aachange` AS `aachange`,`b`.`codonchange` AS `codonchange`,`a`.`dbsnpvariant` AS `dbsnpvariant`,`a`.`variantclass` AS `variantclass`,`a`.`zygosity` AS `zygosity`,`c`.`tissue` AS `tissue`, `c`.`organism` AS `organism` from ((`VarResult` `a` left outer join `VarAnnotation` `b` on (((`a`.`sampleid` = `b`.`sampleid`) and (`a`.`chrom` = `b`.`chrom`) and (`a`.`position` = `b`.`position`)))) join `vw_sampleinfo` `c` on ((`a`.`sampleid` = `c`.`sampleid`))) order by `a`.`sampleid`, `a`.`chrom`,`a`.`position`, `b`.`consequence`;
 -- ---------------------------------------------------

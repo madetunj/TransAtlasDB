@@ -19,7 +19,7 @@ our ($verbose, $efile, $help, $man);
 our ($sqlfile,$connect, $dbverdict, $schemaverdict, $verdict, $found);
 my ($dbname,$username,$password,$location,$fbname);
 my ($sth,$dbh,$schema); #connect to database;
-our @dbtables = qw|Sample Animal MapStats GeneStats Metadata  GenesFpkm IsoformsFpkm VarAnno VarResult VarSummary|;
+our @dbtables = qw|Sample Animal MapStats GeneStats Metadata  GenesFpkm IsoformsFpkm VarAnnotation VarResult VarSummary|;
 #--------------------------------------------------------------------------------
 sub printerr; #declare error routine
 our $default = DEFAULTS(); #default error contact
@@ -120,7 +120,7 @@ sub processArguments {
   $dbname = "transatlasdb" if (! $dbname);
   $fbname = "transatlasfb" if (! $fbname);
   $username = "root" if (! $username);
-  if (! $location) {$location = `pwd`; chomp $location;}
+  if (! $location) {$location = $get;}
 
   #setup log file
     #setup log file
@@ -167,7 +167,7 @@ sub SCHEMA {
        -d, --databasename <string>     specify DatabaseName (default: transatlasdb)
 
  Arguments to install transatlasdb on FastBit
-       -l, --location <directory>	specify FastBit directory (default: current working directory)
+       -l, --location <directory>	specify FastBit directory (default: source directory)
        -n, --fastbitname <directory>    specify FastBitName (default: transatlasfb)
 
  Function: create the TransAtlasDB tables in MySQL and FastBit location on local disk
@@ -212,7 +212,7 @@ specify MySQL databasename if other than 'transatlasdb' (default: transatlasdb)
 
 =item B<-l|--location>
 
-specify FastBit storage path if other than current working directory (default will be the current dirrectory)
+specify FastBit storage path if other than source script directory (default will be the source directory)
 
 =item B<-n|--fastbitname>
 
