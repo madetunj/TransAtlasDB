@@ -1,3 +1,6 @@
+#Version 2.2
+	- Fixed bugs (refgenomename was wrong)
+
 #Version 2.1
 	- Delete variants from MySQL tables once imported to NoSQL
 	- Changed VarAnno to VarAnnotaion table 
