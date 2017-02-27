@@ -175,14 +175,36 @@ Otherwise, the sample information can be manually inserted using SQL insert stat
           
           </div>
           <hr>
-   
         <p>Please click the menu items to navigate through this repository. If you have questions, comments and bug reports, please <a href="mailto:amodupe@udel.edu">email me </a>directly. </p>
         <p>Thank you very much for your help and support!</p>
       </section>
       <br>
+      <a class="back-to-top" style="display: inline;" href="#">Back to Top</a>
       <footer>
         <p>This project is maintained by <a href="https://modupeore.github.io" target=_blank>Modupeore</a></p>
       </footer>
+    </div>
+    <script src="/TransAtlasDB/assets/js/scale.fix.js"></script>
+    <script src=”//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js”></script>
+    <script>
+      jQuery(document).ready(function() {
+        var offset = 250;
+        var duration = 300;
+        jQuery(window).scroll(function() {
+          if (jQuery(this).scrollTop() > offset) {
+            jQuery(‘.back-to-top’).fadeIn(duration);
+          } else {
+            jQuery(‘.back-to-top’).fadeOut(duration);
+          }
+        });
+ 
+        jQuery(‘.back-to-top’).click(function(event) {
+          event.preventDefault();
+          jQuery(‘html, body’).animate({scrollTop: 0}, duration);
+          return false;
+        }) 
+      });
+    </script>
     </div>
     <script src="/TransAtlasDB/assets/js/scale.fix.js"></script>
   </body>

@@ -243,6 +243,8 @@ nav ul a:hover { color: #551a8b; }
 div.pushit {margin:20px;}
 a:hover h4 {color:#39c;}
 
+.back-to-top { background: none; margin: 0; position: fixed; bottom: 20px;  right: 0; text-align: center; width: 70px; height: inherit; z-index: 100; display: none; text-decoration: blink; color: #fff; font-weight: bolder; background-color: #af6e18; } 
+.back-to-top i { font-size: 60px; }
 
 @media print, screen and (max-width: 960px) { div.wrapper { width: auto; margin: 0; }
   header, section, footer { float: none; position: static; width: auto; }
