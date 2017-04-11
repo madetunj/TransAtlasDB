@@ -1,6 +1,6 @@
-#TransAtlasDB main package
+# TransAtlasDB main package
 
-##TransAtlasDB Perl Modules
+## TransAtlasDB Perl Modules
 
 The TransAtlasDB toolkit uses standard modules in addition to the following modules:
 
