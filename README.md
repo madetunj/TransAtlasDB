@@ -1,4 +1,4 @@
-#TransAtlasDB documentation
+# TransAtlasDB documentation
 
 TransAtlasDB is an integrated database system from transcriptome analysis data. 
 
