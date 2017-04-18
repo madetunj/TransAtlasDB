@@ -30,7 +30,10 @@
           <a href="index.html"><strong><center>What is TransAtlasDB?</center></strong></a>
         </ul>
         <ul class="icons">
-          <a href="usage.html"><strong><center>Toolkit</center></strong></a>
+          <a href="usage.html"><strong><center>Usage & Downloads</center></strong></a>
+        </ul>
+        <ul class="icons">
+          <a href="toolkit.html"><strong><center>Toolkit</center></strong></a>
         </ul>
         <ul class="icons">
           <a class="select" href="tutorial.html"><strong>Tutorial</strong></a>
@@ -58,9 +61,16 @@
         <p>This is the quick start guide.</p>
         <p>TransAtlasDB is a sophisticated bioinformatics system, which incorporates both the Relational Database and NoSQL Database system.</p>
         <p>The relational database, <a href="https://www.mysql.com" target=_blank><b color="red">MySQL</b></a>, enforces data assurance and integrity and the NoSQL database system, <a href="https://sdm.lbl.gov/fastbit/" target=_blank><b>FastBit</b></a>, ensures rapid performance for querying big data.<br>
-        Hence, both database systems are required to be installed and added to the systems’ or users’ executable path.</p>
-        
+        Hence, both database systems are required to be installed and added to the systems’ or users’ executable path.</p>        
         <hr>
+	<h3>BEFORE YOU BEGIN</h3>
+	<div class="pushit">
+	  <p>First, we need to download appropriate databases and Perl DBD module from the <a href="usage.html" target=_blank><b color="red">Usage & Downloads page</b></a>, before proceeding to the next section.</p>
+          <p>Assume that we have downloaded TransAtlasDB toolkit and unpacked the TAR package using <d>tar -xvfz transatlasdb.tgz</d> or the ZIP package using <d>unzip transatlasdb.zip</d>.<br>
+   You will see that the directory contains several Perl programs with <i><font color="#d14">.pl</font></i> suffix.<br>
+<b>NOTE:</b> If you already added the transatlasdb path into your system executable path, then typing <d>INSTALL-tad.pl</d>
+                would be okay instead of typing <d>perl INSTALL-tad.pL</d>. </p>
+	</div><hr>
         <A name="tadinstall"><h3>INSTALLATION</h3></a>
         <div class="pushit">
           <p>The TransAtlasDB database system and necessary components need to be installed to a local disk using <b><font color="#000"><i>INSTALL-tad.pL</i></font></b>.</p>
@@ -70,7 +80,7 @@
   <span class="k">INSTALL-tad.pL</span> <span class="o">-</span><span class="nb">password</span> <span class="s">mysql-password</span>
 </code></pre></div>
           <div class="pushit">
-            <p>Otherwise, additional arguments; such as the mysql username <d>-username</d> is required and optionally the database name <d>-databasename</d>, else the default name <i><font color="#d14">transatlasdb</font></i> will be assigned.</p>
+            <p>Otherwise, arguments such as the mysql username <d>-username</d> is required and optionally the database name <d>-databasename</d>, else the default name <i><font color="#d14">transatlasdb</font></i> will be assigned.</p>
           </div>
           <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for installing TransAtlasDB specifying username as 'mysql-username' and databasename as 'mysql-databasename'.</span>
   <span class="k">INSTALL-tad.pL</span> <span class="o">-</span><span class="nb">p</span> <span class="s">mysql-password</span>  <span class="o">-</span><span class="nb">username</span> <span class="s">mysql-username</span> <span class="o">-</span><span class="nb">databasename</span> <span class="s">mysql-databasename</span>
@@ -97,19 +107,23 @@
         </div>
         <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for importing Samples metadata from FAANG metadata file 'faang.xls'.</span>
   <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">metadata</span> <span class="s">faang.xls</span>
+<span class="c1"># Using the example provided.</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">metadata</span> <span class="s">example/metadata/FAANG/FAANG_GGA_UD.xlsx </span><br>
 </code><code><span class="c1"># Syntax for importing Samples metadata from tab-delimited template 'faang-template.txt'.</span>
   <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">metadata</span> <span class="o">-</span><span class="nb">t</span> <span class="s">faang-template.txt</span>
+<span class="c1"># Using the example provided.</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">metadata</span> <span class="o">-</span><span class="nb">t</span> <span class="s">example/metadata/TEMPLATE/metadata_GGA_UD.txt</span>
 </code></pre></div>
           <div class="pushit">
             <h4>Importing Transcriptome Analysis Data</h4>
             <p>Transcriptome analysis results can be inserted using <d>-data2db</d>. The transcriptome profiling data or variant analysis data van be imported together via <d>-all</d> or separately using <d>-gene</d> for expresion profiling results or <d>-variant</d> for variant analysis results.</p>
           </div>
         <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for importing all RNASeq expression and variant results in for sample 'GGA_UD_1004'.</span>
-  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">all</span> <span class="s">GGA_UD_1004</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">all</span> <span class="s">example/sample_sxt/GGA_UD_1004</span>
 <span class="c1"># Syntax for importing RNASeq expression profiling information in for sample 'GGA_UD_1004'.</span>
-  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">gene</span> <span class="s">GGA_UD_1004</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">gene</span> <span class="s">example/sample_sxt/GGA_UD_1004</span>
 <span class="c1"># Syntax for importing RNASeq variant results in for sample 'GGA_UD_1004'.</span>
-  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">variant</span> <span class="s">GGA_UD_1004</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">variant</span> <span class="s">example/sample_sxt/GGA_UD_1004</span>
 </code></pre></div>
         
         <div class="pushit">
@@ -117,9 +131,9 @@
             <p>The variant functional annotations predicted from either VEP or ANNOVAR can also be imported using additional flags <d>-vep</d> or <d>-annovar</d> respectively and must be in their default tab-delimited format. If VEP, the filename should end with <i><font color="#d14">.vep.txt</font></i>, or else if ANNOVAR, the file having suffix <i><font color="#d14">.multianno.txt</font></i> will be accepted.</p>
           </div>
         <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for importing RNASeq variant results with VEP annotations for sample 'GGA_UD_1004'.</span>
-  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">variant</span> <span class="o">-</span><span class="nb">vep</span> <span class="s">GGA_UD_1004</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">variant</span> <span class="o">-</span><span class="nb">vep</span> <span class="s">example/sample_sxt/GGA_UD_1004</span>
 <span class="c1"># Syntax for importing RNASeq data with ANNOVAR annotations for sample 'GGA_UD_1004'.</span>
-  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">all</span> <span class="s">GGA_UD_1004</span> <span class="o">-</span><span class="nb">annovar</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">all</span> <span class="s">example/sample_sxt/GGA_UD_1004</span> <span class="o">-</span><span class="nb">annovar</span>
 </code></pre></div>
         <div class="pushit"><p><strong>NOTE </strong>: The analysis data should be stored in a single folder for each sample and the folder-name must be the same <b><i>sample name</i></b> as represented in the samples metadata. A typical folder directory structure is shown <a href="sample.html#folder">here</a>.</p>
         <h4>Deleting data </h4>
@@ -218,27 +232,6 @@
         <center><figure><img src="images/export.png">
         <figcaption>Data retrieval procedure.</figcaption></figure></center>
         
-        <hr/>
-        <A name="modules"><h3>MODULE DEPENDENCIES</h3></a>
-        <div class="pushit">
-          The following modules have been already configured in the package for Mac OSX nd Unbuntu systems except DBD::mysql.
-          <div class="pushit">
-            <ol start="i">
-            <li><strong><a href="http://search.cpan.org/~capttofu/DBD-mysql/lib/DBD/mysql.pm" target="_blank">DBD::mysql</a></strong></li>
-            Version: 4.038
-            <li><strong><a href="http://search.cpan.org/~hmbrand/Spreadsheet-Read-0.66/Read.pm" target="_blank">Spreadsheet::Read</a></strong></li>
-            Version: 0.66
-            <li><strong><a href="http://search.cpan.org/~dougw/Spreadsheet-ParseExcel-0.65/lib/Spreadsheet/ParseExcel.pm" target="_blank">Spreadsheet::ParseExcel</a></strong></li>
-            Version: 0.65
-            <li><strong><a href="http://search.cpan.org/~dmow/Spreadsheet-XLSX/lib/Spreadsheet/XLSX.pm" target="_blank">Spreadsheet::XLSX</a></strong></li>
-            Version: 0.15
-            <li><strong><a href="http://search.cpan.org/~darren/Text-TabularDisplay/TabularDisplay.pm" target="_blank">Text::TabularDisplay</a></strong></li>
-            Version: 1.38
-            <li><strong><a href="http://search.cpan.org/~salva/Sort-Key-1.33/lib/Sort/Key.pm" target="_blank">Sort::Key</a></strong></li>
-            Version: 1.33
-          </ol>
-          </div>
-        </div>
         <hr>
    
         <p>Please click the menu items to navigate through this repository. If you have questions, comments and bug reports, please <a href="mailto:amodupe@udel.edu">email me </a>directly. </p>

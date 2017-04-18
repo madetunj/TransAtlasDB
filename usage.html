@@ -30,7 +30,10 @@
           <a href="index.html"><strong><center>What is TransAtlasDB?</center></strong></a>
         </ul>
         <ul class="icons">
-          <a class="select" href="usage.html"><strong><center>Toolkit</center></strong></a>
+          <a class="select" href="usage.html"><strong><center>Usage & Downloads</center></strong></a>
+        </ul>
+        <ul class="icons">
+          <a href="toolkit.html"><strong><center>Toolkit</center></strong></a>
         </ul>
         <ul class="icons">
           <a href="tutorial.html"><strong>Tutorial</strong></a>
@@ -42,9 +45,9 @@
         <p class="view"><a href="https://github.com/modupeore/TransAtlasDB">View the Project on GitHub <small></small></a></p>  
         <nav>
        <ul><h1><font color="#8f4724" size="5px">Navigation:</font></h1></ul>
-       <ul><h2><A href="#tadinstall">Installation</a></h2></ul>
-       <ul><h2><A href="#tadimport">Data import</a></h2></ul>
-       <ul><h2><A href="#tadexport"><h2>Data retrieval</a></h2></ul>
+       <ul><h2><A href="#relational">MySQL</a></h2></ul>
+       <ul><h2><A href="#nonrelational">FastBit (NoSQL)</a></h2></ul>
+       <ul><h2><A href="#perlmodule"><h2>Perl modules</a></h2></ul>
       </nav><br>
         <ul>
           <li><a href="download/transatlasdb.zip">Download <strong>ZIP File</strong></a></li>
@@ -54,49 +57,92 @@
       </header>
       <br>
       <section>
-        <h2>TransAtlasDB ToolKit</h2>
-        <p>The TransAtlasDB toolkit is written in Perl and can be run on diverse hardware systems where the standard Perl modules have been installed.</p>
-        <p>This Perl toolkit requires the <a href="http://search.cpan.org/~capttofu/DBD-mysql/lib/DBD/mysql.pm" target="_blank">Perl-DBD module</a> to be installed on the local system.</p>
-        <p>Module dependencies used can be found <a href="tutorial.html#modules">here</a>.</p>
-        <hr>
-        <h3>The package consist of the following files:</h3>        
-        <div class="pushit">
-          <A name="tadinstall" href="tutorial.html#tadinstall"><h4>INSTALL-tad.pL</h4></a>
-        <blockquote>
-          <p class="summary">install TransAtlasDB system</p>
-        </blockquote>
-        
-        <A name="tadinstall" href="tutorial.html#tadinstall"><h4>connect-tad.pL</h4></a>
-        <blockquote>
-          <p class="summary">verify connection details or create connection details (used only when requested)</p>
-        </blockquote>
+        <h2>TransAtlasDB Downloads</h2>
+        <p>The following are required for successful utilization of TransAtlasDB toolkit.</p>
+          <ol>
+            <li><A name="relational" href="usage.html#relational"><h3>Relational Database <i><font color="gray">- MySQL </font></i></h3></a></li>
+		<div class="pushit">
+		<h4>For Mac OSX</h4>
+		<ol type="i">
+		  <li>The MySQL community server is required and can be downloaded <a target="_blank" href="https://dev.mysql.com/downloads/mysql/">here</a>.</li><br>
+		  <li>Download the <b><font color="#0">DMG Archive</font></b> file.</li><br>
+		  <li>Unpack the download <i>.dmg</i> file.</li><br>
+		  <li>Click on the mysql server package from unpacked files and complete the installation process.<br>
+Once the installer has finished successfully, all MySQL related files should be installed under <font color="#0">/usr/local/mysql-VERSION </font>directory. 
+A link <font color="#0">/usr/local/mysql</font> (pointing to the MySQL installation directory) should also have been created.<br>
+<b>IMPORTANT:</b> Save the mysql temporary password provided.</li><br>
+ 		  <li>Setup auto start package for MySQL on OS X, by<br>
+		  <ul>
+			<li>Restarting the operating system #not yet tested, or</li>
+			<li>STARTing the mysql server in your System Preferences.</li></ul>
+<ol>
+</div>
+<table style="max-width:600pt; border:0pt; margin:0pt padding:0pt"><tr border="0"><td rowspan=2><img src="images/mysql-mac-1.png" height="220pt" width="300pt"></td><td><img src="images/mysql-mac-2.png" height="100pt" width="300pt"></td></tr><tr><td><img src="images/mysql-mac-3.png" height="100pt" width="300pt"></td></tr></table>
+<div class="pushit">
+<ol type="i" start="6">
+		<li>Add the mysql location (<font color="#0">/usr/local/mysql/bin/</font>) to your PATH. For your convenience, save this path in your <d>$HOME/.bash_profile</d>. 
+			<pre class="highlight"><code>export PATH=${PATH}:/usr/local/mysql/bin </code></pre></li>
+		<li>Create aliases of mysql in your <d>$HOME/.bash_profile</d>.
+			<pre class="highlight"><code>alias mysqladmin=/usr/local/mysql/bin/mysqladmin<br>alias mysql=/usr/local/mysql/bin/mysql</code></pre></li>
+		<li>Reload your updated profile<pre><code>source $HOME/.bash_profile</code></pre></li>
+		<li>Log into mysql using temporary password<br>
+	<pre class="highlight"><code><span>mysql -uroot -p<font color="#d14">'mysql_temporary_password_provided'</font></span></code></pre></li>
+		<li>In the mysql interface, change temporary password to a new password<pre><code>SET PASSWORD=PASSWORD(<font color="#d14">'your_new_password'</font>);</code></pre></li>
+		<li>Exit from MySQL<pre><code>exit</code></pre></li>
+	</ol>
+<br>
+	<h4>For Ubuntu</h4>
+	<ol type="i">
+		<li>Update apt-get<pre><code>sudo apt-get update</code></pre></li>
+		<li>Install mysql-server & set your mysql password when prompted <pre><code>sudo apt-get install mysql-server</code></pre></li>
+		<li>Install the mysqlclient <pre><code>sudo apt-get install libmysqlclient-dev</code></pre></li>
+	</ol>
+</div>
+<center><h5><font size="3pt">You have successfully installed MySQL !</font></h5></center><br>
+<hr>
 
-        <A name="tadimport" href="tutorial.html#tadimport"><h4>tad-import.pl</h4></a>
-        <blockquote>
-          <p class="summary">import samples metadata and RNAseq data into the database</p>
-        </blockquote>
 
-        <A name="tadexport" href="tutorial.html#tadexport"><h4>tad-export.pl</h4></a>
-        <blockquote>
-          <p class="summary">view or export reports based on user-defined queries</p>
-        </blockquote>
-      
-        <A name="tadexport" href="tutorial.html#tadexport"><h4>tad-interact.pl</h4></a>      
-        <blockquote>
-          <p class="summary">interactive interface to explore database content</p>
-        </blockquote>
-        <br>
+<li><A name="nonrelational" href="usage.html#nonrelational"><h3>Non-Relational Database<i><font color="gray"> - FastBit </font></i></h3></a></li>
+<p>The FastBit software can be downloaded <a href="https://codeforge.lbl.gov/frs/download.php/latestzip/41/fastbit-latest.zip">here</a>.<br>
+Once downloaded.
+<ol type="i">
+	<li>Unzip the fastbit-latest.zip file.<pre class="highlight"><code>unzip fastbit-latest.zip</code></pre></li>
+	<li>Unpack the download <i>.tar.gz</i> file.<pre class="highlight"><code>tar -xzvf fastbit-<font color="#d14">version</font>.tar.gz</code></pre></li>
+	<li>In the unpacked directory, configure the fastbit software.<br>
+( if Mac OSX: ensure Xcode install has been previously configured; the option to install with automatically appear when you run the command below ).<br>
+<b>NOTE:</b> This step takes about 15 - 30 minutes to complete.
+<pre class="highlight"><code>./configure && make</code></pre></li>
+	<li>Install the fastbit software.<pre class="highlight"><code><span>sudo make install</span></code></pre></li>
+<!-- <br><span class="c1"># However, if you don't have admin priviledges, run</span><br><span>make prefix=${HOME} install #not yet tested</span></code></pre></li>-->
+	<li>Add the library path to your profile
+<pre class="highlight"><code><span class="c1"># Mac OSX: save in your </span><span><font color="gray">'$HOME/.bash_profile'</font></span><br><span class="c1"># Ubuntu: save in your </span><span><font color="gray">'$HOME/.bashrc'</font></span>
+<span>export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib</span></code></pre></li>
+<li>Reload your updated profile
+<pre class="highlight"><code><span class="c1"># Mac OSX</span><br><span>source $HOME/.bash_profile</span></code></pre><pre class="highlight"><code><span class="c1"># Ubuntu</span><br><span>source $HOME/.bashrc</span></code></pre></li>
+</ol>
+<center><h5><font size="3pt">You have successfully installed FastBit !</font></h5></center>
+<br>
+<hr>
 
-        <strong><font color=#494949>other folders includes:</font></strong><br>
-        <blockquote>
-          <p class="sub">schema/</p>
-          <p class="summary">&emsp;&emsp;contains the TransAtlasDB relational database schema</p>
-          <p class="sub">example/</p>
-          <p class="summary">&emsp;&emsp;contains sample files and templates</p>
-          <p class="sub">lib/</p>
-          <p class="summary">&emsp;&emsp;contains required routines and modules</p>
-        </blockquote>
-        </div>
+
+<li><A name="perlmodule" href="usage.html#perlmodule"><h3>Perl modules</h3></a></li>
+<p>The easiest way to install Perl modules is using <a href="http://search.cpan.org/~miyagawa/App-cpanminus-1.7043/lib/App/cpanminus.pm" target="_blank">cpanminus</a>.</p>
+<ol type="i">
+	<li>Install cpanm using curl
+<pre class="highlight"><code><span class="c1"># Mac OSX</span><br><span>sudo curl -L http://cpanmin.us | perl - App::cpanminus</span></code></pre>
+<pre class="highlight"><code><span class="c1"># Ubuntu</span><br><span>sudo apt install cpanminus</span></code></pre></li>
+	<li>Install required Perl modules
+	<ol type="a"><li>DBD::mysql<pre><code>sudo cpanm DBD::mysql</code></pre></li>
+		<li>Spreadsheet::Read<pre><code>sudo cpanm Spreadsheet::Read</code></pre></li>
+                <li>Spreadsheet::XLSX<pre><code>sudo cpanm Spreadsheet::XLSX</code></pre></li>
+                <li>Text::TabularDisplay<pre><code>sudo cpanm Text::TabularDisplay</code></pre></li>
+                <li>Sort::Key<pre><code>sudo cpanm Sort::Key</code></pre></li>
+	</ol>
+</li>
+<center><h5><font size="3pt">You have successfully installed the required Perl modules !<br>
+==> Proceed to the <a href="tutorial.html">Tutorial</a> <== </font></h5></center>
+</ol>
+<br><hr><br>
         <p>Please click the menu items to navigate through this repository. If you have questions, comments and bug reports, please <a href="mailto:amodupe@udel.edu">email me </a>directly. </p>
         <p>Thank you very much for your help and support!</p>
       </section>
