@@ -29,7 +29,7 @@ The TransAtlasDB toolkit uses standard modules in addition to the following modu
 	* Location: http://search.cpan.org/CPAN/authors/id/S/SA/SALVA/Sort-Key-1.33.tar.gz
 
 
-**ALL** Perl modules already configured in the package for Mac OSX and Ubuntu systems except the _DBD::mysql_ module
+**ALL** Perl modules should be configured for Mac OSX and Ubuntu systems 
 
 Please click the menu items to navigate through this repository. If you have questions, comments and bug reports, please email me directly. Thank you very much for your help and support!
 
