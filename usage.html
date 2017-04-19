@@ -87,14 +87,16 @@ A link <font color="#0">/usr/local/mysql</font> (pointing to the MySQL installat
 		<li>Reload your updated profile<pre><code>source $HOME/.bash_profile</code></pre></li>
 		<li>Log into mysql using temporary password<br>
 	<pre class="highlight"><code><span>mysql -uroot -p<font color="#d14">'mysql_temporary_password_provided'</font></span></code></pre></li>
-		<li>In the mysql interface, change temporary password to a new password<pre><code>SET PASSWORD=PASSWORD(<font color="#d14">'your_new_password'</font>);</code></pre></li>
+		<li>In the mysql interface, change temporary password to a new password<br><b>NOTE:</b> Avoid using special characters such as <d><font style="arial"> $ & ! \ [ ] < > ` </d>
+	<pre><code>SET PASSWORD=PASSWORD(<font color="#d14">'your_new_password'</font>);</code></pre></li>
 		<li>Exit from MySQL<pre><code>exit</code></pre></li>
 	</ol>
 <br>
 	<h4>For Ubuntu</h4>
 	<ol type="i">
 		<li>Update apt-get<pre><code>sudo apt-get update</code></pre></li>
-		<li>Install mysql-server & set your mysql password when prompted <pre><code>sudo apt-get install mysql-server</code></pre></li>
+		<li>Install mysql-server & set your mysql password when prompted <br><b>NOTE:</b> Avoid using special characters such as <d><font style="arial"> $ & ! \ [ ] < > ` </d>
+	<pre><code>sudo apt-get install mysql-server</code></pre></li>
 		<li>Install the mysqlclient <pre><code>sudo apt-get install libmysqlclient-dev</code></pre></li>
 	</ol>
 </div>
