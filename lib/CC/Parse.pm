@@ -294,10 +294,11 @@ sub AVERAGE {
 			foreach my $ftissue (@tissue) {
 				my $syntax = "call usp_gdtissue(\"".$gene."\",\"".$ftissue."\",\"". $species."\")";
 				$sth = $dbh->prepare($syntax);
-				$sth->execute or die "SQL Error: $DBI::errstr\n";
+				$sth->execute() or die "SQL Error: $DBI::errstr\n";
 				my $found = $sth->fetch();
 				if ($found) {
-					while (my ($genename, $max, $avg, $min) = $sth->fetchrow_array() ) {
+					$sth->execute() or die "SQL Error: $DBI::errstr\n";
+					while (my ($genename, $max, $avg, $min) = $sth->fetchrow_array() ) { 
 						$AVGFPKM{$genename}{$ftissue} = "$max|$avg|$min";
 					}
 					$genes .= $gene;
@@ -440,15 +441,15 @@ sub GENEXP {
 		unless ($verdict) { $verdict = 0; }
 		if ($verdict =~ /^0/) { 
 			printerr "GENE(S) selected : 'all genes'\n";
-			$syntax = "select geneshortname, fpkm, sampleid, chromnumber, chromstart, chromstop from GenesFpkm where sampleid in ("; #syntax
+			$syntax = "select refgenename, fpkm, sampleid, chromnumber, chromstart, chromstop from GenesFpkm where sampleid in ("; #syntax
 			foreach (@newsample) { $syntax .= "'$_',";} chop $syntax; $syntax .= ") order by geneid desc";
 		}else {
 			my @genes = split(",", $verdict);
 			$genes = $verdict;
 			printerr "GENE(S) selected : $verdict\n";
-			$syntax = "select geneshortname, fpkm, sampleid, chromnumber, chromstart, chromstop from GenesFpkm where sampleid in (";
+			$syntax = "select refgenename, fpkm, sampleid, chromnumber, chromstart, chromstop from GenesFpkm where sampleid in (";
 			foreach (@newsample) { $syntax .= "'$_',";} chop $syntax; $syntax .= ") and (";
-			foreach (@genes) { $syntax .= " geneshortname like '%$_%' or"; } $syntax = substr($syntax, 0, -2); $syntax .= ") order by geneid desc";
+			foreach (@genes) { $syntax .= " refgenename like '%$_%' or"; } $syntax = substr($syntax, 0, -2); $syntax .= ") order by geneid desc";
 		}
 		$sth = $dbh->prepare($syntax);
 		$sth->execute or die "SQL Error:$DBI::errstr\n";

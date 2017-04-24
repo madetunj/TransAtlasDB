@@ -155,7 +155,7 @@ CREATE TABLE `VarAnnotation` (`sampleid` VARCHAR(150) NOT NULL, `chrom` VARCHAR(
 -- procedure usp_gdtissue
 -- -----------------------------------------------------
 DROP procedure IF EXISTS `usp_gdtissue`;
-CREATE PROCEDURE `usp_gdtissue`(in gname varchar(45), in tissue varchar(45), in specie varchar(45)) select a.geneshortname `Gene Name`, max(a.fpkm) `Maximum Fpkm`, CAST(avg(a.fpkm) AS DECIMAL(20,5)) `Average Fpkm`, min(a.fpkm) `Minimum Fpkm` from GenesFpkm a join vw_sampleinfo b on a.sampleid = b.sampleid where a.geneshortname like CONCAT('%', TRIM(IFNULL(gname, '')), '%') and b.tissue = tissue and b.tissue is not null and b.organism = specie group by a.geneshortname order by a.geneshortname;
+CREATE PROCEDURE `usp_gdtissue`(in gname varchar(45), in tissue varchar(45), in specie varchar(45)) select a.refgenename `Gene Name`, max(a.fpkm) `Maximum Fpkm`, CAST(avg(a.fpkm) AS DECIMAL(20,5)) `Average Fpkm`, min(a.fpkm) `Minimum Fpkm` from GenesFpkm a join vw_sampleinfo b on a.sampleid = b.sampleid where a.refgenename like CONCAT('%', TRIM(IFNULL(gname, '')), '%') and b.tissue = tissue and b.tissue is not null and b.organism = specie group by a.refgenename order by a.refgenename;
 /* Create a stored procedure to get fpkm details of a gene based on tissue and organism */
 /* call usp_gdtissue("ASB6", "pituitary gland", "Gallus gallus"); */
 -- -----------------------------------------------------

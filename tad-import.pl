@@ -641,6 +641,7 @@ if ($delete){
 								$sth = $dbh->prepare("delete from VarSummary where sampleid = '$delete'"); $sth->execute(); printerr ".";
 								my $execute = "ibis -d $ffastbit -y \"sampleid = '$delete'\" -z";
 								`$execute 2>> $efile`; printerr ".";
+								`rm -rf $ffastbit/*sp $ffastbit/*old $ffastbit/*idx $ffastbit/*dic $ffastbit/*int `; #removing old indexes
 								printerr " Done\n";
 							}
 						} else {
@@ -651,6 +652,7 @@ if ($delete){
 							$sth = $dbh->prepare("delete from VarSummary where sampleid = '$delete'"); $sth->execute(); printerr ".";
 							my $execute = "ibis -d $ffastbit -y \"sampleid = '$delete'\" -z";
 							`$execute 2>> $efile`; printerr ".";
+							`rm -rf $ffastbit/*sp $ffastbit/*old $ffastbit/*idx $ffastbit/*dic $ffastbit/*int `; #removing old indexes
 							printerr " Done\n";
 						}
 					}
@@ -1197,6 +1199,7 @@ sub VEPVARIANT {
 							$nosqlrow[$variables] = "NULL";
 						}
 						if ($variables < 17) {
+							$nosqlrow[$variables] =~ s/^'|'$//g;
 							$showcase .= "'$nosqlrow[$variables]',";
 						}
 						else {
