@@ -58,17 +58,16 @@
       <br>
       <section>
         <h2>TransAtlasDB Quick Start Guide</h2>
-        <p>This is the quick start guide.</p>
         <p>TransAtlasDB is a sophisticated bioinformatics system, which incorporates both the Relational Database and NoSQL Database system.</p>
         <p>The relational database, <a href="https://www.mysql.com" target=_blank><b color="red">MySQL</b></a>, enforces data assurance and integrity and the NoSQL database system, <a href="https://sdm.lbl.gov/fastbit/" target=_blank><b>FastBit</b></a>, ensures rapid performance for querying big data.<br>
         Hence, both database systems are required to be installed and added to the systems’ or users’ executable path.</p>        
         <hr>
 	<h3>BEFORE YOU BEGIN</h3>
 	<div class="pushit">
-	  <p>First, we need to download appropriate databases and Perl DBD module from the <a href="usage.html" target=_blank><b color="red">Usage & Downloads page</b></a>, before proceeding to the next section.</p>
-          <p>Assume that we have downloaded TransAtlasDB toolkit and unpacked the TAR package using <d>tar -xvfz transatlasdb.tgz</d> or the ZIP package using <d>unzip transatlasdb.zip</d>.<br>
+	  <p>First, we need to download appropriate databases and required Perl modules from the <a href="usage.html" target=_blank><b color="red">Usage & Downloads page</b></a>, before proceeding to the next section.</p>
+          <p>Assume that we have downloaded TransAtlasDB toolkit and unpacked the TAR package using <d>tar -xzvf transatlasdb.tgz</d> or the ZIP package using <d>unzip transatlasdb.zip</d>.<br>
    You will see that the directory contains several Perl programs with <i><font color="#d14">.pl</font></i> suffix.<br>
-<b>NOTE:</b> If you already added the transatlasdb path into your system executable path, then typing <d>INSTALL-tad.pl</d>
+<strong>NOTE:</strong> If you already added the transatlasdb path into your system executable path, then typing <d>INSTALL-tad.pl</d>
                 would be okay instead of typing <d>perl INSTALL-tad.pL</d>. </p>
 	</div><hr>
         <A name="tadinstall"><h3>INSTALLATION</h3></a>
@@ -105,18 +104,14 @@
           <p>The samples information, commonly known as, samples metadata consists of the relevant details to uniquely identify each specimen used for RNAseq.<br>
           The samples metadata can be imported via <d>-metadata</d> folowed by the FAANG sample submission spreadsheet or the template tab-delimited file. Instructions on samples metadata requirements can be found <a href="sample.html">here</a>.</p>
         </div>
-        <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for importing Samples metadata from FAANG metadata file 'faang.xls'.</span>
-  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">metadata</span> <span class="s">faang.xls</span>
-<span class="c1"># Using the example provided.</span>
+        <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for importing the <b>example</b> FAANG metadata provided.</span>
   <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">metadata</span> <span class="s">example/metadata/FAANG/FAANG_GGA_UD.xlsx </span><br>
-</code><code><span class="c1"># Syntax for importing Samples metadata from tab-delimited template 'faang-template.txt'.</span>
-  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">metadata</span> <span class="o">-</span><span class="nb">t</span> <span class="s">faang-template.txt</span>
-<span class="c1"># Using the example provided.</span>
+</code><code><span class="c1"># The second option to import a tab-delimited file using the <b>example</b> provided.</span>
   <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">metadata</span> <span class="o">-</span><span class="nb">t</span> <span class="s">example/metadata/TEMPLATE/metadata_GGA_UD.txt</span>
 </code></pre></div>
           <div class="pushit">
             <h4>Importing Transcriptome Analysis Data</h4>
-            <p>Transcriptome analysis results can be inserted using <d>-data2db</d>. The transcriptome profiling data or variant analysis data van be imported together via <d>-all</d> or separately using <d>-gene</d> for expresion profiling results or <d>-variant</d> for variant analysis results.</p>
+            <p>Transcriptome analysis results can be inserted using <d>-data2db</d>. The transcriptome profiling data or variant analysis data can be imported together via <d>-all</d> or separately using <d>-gene</d> for expresion profiling results or <d>-variant</d> for variant analysis results.</p>
           </div>
         <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for importing all RNASeq expression and variant results in for sample 'GGA_UD_1004'.</span>
   <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">all</span> <span class="s">example/sample_sxt/GGA_UD_1004</span>
@@ -131,32 +126,32 @@
             <p>The variant functional annotations predicted from either VEP or ANNOVAR can also be imported using additional flags <d>-vep</d> or <d>-annovar</d> respectively and must be in their default tab-delimited format. If VEP, the filename should end with <i><font color="#d14">.vep.txt</font></i>, or else if ANNOVAR, the file having suffix <i><font color="#d14">.multianno.txt</font></i> will be accepted.</p>
           </div>
         <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for importing RNASeq variant results with VEP annotations for sample 'GGA_UD_1004'.</span>
-  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">variant</span> <span class="o">-</span><span class="nb">vep</span> <span class="s">example/sample_sxt/GGA_UD_1004</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">variant</span> <span class="o">-</span><span class="nb">vep</span> <span class="s">example/sample_sxt/GGA_UD_1014</span>
 <span class="c1"># Syntax for importing RNASeq data with ANNOVAR annotations for sample 'GGA_UD_1004'.</span>
   <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">all</span> <span class="s">example/sample_sxt/GGA_UD_1004</span> <span class="o">-</span><span class="nb">annovar</span>
 </code></pre></div>
-        <div class="pushit"><p><strong>NOTE </strong>: The analysis data should be stored in a single folder for each sample and the folder-name must be the same <b><i>sample name</i></b> as represented in the samples metadata. A typical folder directory structure is shown <a href="sample.html#folder">here</a>.</p>
-        <h4>Deleting data </h4>
+        <div class="pushit"><p><strong>NOTE:</strong> The analysis data should be stored in a single folder for each sample and the folder-name must be the same <b><i>sample name</i></b> as represented in the samples metadata. A typical folder directory structure is shown <a href="sample.html#folder">here</a>.</p>
+        <!--<h4>Deleting data </h4>
         <p>Sample results can only be imported once to ensure data integrity, nonetheless, previously imported data can be cautiously deleted using <d>-delete</d> followed by sample name.
         </div>
         <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for deleting sample 'GGA_UD_1004' from the database.</span>
   <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">delete</span> <span class="s">GGA_UD_1004</span>
-</code></pre></div>
+</code></pre></div>-->
         <center><figure><img src="images/import.png">
         <figcaption>Data import procedure for samples metadata (A) and RNAseq data (B) respectively.</figcaption></figure></center>
         <hr/>
         <A name="tadexport"><h3>DATA RETRIEVAL</h3></a>
         <div class="pushit">
           <p>Transcriptome analysis data previously stored can be retrieved using <b><font color="#000"><i>tad-export.pl</i></font></b>.</p>
-          <p>The export module offers two methods of extracting data from the database; one by performing data manipulation language (DML) SQL statements using <d>-query</d> and the second method consisstin of pre-defined queries of research interest using <d>-db2data</d>.</p>
+          <p>The export module offers two methods of extracting data from the database; one by performing data manipulation language (DML) SQL statements using <d>-query</d> and the second method consisting of pre-defined queries of research interest using <d>-db2data</d>.</p>
           <h4>Performing DML Statements</h4>
           <p>Users can execute direct SQL statements via <d>-query</d> to the relational database and the query must be wrapped with single quotation.<br>
           For instance, executing <i><font color="#d14">'show tables'</font></i> will retrieve all the rows currently in the database, which can be stored as a tab-delimited file.</p>
         </div>
         <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax to view all the tables in the database.</span>
   <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">query</span> <span class="s">'show tables'</span>
-</code><code><span class="c1"># Syntax to retrieve all the rows in the Samples table and stored the results in a tab-delimited file 'output.txt'.</span>
-  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">query</span> <span class="s">'select * from Samples'</span> <span class="o">-</span><span class="nb">output</span> <span class="s">output.txt</span>
+</code><code><span class="c1"># Syntax to retrieve all the rows in the Sample table and store the results in a tab-delimited file 'output.txt'.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">query</span> <span class="s">'select * from Sample'</span> <span class="o">-</span><span class="nb">output</span> <span class="s">output.txt</span>
 </code></pre></div>
         
           <div class="pushit">
@@ -224,16 +219,35 @@
   <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">varanno</span> <span class="o">-</span><span class="nb">chromosome</span> <span class="s">'chr1'</span> <span class="o">-</span><span class="nb">region</span> <span class="s">50000-900000</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span> <span class="o">-</span><span class="nb">o</span> <span class="o">-</span><span class="nb">vcf</span> <span class="s">output.vcf</span>
 </code></pre></div>
           <div class="pushit">
-            <h4>Interacting with TransAtlasDB using <font color="#000"><i>tad-interact.pl</i></font></h4>
+            <!--<h4>Interacting with TransAtlasDB using <font color="#000"><i>tad-interact.pl</i></font></h4>
           <p>If uncertain on how to proceed with the export module, the interaction module provides an easy-to-use menu-driven interface.<br>
           The menu offers seven choices of exploratory research interest and provides a detailed description of what can be done from the module.</p>
           <p>However, the interaction module only outputs a small subset of results, nevertheless, further instructions on how to export the complete results will be displayed.</p>
-        
+        -->
         <center><figure><img src="images/export.png">
         <figcaption>Data retrieval procedure.</figcaption></figure></center>
         
         <hr>
    
+
+	 <h3>ADDITIONAL PROGRAMS</h3>
+        <div class="pushit">
+          <h4>Interacting with TransAtlasDB using <font color="#000"><i>tad-interact.pl</i></font></h4>
+          <p>If uncertain on how to proceed with the export module, the interaction module provides an easy-to-use menu-driven interface.<br>
+          The menu offers seven choices of exploratory research interest and provides a detailed description of what can be done from the module.</p></div>
+        <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax to begin the interaction module.</span>
+  <span class="k">tad-interact.pl</span></code></pre></div>
+          <div class="pushit"><p><strong>NOTE:</strong> The interaction module only outputs a small subset of results and further instructions on how to export the complete results will be displayed.</p>
+				<h4>Deleting Data</h4>
+        <p>Sample results can only be imported once to ensure data integrity, nonetheless, previously imported data can be cautiously deleted using <d>-delete</d> followed by sample name.
+        </div>
+        <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for deleting sample 'GGA_UD_1004' from the database.</span>
+  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">delete</span> <span class="s">GGA_UD_1004</span>
+</code></pre></div>
+					</div>
+        <hr>
+   
+	 
         <p>Please click the menu items to navigate through this repository. If you have questions, comments and bug reports, please <a href="mailto:amodupe@udel.edu">email me </a>directly. </p>
         <p>Thank you very much for your help and support!</p>
       </section>

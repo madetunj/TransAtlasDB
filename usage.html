@@ -58,7 +58,7 @@
       <br>
       <section>
         <h2>TransAtlasDB Downloads</h2>
-	<p>TransAtlasDB can be deployed on Ubuntu Linux and Mac OSX operating systems using the latest available MySQL and FastBit software.</p>
+	<p>TransAtlasDB can be deployed on <font color="#0">Ubuntu Linux</font> and <font color="#0">Mac OSX</font> operating systems using the latest available MySQL and FastBit software.</p>
         <p>The following are required for successful utilization of TransAtlasDB toolkit.</p>
           <ol>
             <li><A name="relational" href="usage.html#relational"><h3>Relational Database <i><font color="gray">- MySQL </font></i></h3></a></li>
@@ -71,7 +71,7 @@
 		  <li>Click on the mysql server package from unpacked files and complete the installation process.<br>
 Once the installer has finished successfully, all MySQL related files should be installed under <font color="#0">/usr/local/mysql-VERSION </font>directory. 
 A link <font color="#0">/usr/local/mysql</font> (pointing to the MySQL installation directory) should also have been created.<br>
-<b>IMPORTANT:</b> Save the mysql temporary password provided.</li><br>
+<strong>IMPORTANT:</strong> Save the mysql temporary password provided.</li><br>
  		  <li>Setup auto start package for MySQL on OS X, by<br>
 		  <ul>
 			<li>Restarting the operating system #not yet tested, or</li>
@@ -81,14 +81,14 @@ A link <font color="#0">/usr/local/mysql</font> (pointing to the MySQL installat
 <table style="max-width:600pt; border:0pt; margin:0pt padding:0pt"><tr border="0"><td rowspan=2><img src="images/mysql-mac-1.png" height="220pt" width="300pt"></td><td><img src="images/mysql-mac-2.png" height="100pt" width="300pt"></td></tr><tr><td><img src="images/mysql-mac-3.png" height="100pt" width="300pt"></td></tr></table>
 <div class="pushit">
 <ol type="i" start="6">
-		<li>Add the mysql location (<font color="#0">/usr/local/mysql/bin/</font>) to your PATH. For your convenience, save this path in your <d>$HOME/.bash_profile</d>. 
+		<li>Add the mysql location (<font color="#0">/usr/local/mysql/bin/</font>) to your PATH. Save this path in your profile - <d>$HOME/.bash_profile</d>. 
 			<pre class="highlight"><code>export PATH=${PATH}:/usr/local/mysql/bin </code></pre></li>
-		<li>Create aliases of mysql in your <d>$HOME/.bash_profile</d>.
+		<li>Create aliases of mysql in your profile - <d>$HOME/.bash_profile</d>.
 			<pre class="highlight"><code>alias mysqladmin=/usr/local/mysql/bin/mysqladmin<br>alias mysql=/usr/local/mysql/bin/mysql</code></pre></li>
 		<li>Reload your updated profile<pre><code>source $HOME/.bash_profile</code></pre></li>
 		<li>Log into mysql using temporary password<br>
 	<pre class="highlight"><code><span>mysql -uroot -p<font color="#d14">'mysql_temporary_password_provided'</font></span></code></pre></li>
-		<li>In the mysql interface, change temporary password to a new password<br><b>NOTE:</b> Avoid using special characters such as <d><font style="arial"> $ & ! \ [ ] < > ` </d>
+		<li>In the mysql interface, change temporary password to a new password<br><strong>NOTE:</strong> Avoid using special characters such as <d><font style="arial"> $ & ! \ [ ] < > ` </d>
 	<pre><code>SET PASSWORD=PASSWORD(<font color="#d14">'your_new_password'</font>);</code></pre></li>
 		<li>Exit from MySQL<pre><code>exit</code></pre></li>
 	</ol>
@@ -96,7 +96,7 @@ A link <font color="#0">/usr/local/mysql</font> (pointing to the MySQL installat
 	<h4>For Ubuntu</h4>
 	<ol type="i">
 		<li>Update apt-get<pre><code>sudo apt-get update</code></pre></li>
-		<li>Install mysql-server & set your mysql password when prompted <br><b>NOTE:</b> Avoid using special characters such as <d><font style="arial"> $ & ! \ [ ] < > ` </d>
+		<li>Install mysql-server & set your mysql password when prompted <br><strong>NOTE:</strong> Avoid using special characters such as <d><font style="arial"> $ & ! \ [ ] < > ` </d>
 	<pre><code>sudo apt-get install mysql-server</code></pre></li>
 		<li>Install the mysqlclient <pre><code>sudo apt-get install libmysqlclient-dev</code></pre></li>
 	</ol>
@@ -113,13 +113,13 @@ Once downloaded.
 	<li>Unpack the download <i>.tar.gz</i> file.<pre class="highlight"><code>tar -xzvf fastbit-<font color="#d14">version</font>.tar.gz</code></pre></li>
 	<li>In the unpacked directory, configure the fastbit software.<br>
 ( if Mac OSX: ensure Xcode install has been previously configured; the option to install with automatically appear when you run the command below ).<br>
-<b>NOTE:</b> This step takes about 15 - 30 minutes to complete.
+<strong>NOTE:</strong> This step takes about 15 - 30 minutes to complete.
 <pre class="highlight"><code>./configure && make</code></pre></li>
 	<li>Install the fastbit software.<pre class="highlight"><code><span>sudo make install</span></code></pre></li>
 <!-- <br><span class="c1"># However, if you don't have admin priviledges, run</span><br><span>make prefix=${HOME} install #not yet tested</span></code></pre></li>-->
-	<li>Add the library path to your profile
-<pre class="highlight"><code><span class="c1"># Mac OSX: save in your </span><span><font color="gray">'$HOME/.bash_profile'</font></span><br><span class="c1"># Ubuntu: save in your </span><span><font color="gray">'$HOME/.bashrc'</font></span>
-<span>export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib</span></code></pre></li>
+	<li>Add the library path to your profile<br>
+<font color="grey"><strong>NOTE:</strong><ul type="circle"><li><b>For Mac OSX:</b> Your profile is <d>$HOME/.bash_profile</d></li><li><b>For Ubuntu:</b> Your profile is <d>$HOME/.bashrc</d</li></ul>
+<pre class="highlight"><code><span>export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib</span></code></pre></li>
 <li>Reload your updated profile
 <pre class="highlight"><code><span class="c1"># Mac OSX</span><br><span>source $HOME/.bash_profile</span></code></pre><pre class="highlight"><code><span class="c1"># Ubuntu</span><br><span>source $HOME/.bashrc</span></code></pre></li>
 </ol>
