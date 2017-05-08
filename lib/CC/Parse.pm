@@ -1,7 +1,7 @@
 #package CC::Parse;
 use strict;
 use Cwd qw(abs_path);
-use lib dirname(abs_path $0) .'/lib/lib/perl5';
+use lib dirname(abs_path $0) .'/lib';
 use Spreadsheet::Read;
 use Text::TabularDisplay;
 use Term::ANSIColor;
@@ -9,8 +9,9 @@ use List::MoreUtils qw(uniq);
 use Sort::Key::Natural qw(natsort);
 
 
-my ($sth, $dbh, $t, $fastbit);
+my ($sth, $dbh, $t);
 my ($precount, $count, $verdict);
+
 sub excelcontent { #read excel content
 	unless($_[0] =~ /\.xls/){pod2usage("Error: File \"$_[0]\" is not an excel file.");}
   my $workbook = ReadData($_[0]) or pod2usage("Error: Could not open excel file \"$_[0]\"");
@@ -56,7 +57,7 @@ sub tabcontent { #read tadcontent
   return \%INDEX;
 }
 
-sub SUMMARY {
+sub SUMMARY { #tad-interact option A
 	open(LOG, ">>", $_[1]) or die "\nERROR:\t cannot write LOG information to log file $_[1] $!\n"; #open log file
 	print colored("A.\tSUMMARY OF SAMPLES IN THE DATABASE.", 'bright_red on_black'),"\n";
 	print LOG "A.\tSUMMARY OF SAMPLES IN THE DATABASE.\n";
@@ -125,7 +126,7 @@ sub SUMMARY {
 		print LOG $t-> render, "\n\n";
 }
 
-sub METADATA {
+sub METADATA { #tad-interact option B
 	open(LOG, ">>", $_[1]) or die "\nERROR:\t cannot write LOG information to log file $_[1] $!\n"; #open log file
 	print colored("B.\tMETADATA OF SAMPLES.", 'bright_red on_black'),"\n";
 	print LOG "B.\tMETADATA OF SAMPLES.\n";
@@ -174,7 +175,7 @@ sub METADATA {
 	} 
 }
 
-sub TRANSCRIPT {
+sub TRANSCRIPT { #tad-interact option C
 	open(LOG, ">>", $_[1]) or die "\nERROR:\t cannot write LOG information to log file $_[1] $!\n"; #open log file
 	print colored("C.\tTRANSCRIPTOME ANALYSIS SUMMARY OF SAMPLES.", 'bright_red on_black'),"\n";
 	print LOG "C.\tTRANSCRIPTOME ANALYSIS SUMMARY OF SAMPLES.\n";
@@ -223,10 +224,11 @@ sub TRANSCRIPT {
 	} 
 }
 
-sub AVERAGE {
+sub AVERAGE { #tad-interact option D
 	open(LOG, ">>", $_[1]) or die "\nERROR:\t cannot write LOG information to log file $_[1] $!\n"; #open log file
 	print colored("D.\tAVERAGE FPKM VALUES OF INDIVIDUAL GENES.", 'bright_red on_black'),"\n";
 	print LOG "D.\tAVERAGE FPKM VALUES OF INDIVIDUAL GENES.\n";
+	my $gfastbit = $_[2]."/gene-information";
 	$dbh = $_[0];
 	my (%TISSUE, %GENES, %AVGFPKM, $tissue, $genes , $species, %ORGANISM);
 	$count = 0;
@@ -292,19 +294,36 @@ sub AVERAGE {
 		@tissue = split("\,",$tissue);
 		foreach my $gene (@genes){
 			foreach my $ftissue (@tissue) {
-				my $syntax = "call usp_gdtissue(\"".$gene."\",\"".$ftissue."\",\"". $species."\")";
-				$sth = $dbh->prepare($syntax);
-				$sth->execute() or die "SQL Error: $DBI::errstr\n";
-				my $found = $sth->fetch();
-				if ($found) {
-					$sth->execute() or die "SQL Error: $DBI::errstr\n";
-					while (my ($genename, $max, $avg, $min) = $sth->fetchrow_array() ) { 
+				#my $syntax = "call usp_gdtissue(\"".$gene."\",\"".$ftissue."\",\"". $species."\")";
+				#$sth = $dbh->prepare($syntax);
+				#$sth->execute() or die "SQL Error: $DBI::errstr\n";
+				`ibis -d $gfastbit -q 'select genename, max(fpkm), avg(fpkm), min(fpkm) where genename like "%$gene%" and tissue = "$ftissue" and organism = "$species"' -o $_[3] 2>>$_[1]`;
+				my $found = `head -n 1 $_[3]`;
+				if (length($found) > 1) {
+					open(IN,"<",$_[3]);
+					while (<IN>){
+						chomp;
+						my ($genename,$max,$avg,$min) = split (/\, /, $_, 4);
+						$genename =~ s/^'|'$|^"|"$//g; #removing the quotation marks from the words
+						if ($genename =~ /NULL/) { $genename = "-"; }
 						$AVGFPKM{$genename}{$ftissue} = "$max|$avg|$min";
 					}
 					$genes .= $gene;
 				} else {
 					printerr "NOTICE:\t No Results found with gene '$gene'\n";
 				}
+				`rm -rf $_[3]`;
+		
+				#my $found = $sth->fetch();
+				#if ($found) {
+				#	$sth->execute() or die "SQL Error: $DBI::errstr\n";
+				#	while (my ($genename, $max, $avg, $min) = $sth->fetchrow_array() ) { 
+				#		$AVGFPKM{$genename}{$ftissue} = "$max|$avg|$min";
+				#	}
+				#	$genes .= $gene;
+				#} else {
+				#	printerr "NOTICE:\t No Results found with gene '$gene'\n";
+				#}
 			}
 		}
 		$count = scalar keys %AVGFPKM;
@@ -362,10 +381,11 @@ sub AVERAGE {
 	}
 }
 
-sub GENEXP {
+sub GENEXP { #tad-interact option E
 	open(LOG, ">>", $_[1]) or die "\nERROR:\t cannot write LOG information to log file $_[1] $!\n"; # open log file
 	print colored("E.\tGENE EXPRESSION ACROSS SAMPLES.", 'bright_red on_black'),"\n";
 	print LOG "E.\tGENE EXPRESSION ACROSS SAMPLES.\n";
+	my $gfastbit = $_[2]."/gene-information";
 	$dbh = $_[0];
 	my (%FPKM, %POSITION, %ORGANISM, %SAMPLE, %REALPOST, %CHROM, $species, $sample, $finalsample, $genes, $syntax, @row, $indent);
 	$count = 0;
@@ -441,25 +461,31 @@ sub GENEXP {
 		unless ($verdict) { $verdict = 0; }
 		if ($verdict =~ /^0/) { 
 			printerr "GENE(S) selected : 'all genes'\n";
-			$syntax = "select refgenename, fpkm, sampleid, chromnumber, chromstart, chromstop from GenesFpkm where sampleid in ("; #syntax
+			$syntax = "select genename, fpkm, sampleid, chrom, start, stop where sampleid in ("; #syntax
 			foreach (@newsample) { $syntax .= "'$_',";} chop $syntax; $syntax .= ") order by geneid desc";
 		}else {
 			my @genes = split(",", $verdict);
 			$genes = $verdict;
 			printerr "GENE(S) selected : $verdict\n";
-			$syntax = "select refgenename, fpkm, sampleid, chromnumber, chromstart, chromstop from GenesFpkm where sampleid in (";
+			$syntax = "select genename, fpkm, sampleid, chrom, start, stop where sampleid in (";
 			foreach (@newsample) { $syntax .= "'$_',";} chop $syntax; $syntax .= ") and (";
-			foreach (@genes) { $syntax .= " refgenename like '%$_%' or"; } $syntax = substr($syntax, 0, -2); $syntax .= ") order by geneid desc";
+			foreach (@genes) { $syntax .= " genename like '%$_%' or"; } $syntax = substr($syntax, 0, -2); $syntax .= ") order by geneid desc";
 		}
-		$sth = $dbh->prepare($syntax);
-		$sth->execute or die "SQL Error:$DBI::errstr\n";
+		#$sth = $dbh->prepare($syntax);
+		#$sth->execute or die "SQL Error:$DBI::errstr\n";
+		`ibis -d $gfastbit -q "$syntax" -o $_[3] 2>>$_[1]`;
 		$count = 0;
-		while (my ($gene_id, $fpkm, $library_id, $chrom, $start, $stop) = $sth->fetchrow_array() ) {
+		open(IN,"<",$_[3]);
+		while (<IN>){
+			chomp;
+			my ($geneid, $fpkm, $library, $chrom, $start, $stop) = split /\, /;
+			$geneid =~ s/^'|'$|^"|"$//g; $library =~ s/^'|'$|^"|"$//g; $chrom =~ s/^'|'$|^"|"$//g; #removing quotation marks if applicable
 			$count++;
-			$FPKM{"$gene_id|$chrom"}{$library_id} = $fpkm;
-			$CHROM{"$gene_id|$chrom"} = $chrom;
-			$POSITION{"$gene_id|$chrom"}{$library_id} = "$start|$stop";
+			$FPKM{"$geneid|$chrom"}{$library} = $fpkm;
+			$CHROM{"$geneid|$chrom"} = $chrom;
+			$POSITION{"$geneid|$chrom"}{$library} = "$start|$stop";
 		}
+		close (IN); `rm -rf $_[3]`;
 		
 		foreach my $genest (sort keys %POSITION) {
 			if ($genest =~ /^[0-9a-zA-Z]/){
@@ -547,7 +573,7 @@ sub GENEXP {
 	printerr "\n\n";
 }
 
-sub CHRVAR {
+sub CHRVAR { #tad-interact option F
 	open(LOG, ">>", $_[1]) or die "\nERROR:\t cannot write LOG information to log file $_[1] $!\n"; #open log file
 	print colored("F.\tVARIANT CHROMOSOMAL DISTRIBUTION ACROSS SAMPLES.", 'bright_red on_black'),"\n";
 	print LOG "F.\tVARIANT CHROMOSOMAL DISTRIBUTION ACROSS SAMPLES.\n";
@@ -758,7 +784,7 @@ sub VARANNO {
 	print LOG "G.\tGENE ASSOCIATED VARIANTS ANNOTATION.\n";
 	
 	$dbh = $_[0];
-	$fastbit = $_[1];	
+	my $vfastbit = $_[1]."/variant-information";
 	my ($genes, $genes2, %ORGANISM, %GENEVAR, @genes, $indent, $species, $vfound);
 
 	$count = 0;
@@ -801,7 +827,7 @@ sub VARANNO {
 			foreach my $gene (@genes){
 				if ($found) {
 					#using fastbit
-					my $syntax = "ibis -d $fastbit -q \"select chrom,position,refallele,altallele,variantclass,consequence,group_concat(genename),group_concat(dbsnpvariant), 	group_concat(sampleid) where genename like '%".$gene."%' and organism='$species'\" -o $_[3]";
+					my $syntax = "ibis -d $vfastbit -q \"select chrom,position,refallele,altallele,variantclass,consequence,group_concat(genename),group_concat(dbsnpvariant), 	group_concat(sampleid) where genename like '%".$gene."%' and organism='$species'\" -o $_[3]";
 					`$syntax 2>> $_[2]`;
 					open(IN,'<',$_[3]); my @nosqlcontent = <IN>; close IN; `rm -rf $_[3]`;
 					if ($#nosqlcontent < 0) {printerr "NOTICE:\t No variants are associated with gene '$gene'\n";}
@@ -907,9 +933,9 @@ sub CHRANNO {
 	print colored("H.\tCHROMSOMAL REGIONS WITH VARIANTS & ANNOTATION.", 'bright_red on_black'),"\n";
 	print LOG "H.\tCHROMSOMAL REGIONS WITH VARIANTS & ANNOTATION.\n";
 	$dbh = $_[0];
-	$fastbit = $_[1];
+	my $vfastbit = $_[1]."/variant-information";
 	my ($chromosome, %ORGANISM, %CHRVAR, %CHROM, @chromosomes, $species,$indent,$region);
-	my $syntax = "ibis -d $fastbit -q \"select chrom,position,refallele,altallele,variantclass,consequence,group_concat(genename),group_concat(dbsnpvariant), group_concat(sampleid) where ";
+	my $syntax = "ibis -d $vfastbit -q \"select chrom,position,refallele,altallele,variantclass,consequence,group_concat(genename),group_concat(dbsnpvariant), group_concat(sampleid) where ";
 	$count = 0;
 	$sth = $dbh->prepare("select distinct a.organism from vw_sampleinfo a join VarSummary b on a.sampleid = b.sampleid"); #get organism with annotation information
 	$sth->execute or die "SQL Error: $DBI::errstr\n";

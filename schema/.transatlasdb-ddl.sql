@@ -131,11 +131,7 @@ CREATE TABLE `GeneStats` (`sampleid` VARCHAR(150) NOT NULL, `genes` INT(11) NULL
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `Metadata`;
 CREATE TABLE `Metadata` ( `sampleid` VARCHAR(150) NOT NULL, `refgenome` VARCHAR(100) NULL DEFAULT NULL, `annfile` VARCHAR(50) NULL DEFAULT NULL, `stranded` VARCHAR(100) NULL DEFAULT NULL, `sequencename` TEXT NULL DEFAULT NULL, `mappingtool` VARCHAR(100) NULL DEFAULT NULL, CONSTRAINT `metadata_ibfk_1` FOREIGN KEY (`sampleid`) REFERENCES `MapStats` (`sampleid`)) ENGINE = InnoDB DEFAULT CHARACTER SET = latin1;
--- -----------------------------------------------------
--- Table structure for table `GenesFpkm`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `GenesFpkm`;
-CREATE TABLE `GenesFpkm` (`sampleid` VARCHAR(150) NOT NULL, `geneid` VARCHAR(100) NOT NULL DEFAULT '', `refgenename` VARCHAR(250) NOT NULL DEFAULT '', `chromnumber` VARCHAR(100) NOT NULL DEFAULT '', `chromstart` INT(11) NOT NULL DEFAULT '0', `chromstop` INT(11) NOT NULL DEFAULT '0', `coverage` DOUBLE(20,10) NULL DEFAULT NULL, `tpm` DOUBLE(20,5) NULL DEFAULT NULL, `fpkm` DOUBLE(20,5) NOT NULL DEFAULT '0.00000', `fpkmconflow` DOUBLE(20,5) NULL DEFAULT NULL, `fpkmconfhigh` DOUBLE(20,5) NULL DEFAULT NULL, `fpkmstatus` VARCHAR(20) NULL DEFAULT NULL, INDEX `genesfpkm_indx_refgenename` (`refgenename` ASC), INDEX `genesfpkm_ibfk_1_idx` (`sampleid` ASC), PRIMARY KEY (`sampleid`, `geneid`, `refgenename`, `chromnumber`,`chromstart`,`chromstop`,`fpkm`), KEY `genesfpkm_indx_refgenename_1` (`refgenename`), CONSTRAINT `genesfpkm_ibfk_1` FOREIGN KEY (`sampleid`) REFERENCES `GeneStats` (`sampleid`)) ENGINE = InnoDB DEFAULT CHARACTER SET = latin1;
+
 -- -----------------------------------------------------
 -- Table structure for table `VarSummary`
 -- -----------------------------------------------------
@@ -151,13 +147,6 @@ CREATE TABLE `VarResult` ( `sampleid` VARCHAR(150) NOT NULL, `chrom` VARCHAR(100
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `VarAnnotation`;
 CREATE TABLE `VarAnnotation` (`sampleid` VARCHAR(150) NOT NULL, `chrom` VARCHAR(100) NOT NULL DEFAULT '', `position` INT(11) NOT NULL DEFAULT '0', `consequence` VARCHAR(100) NOT NULL DEFAULT '', `source` VARCHAR(100) NULL DEFAULT NULL, `geneid` VARCHAR(100) NOT NULL DEFAULT '', `genename` VARCHAR(100) NULL DEFAULT NULL, `transcript` VARCHAR(250) NULL DEFAULT NULL, `feature` VARCHAR(100) NULL DEFAULT NULL, `genetype` VARCHAR(250) NULL DEFAULT NULL, `proteinposition` VARCHAR(100) NOT NULL DEFAULT '', `aachange` VARCHAR(100) NULL DEFAULT NULL, `codonchange` VARCHAR(100) NULL DEFAULT NULL, PRIMARY KEY (`consequence`, `geneid`, `proteinposition`, `sampleid`, `chrom`, `position`), INDEX `varannotation_indx_genename` (`genename` ASC), CONSTRAINT `varannotation_ibfk_1` FOREIGN KEY (`sampleid` , `chrom` , `position`) REFERENCES `VarResult` (`sampleid` , `chrom` , `position`)) ENGINE = InnoDB DEFAULT CHARACTER SET = latin1;
--- -----------------------------------------------------
--- procedure usp_gdtissue
--- -----------------------------------------------------
-DROP procedure IF EXISTS `usp_gdtissue`;
-CREATE PROCEDURE `usp_gdtissue`(in gname varchar(45), in tissue varchar(45), in specie varchar(45)) select a.refgenename `Gene Name`, max(a.fpkm) `Maximum Fpkm`, CAST(avg(a.fpkm) AS DECIMAL(20,5)) `Average Fpkm`, min(a.fpkm) `Minimum Fpkm` from GenesFpkm a join vw_sampleinfo b on a.sampleid = b.sampleid where a.refgenename like CONCAT('%', TRIM(IFNULL(gname, '')), '%') and b.tissue = tissue and b.tissue is not null and b.organism = specie group by a.refgenename order by a.refgenename;
-/* Create a stored procedure to get fpkm details of a gene based on tissue and organism */
-/* call usp_gdtissue("ASB6", "pituitary gland", "Gallus gallus"); */
 -- -----------------------------------------------------
 -- procedure usp_vchrposition
 -- -----------------------------------------------------

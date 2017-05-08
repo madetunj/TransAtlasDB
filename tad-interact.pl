@@ -11,8 +11,8 @@ use CC::Create;
 use CC::Parse;
 use Term::ANSIColor;
 
-our $VERSION = '$ Version: 1 $';
-our $DATE = '$ Date: 2016-11-17 17:38:00 (Thu, 17 Nov 2016) $';
+our $VERSION = '$ Version: 3 $';
+our $DATE = '$ Date: 2017-05-05 05:14:00 (Fri, 05 May 2017) $';
 our $AUTHOR= '$ Author:Modupe Adetunji <amodupe@udel.edu> $';
 
 #--------------------------------------------------------------------------------
@@ -75,8 +75,8 @@ while ($choice < 1){
 		SUMMARY($dbh, $efile) if $verdict =~ /^a/;
 		METADATA($dbh, $efile) if $verdict =~ /^b/;
 		TRANSCRIPT($dbh,$efile) if $verdict =~ /^c/;
-		AVERAGE($dbh,$efile) if $verdict =~ /^d/;
-		GENEXP($dbh,$efile) if $verdict =~ /^e/;
+		AVERAGE($dbh,$efile,$fastbit,$nosql) if $verdict =~ /^d/;
+		GENEXP($dbh,$efile,$fastbit,$nosql) if $verdict =~ /^e/;
 		CHRVAR($dbh,$efile) if $verdict =~ /^f/;
 		VARANNO($dbh,$fastbit,$efile,$nosql) if $verdict =~ /^g/;
 		CHRANNO($dbh,$fastbit,$efile,$nosql) if $verdict =~ /^h/;
