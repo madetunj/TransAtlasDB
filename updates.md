@@ -1,3 +1,6 @@
+# Version 3
+	- Moved Expression Information to NoSQL database
+
 # Version 2.2
 	- Fixed bugs (refgenomename was wrong)
 
