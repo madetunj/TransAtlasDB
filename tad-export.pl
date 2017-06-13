@@ -18,7 +18,7 @@ our $AUTHOR= '$ Author:Modupe Adetunji <amodupe@udel.edu> $';
 
 #--------------------------------------------------------------------------------
 print "\n";
-our ($verbose, $efile, $help, $man, $nosql, $tmpout);
+our ($verbose, $efile, $help, $man, $nosql, $tmpout, $log);
 our ($dbh, $sth, $found, $count, @header, $connect, $fastbit);
 our ($query, $output,$avgfpkm, $gene, $tissue, $organism, $genexp, $chrvar, $sample, $chromosome, $varanno, $region, $vcf);
 my ($dbdata, $table, $outfile, $syntax, $status, $vcfsyntax);
@@ -39,13 +39,15 @@ my (%subref, %subalt, %subgt,%MTD);
 #--------------------------------------------------------------------------------
 
 sub printerr; #declare error routine
+our ($ibis, $ardea) = fastbit_name(); #ibis and ardea location
 our $default = DEFAULTS(); #default error contact
 processArguments(); #Process input
 
 my %all_details = %{connection($connect, $default)}; #get connection details
+if (length($ibis) < 1){ ($ibis, $ardea) = ($all_details{'FastBit-ibis'}, $all_details{'FastBit-ardea'}); } #alternative for ibis and ardea location 
 if ($query) { #if user query mode selected
     $query =~ s/^\s+|\s+$//g;
-    $verbose and printerr "NOTICE:\t User query module selected\n";
+    unless ($log) { $verbose and printerr "NOTICE:\t User query module selected\n"; }
     undef %ARRAYQUERY;
     $dbh = mysql($all_details{'MySQL-databasename'}, $all_details{'MySQL-username'}, $all_details{'MySQL-password'}); #connect to mysql
   $sth = $dbh->prepare($query); $sth->execute() or exit;
@@ -66,10 +68,10 @@ if ($query) { #if user query mode selected
                 print OUT join("\t", @{$ARRAYQUERY{$row}}),"\n";
             } close OUT;
         } else {
-            printerr $table-> render, "\n"; #print display
+            unless ($log) { printerr $table-> render, "\n"; } #print display
         }
-        $verbose and printerr "NOTICE:\t Summary: $count rows in result\n";
-    } else { printerr "NOTICE:\t No Results based on search criteria: '$query' \n"; }
+        unless ($log) { $verbose and printerr "NOTICE:\t Summary: $count rows in result\n"; }
+    } else { unless ($log) { printerr "NOTICE:\t No Results based on search criteria: '$query' \n"; } }
 } #end of user query module
 
 if ($dbdata){ #if db 2 data mode selected
@@ -80,10 +82,12 @@ if ($dbdata){ #if db 2 data mode selected
         $count = 0;
         undef %ARRAYQUERY;
         #making sure required attributes are specified.
-        $verbose and printerr "TASK:\t Average Fpkm Values of Individual Genes\n";
+        unless ($log){ $verbose and printerr "TASK:\t Average Fpkm Values of Individual Genes\n";}
         unless ($gene && $organism){
-            unless ($gene) {printerr "ERROR:\t Gene option '-gene' is not specified\n"; }
-            unless ($organism) {printerr "ERROR:\t Organism option '-species' is not specified\n"; }
+            unless ($log) {
+                unless ($gene) {printerr "ERROR:\t Gene option '-gene' is not specified\n"; }
+                unless ($organism) {printerr "ERROR:\t Organism option '-species' is not specified\n"; }
+            }
             pod2usage("ERROR:\t Details for -avgfpkm are missing. Review 'tad-interact.pl -d' for more information");
         }
         $dbh = mysql($all_details{'MySQL-databasename'}, $all_details{'MySQL-username'}, $all_details{'MySQL-password'}); #connect to mysql
@@ -91,7 +95,7 @@ if ($dbdata){ #if db 2 data mode selected
         $organism =~ s/^\s+|\s+$//g;
         $sth = $dbh->prepare("select organism from Animal where organism = '$organism'");$sth->execute(); $found =$sth->fetch();
         unless ($found) { pod2usage("ERROR:\t Organism name '$organism' is not found in database. Consult 'tad-interact.pl -d' for more information"); }
-        $verbose and printerr "NOTICE:\t Organism selected: $organism\n";
+        unless ($log) { $verbose and printerr "NOTICE:\t Organism selected: $organism\n"; }
         
         if ($tissue) {
             my @tissue = split(",", $tissue); undef $tissue; 
@@ -101,9 +105,9 @@ if ($dbdata){ #if db 2 data mode selected
                 unless ($found) { pod2usage("ERROR:\t Tissue name '$_' is not found in database. Consult 'tad-interact.pl -d' for more information"); }
                 $tissue .= $_ .",";
             }chop $tissue;
-            $verbose and printerr "NOTICE:\t Tissue(s) selected: $tissue\n";
+            unless ($log) { $verbose and printerr "NOTICE:\t Tissue(s) selected: $tissue\n"; }
         } else {
-            $verbose and printerr "NOTICE:\t Tissue(s) selected: 'all tissue for $organism'\n";
+            unless ($log) { $verbose and printerr "NOTICE:\t Tissue(s) selected: 'all tissue for $organism'\n"; }
             $sth = $dbh->prepare("select tissue from vw_sampleinfo where organism = '$organism' and genes is not null"); #get samples
             $sth->execute or die "SQL Error: $DBI::errstr\n";
             my $tnumber= 0;
@@ -114,14 +118,14 @@ if ($dbdata){ #if db 2 data mode selected
             } chop $tissue;
         } #checking sample options
         my @tissue = split(",", $tissue);
-        $verbose and printerr "NOTICE:\t Gene(s) selected: $gene\n";
+        unless ($log) { $verbose and printerr "NOTICE:\t Gene(s) selected: $gene\n"; }
         my @genes = split(",", $gene);
         foreach my $fgene (@genes){
             $fgene =~ s/^\s+|\s+$//g;
             foreach my $ftissue (@tissue) {
                 @header = ("GENENAME","TISSUE", "MAXIMUM FPKM", "AVERAGE FPKM", "MINIMUMFPKM");
                 $table = Text::TabularDisplay->new( @header );
-                `ibis -d $gfastbit -q 'select genename, max(fpkm), avg(fpkm), min(fpkm) where genename like "%$fgene%" and tissue = "$ftissue" and organism = "$organism"' -o $nosql 2>>$efile`;
+                `$ibis -d $gfastbit -q 'select genename, max(fpkm), avg(fpkm), min(fpkm) where genename like "%$fgene%" and tissue = "$ftissue" and organism = "$organism"' -o $nosql 2>>$efile`;
 				my $found = `head -n 1 $nosql`;
 				if (length($found) > 1) {
 					open(IN,"<",$nosql);
@@ -134,7 +138,7 @@ if ($dbdata){ #if db 2 data mode selected
                         $ARRAYQUERY{$genename}{$ftissue} = [@row];
                     } close (IN); `rm -rf $nosql`;
                 } else {
-                    printerr "NOTICE:\t No Results found with gene '$fgene'\n";
+                    unless ($log) { printerr "NOTICE:\t No Results found with gene '$fgene'\n"; }
                 }
 
         #$syntax = "call usp_gdtissue(\"".$fgene."\",\"".$ftissue."\",\"". $organism."\")";
@@ -173,19 +177,19 @@ if ($dbdata){ #if db 2 data mode selected
                         $table->add(@{$ARRAYQUERY{$a}{$b}});
                     }
                 } 
-                printerr $table-> render, "\n"; #print display
+                unless ($log) { printerr $table-> render, "\n"; }#print display
             }    
-            $verbose and printerr "NOTICE:\t Summary: $count rows in result\n";
-        } else { printerr "\nNOTICE:\t No Results based on search criteria: '$gene' \n"; }
+            unless ($log) { $verbose and printerr "NOTICE:\t Summary: $count rows in result\n"; }
+        } else { unless ($log) { printerr "\nNOTICE:\t No Results based on search criteria: '$gene' \n"; } }
     } #end of avgfpkm module
     
     if ($genexp){ #looking at gene expression per sample
         `mkdir -p tadtmp/`;
         $count = 0;
         #making sure required attributes are specified.
-        $verbose and printerr "TASK:\t Gene Expression (FPKM) information across Samples\n";
+        unless ($log) { $verbose and printerr "TASK:\t Gene Expression (FPKM) information across Samples\n"; }
         unless ($organism){
-            printerr "ERROR:\t Organism option '-species' is not specified\n";
+            unless ($log) { printerr "ERROR:\t Organism option '-species' is not specified\n"; }
             pod2usage("ERROR:\t Details for -genexp are missing. Review 'tad-interact.pl -e' for more information");
         }
         $dbh = mysql($all_details{'MySQL-databasename'}, $all_details{'MySQL-username'}, $all_details{'MySQL-password'}); #connect to mysql
@@ -195,7 +199,7 @@ if ($dbdata){ #if db 2 data mode selected
         $organism =~ s/^\s+|\s+$//g;
         $sth = $dbh->prepare("select organism from Animal where organism = '$organism'");$sth->execute(); $found =$sth->fetch();
         unless ($found) { pod2usage("ERROR:\t Organism name '$organism' is not found in database. Consult 'tad-interact.pl -e' for more information"); }
-        $verbose and printerr "NOTICE:\t Organism selected: $organism\n";
+        unless ($log) { $verbose and printerr "NOTICE:\t Organism selected: $organism\n"; }
         #checking if sample is in the database
         if ($sample) {
             my @sample = split(",", $sample); undef $sample; 
@@ -205,9 +209,9 @@ if ($dbdata){ #if db 2 data mode selected
                 unless ($found) { pod2usage("ERROR:\t Sample ID '$_' is not in the database. Consult 'tad-interact.pl -e' for more information"); }
                 $sample .= $_ .",";
             }chop $sample;
-            $verbose and printerr "NOTICE:\t Sample(s) selected: $sample\n";
+            unless ($log) { $verbose and printerr "NOTICE:\t Sample(s) selected: $sample\n"; }
         } else {
-            $verbose and printerr "NOTICE:\t Sample(s) selected: 'all samples for $organism'\n";
+            unless ($log) { $verbose and printerr "NOTICE:\t Sample(s) selected: 'all samples for $organism'\n"; }
             $sth = $dbh->prepare("select sampleid from vw_sampleinfo where organism = '$organism' and genes is not null"); #get samples
             $sth->execute or die "SQL Error: $DBI::errstr\n";
             my $snumber= 0;
@@ -220,35 +224,54 @@ if ($dbdata){ #if db 2 data mode selected
         @headers = split(",", $sample); 
         $syntax = "select genename, fpkm, sampleid, chrom, start, stop where";
         if ($gene) {
-            $syntax .= " (";
             my @genes = split(",", $gene); undef $gene;
             foreach (@genes){
                 $_ =~ s/^\s+|\s+$//g;
-                $syntax .= " genename like '%$_%' or";
                 $gene .= $_.",";
             } chop $gene;
-            $verbose and printerr "NOTICE:\t Gene(s) selected: '$gene'\n";
-            $syntax = substr($syntax, 0, -2); $syntax .= " ) and";
-        } else {
-            $verbose and printerr "NOTICE:\t Gene(s) selected: 'all genes'\n";
+            unless ($log) { $verbose and printerr "NOTICE:\t Gene(s) selected: '$gene'\n"; }
         }
-        printerr "NOTICE:\t Processing Gene Expression for each library .";
-        foreach (@headers){ 
-            printerr ".";
-            my $newsyntax = $syntax." sampleid = '$_' ORDER BY geneid desc;";
-            #$sth = $dbh->prepare($newsyntax);
-            #$sth->execute or die "SQL Error:$DBI::errstr\n";
+        else {
+            unless ($log) { $verbose and printerr "NOTICE:\t Gene(s) selected: 'all genes'\n"; }
+        }
+        
+        unless ($log) { printerr "NOTICE:\t Processing Gene Expression for each library ."; }
+        foreach my $header (@headers){ 
+            unless ($log) { printerr "."; }
+            my $newsyntax;
+
+            if ($gene) {
+                my @genes = split(",", $gene);
+                foreach (@genes){
+                    $_ =~ s/^\s+|\s+$//g;
+                    $newsyntax = $syntax." genename like '%$_%' and sampleid = '$header' ORDER BY geneid desc;";
+                    `$ibis -d $gfastbit -q "$newsyntax" -o $nosql 2>>$efile`;
+                    
+                    open(IN,"<",$nosql);
+                    while (<IN>){
+                        chomp;
+                        my ($geneid, $fpkm, $library, $chrom, $start, $stop) = split /\, /; 
+                        $geneid =~ s/^'|'$|^"|"$//g; $library =~ s/^'|'$|^"|"$//g; $chrom =~ s/^'|'$|^"|"$//g; #removing quotation marks if applicable
+                        $FPKM{"$geneid|$chrom"}{$library} = $fpkm;
+                        $CHROM{"$geneid|$chrom"} = $chrom;
+                        $POSITION{"$geneid|$chrom"}{$library} = "$start|$stop";
+                    } close (IN); `rm -rf $nosql`;
+                } 
+            } else {
+                $newsyntax = $syntax." sampleid = '$_' ORDER BY geneid desc;";
+                `$ibis -d $gfastbit -q "$newsyntax" -o $nosql 2>>$efile`;
+                
+                open(IN,"<",$nosql);
+                while (<IN>){ 
+                    chomp;
+                    my ($geneid, $fpkm, $library, $chrom, $start, $stop) = split /\, /; 
+                    $geneid =~ s/^'|'$|^"|"$//g; $library =~ s/^'|'$|^"|"$//g; $chrom =~ s/^'|'$|^"|"$//g; #removing quotation marks if applicable
+                    $FPKM{"$geneid|$chrom"}{$library} = $fpkm;
+                    $CHROM{"$geneid|$chrom"} = $chrom;
+                    $POSITION{"$geneid|$chrom"}{$library} = "$start|$stop";
+                } close (IN); `rm -rf $nosql`;
+            }
             
-            `ibis -d $gfastbit -q "$newsyntax" -o $nosql 2>>$efile`;
-            open(IN,"<",$nosql);
-            while (<IN>){
-            	chomp;
-            	my ($geneid, $fpkm, $library, $chrom, $start, $stop) = split /\, /; 
-            	$geneid =~ s/^'|'$|^"|"$//g; $library =~ s/^'|'$|^"|"$//g; $chrom =~ s/^'|'$|^"|"$//g; #removing quotation marks if applicable
-            	$FPKM{"$geneid|$chrom"}{$library} = $fpkm;
-            	$CHROM{"$geneid|$chrom"} = $chrom;
-            	$POSITION{"$geneid|$chrom"}{$library} = "$start|$stop";
-            } close (IN); `rm -rf $nosql`;
 		
             #while (my ($gene_id, $fpkm, $library_id, $chrom, $start, $stop) = $sth->fetchrow_array() ) {
             #    $FPKM{"$gene_id|$chrom"}{$library_id} = $fpkm;
@@ -257,8 +280,10 @@ if ($dbdata){ #if db 2 data mode selected
             #}
             
         } #end foreach extracting information from the database    
-        printerr " Done\n";
-        printerr "NOTICE:\t Processing Results ...";
+        unless ($log) {
+            printerr " Done\n";
+            printerr "NOTICE:\t Processing Results ...";
+        }
         foreach my $newgene (sort keys %CHROM){ #turning the genes into an array
             if ($newgene =~ /^[\d\w]/){ push @genearray, $newgene;}
         }
@@ -274,7 +299,7 @@ if ($dbdata){ #if db 2 data mode selected
         my $command="cat $newfile >> $tmpout"; #path into temporary output
         system($command);
         `rm -rf tadtmp/`; #remove all temporary files
-        printerr " Done\n";
+        unless ($log) { printerr " Done\n"; }
         @header = qw|GENE CHROM|; push @header, @headers;
         $count = `cat $tmpout | wc -l`; chomp $count;
         open my $content,"<",$tmpout; `rm -rf $tmpout`;
@@ -288,10 +313,10 @@ if ($dbdata){ #if db 2 data mode selected
                 close OUT;
             } else {
                 while (<$content>){ chomp;$table->add(split "\t"); }
-                printerr $table-> render, "\n"; #print display
+                unless ($log) { printerr $table-> render, "\n"; }#print display
             }
-            $verbose and printerr "NOTICE:\t Summary: $count rows in result\n";
-        } else { printerr "\nNOTICE:\t No Results based on search criteria \n"; }
+            unless ($log) { $verbose and printerr "NOTICE:\t Summary: $count rows in result\n"; }
+        } else { unless ($log) { printerr "\nNOTICE:\t No Results based on search criteria \n"; } }
     } #end of genexp module
     
     if ($chrvar){ #looking at chromosomal variant distribution
@@ -299,9 +324,9 @@ if ($dbdata){ #if db 2 data mode selected
         undef %SAMPLE; undef %ARRAYQUERY;
         $count = 0;
         #making sure required attributes are specified.
-        $verbose and printerr "TASK:\t Chromosomal Variant Distribution Across Samples\n";
+        unless ($log) { $verbose and printerr "TASK:\t Chromosomal Variant Distribution Across Samples\n"; }
         unless ($organism){
-            printerr "ERROR:\t Organism option '-species' is not specified\n";
+            unless ($log) { printerr "ERROR:\t Organism option '-species' is not specified\n"; }
             pod2usage("ERROR:\t Details for -chrvar are missing. Review 'tad-interact.pl -f' for more information");
         }
         $dbh = mysql($all_details{'MySQL-databasename'}, $all_details{'MySQL-username'}, $all_details{'MySQL-password'}); #connect to mysql
@@ -309,7 +334,7 @@ if ($dbdata){ #if db 2 data mode selected
         $organism =~ s/^\s+|\s+$//g;
         $sth = $dbh->prepare("select organism from Animal where organism = '$organism'");$sth->execute(); $found =$sth->fetch();
         unless ($found) { pod2usage("ERROR:\t Organism name '$organism' is not found in database. Consult 'tad-interact.pl -f' for more information"); }
-        $verbose and printerr "NOTICE:\t Organism selected: $organism\n";
+        unless ($log) { $verbose and printerr "NOTICE:\t Organism selected: $organism\n"; }
         #checking if sample is in the database
         if ($sample) {
             my @sample = split(",", $sample); undef $sample; 
@@ -319,9 +344,9 @@ if ($dbdata){ #if db 2 data mode selected
                 unless ($found) { pod2usage("ERROR:\t Sample ID '$_' is not in the database. Consult 'tad-interact.pl -f' for more information"); }
                 $sample .= $_ .",";
             } chop $sample;
-            $verbose and printerr "NOTICE:\t Sample(s) selected: $sample\n";
+            unless ($log) { $verbose and printerr "NOTICE:\t Sample(s) selected: $sample\n"; }
         } else {
-            $verbose and printerr "NOTICE:\t Sample(s) selected: 'all samples for $organism'\n";
+            unless ($log) { $verbose and printerr "NOTICE:\t Sample(s) selected: 'all samples for $organism'\n"; }
             $sth = $dbh->prepare("select sampleid from vw_sampleinfo where organism = '$organism' and totalvariants is not null"); #get samples
             $sth->execute or die "SQL Error: $DBI::errstr\n";
             my $snumber= 0; undef $sample;
@@ -345,12 +370,12 @@ if ($dbdata){ #if db 2 data mode selected
                     $syntax .= "chrom = '$_' or ";
                     $chromosome .= $_ .",";
                 } $syntax = substr($syntax,0, -3); $syntax .= ") "; chop $chromosome;
-                $verbose and printerr "NOTICE:\t Chromosome(s) selected: $chromosome\n";
+                unless ($log) { $verbose and printerr "NOTICE:\t Chromosome(s) selected: $chromosome\n"; }
             } else {
-                $verbose and printerr "NOTICE:\t Chromosome(s) selected: 'all chromosomes'\n";
+                unless ($log) { $verbose and printerr "NOTICE:\t Chromosome(s) selected: 'all chromosomes'\n"; }
             }
-            my $endsyntax = "group by sampleid, chrom order by sampleid, length(chrom),chrom";
-            my $allsyntax = $syntax.$endsyntax; 
+            my $endsyntax = "group by sampleid, chrom order by sampleid, length(chrom), chrom";
+            my $allsyntax = $syntax.$endsyntax;
             $sth = $dbh->prepare($allsyntax); 
             $sth->execute or die "SQL Error:$DBI::errstr\n";
             my $number = 0;
@@ -401,63 +426,67 @@ if ($dbdata){ #if db 2 data mode selected
                     $outfile = @{ open_unique($output) }[1];
                     open (OUT, ">$outfile") or die "ERROR:\t Output file $output can be not be created\n";
                     print OUT join("\t", @header),"\n";
-                    foreach (sort keys %ARRAYQUERY) { print OUT join("\t",@{$ARRAYQUERY{$_}}), "\n"; }
+                    foreach (sort {$a <=> $b} keys %ARRAYQUERY) { print OUT join("\t",@{$ARRAYQUERY{$_}}), "\n"; }
                     close OUT;
                 } else {
-                    printerr $table-> render, "\n"; #print display
+                    unless ($log) { printerr $table-> render, "\n"; } #print display
                 }
-                $verbose and printerr "NOTICE:\t Summary: $count rows in result\n";
-            } else { printerr "\nNOTICE:\t No Results based on search criteria \n"; }
-        } else { printerr "\nNOTICE:\t No Results based on search criteria \n"; }
+                unless ($log) { $verbose and printerr "NOTICE:\t Summary: $count rows in result\n"; }
+            } else { unless ($log) { printerr "\nNOTICE:\t No Results based on search criteria \n"; } }
+        } else { unless ($log) { printerr "\nNOTICE:\t No Results based on search criteria \n"; } }
     } #end of chrvar module
     
     if ($varanno){ #looking at variants 
         undef %SAMPLE; undef %ARRAYQUERY; undef $status;
         $count = 0;
         #making sure required attributes are specified.
-        $verbose and printerr "TASK:\t Associated Variant Annotation Information\n";
+        unless ($log) { $verbose and printerr "TASK:\t Associated Variant Annotation Information\n"; }
         unless ($organism){
-            printerr "ERROR:\t Organism option '-species' is not specified\n";
+            unless ($log) { printerr "ERROR:\t Organism option '-species' is not specified\n"; }
             pod2usage("ERROR:\t Details for -varanno are missing. Review 'tad-interact.pl' for more information");
         }
-        if ($gene) { $verbose and printerr "SUBTASK: Gene-associated Variants with Annotation Information\n"; }
-        if ($chromosome) { $verbose and printerr "SUBTASK: Chromosomal region-associated Variants and Annotation Information\n"; }
+        unless ($log) {
+            if ($gene) { $verbose and printerr "SUBTASK: Gene-associated Variants with Annotation Information\n"; }
+            if ($chromosome) { $verbose and printerr "SUBTASK: Chromosomal region-associated Variants and Annotation Information\n"; }
+        }
         $dbh = mysql($all_details{'MySQL-databasename'}, $all_details{'MySQL-username'}, $all_details{'MySQL-password'}); #connect to mysql
         $fastbit = fastbit($all_details{'FastBit-path'}, $all_details{'FastBit-foldername'});  #connect to fastbit
         my $vfastbit = $fastbit."/variant-information";
         $organism =~ s/^\s+|\s+$//g;
         $sth = $dbh->prepare("select organism from Animal where organism = '$organism'");$sth->execute(); $found =$sth->fetch();
         unless ($found) { pod2usage("ERROR:\t Organism name '$organism' is not found in database. Consult 'tad-interact.pl -f' for more information"); }
-        $verbose and printerr "NOTICE:\t Organism selected: $organism\n";
+        unless ($log) { $verbose and printerr "NOTICE:\t Organism selected: $organism\n"; }
         my $number = 0;
         $sth = $dbh->prepare("select group_concat(distinct a.nosql) from VarSummary a join vw_sampleinfo b on a.sampleid = b.sampleid where b.organism = '$organism' and a.nosql is not null group by a.nosql");$sth->execute(); $found =$sth->fetch();
         unless ($found) {
             $vcfsyntax = "select sampleid, chrom, position, refallele, altallele, quality, consequence, genename, geneid, feature, transcript, genetype, proteinposition, aachange, codonchange, dbsnpvariant, variantclass, zygosity, tissue from vw_vvcf where organism='$organism'";
         } else {
-            $syntax = "ibis -d $vfastbit -q \"select chrom,position,refallele,altallele,variantclass,consequence,group_concat(genename),group_concat(dbsnpvariant), group_concat(sampleid) where organism='$organism'";
-            $vcfsyntax = "ibis -d $vfastbit -q \"select sampleid, chrom, position, quality, proteinposition, refallele, altallele, consequence, genename, geneid, feature, transcript, genetype, aachange,  codonchange, dbsnpvariant, variantclass, zygosity, tissue where organism='$organism'";
+            $syntax = "$ibis -d $vfastbit -q \"select chrom,position,refallele,altallele,variantclass,consequence,group_concat(genename),group_concat(dbsnpvariant), group_concat(sampleid) where organism='$organism'";
+            $vcfsyntax = "$ibis -d $vfastbit -q \"select sampleid, chrom, position, quality, proteinposition, refallele, altallele, consequence, genename, geneid, feature, transcript, genetype, aachange,  codonchange, dbsnpvariant, variantclass, zygosity, tissue where organism='$organism'";
         } #the toggle between mysql and fastbit
         unless ($gene) {
             if ($chromosome){
                 my ($start, $stop) = (0,0);
                 my @chromosomes = split(",", $chromosome); undef $chromosome;
                 foreach (@chromosomes){ $_ =~ s/^\s+|\s+$//g; $chromosome .= $_.","; } chop $chromosome;
-                $verbose and printerr "NOTICE:\t Chromosome(s) selected: '$chromosome'\n";
+                unless ($log) { $verbose and printerr "NOTICE:\t Chromosome(s) selected: '$chromosome'\n"; }
                 $chrheader = $chromosome;
                 if ($#chromosomes == 0) {
                     if ($region){
+                        $syntax .= " and chrom = '$chromosomes[0]'";
+                        $vcfsyntax .= " and chrom = '$chromosomes[0]'";
                         if ($region =~ /\-/) {
                             ($start, $stop) = split("-", $region);
                             $syntax .= " and position between $start and $stop";
                             $vcfsyntax .= " and position between $start and $stop";
                             $chrheader .= ":$start\-$stop";
-                            $verbose and printerr "NOTICE:\t Region: between $start and $stop\n";
+                            unless ($log) { $verbose and printerr "NOTICE:\t Region: between $start and $stop\n"; }
                         } else {
                             $start = $region-1500; $stop = $region+1500;
                             $syntax .= " and position between ". $start." and ". $stop;
                             $vcfsyntax .= " and position between ". $start." and ". $stop;
                             $chrheader .= ":$start\-$stop";
-                            $verbose and printerr "NOTICE:\t Region: 3000bp region of $region\n";
+                            unless ($log) { $verbose and printerr "NOTICE:\t Region: 3000bp region of $region\n"; }
                         }
                         unless ($found) { # if no nosql output
                             $syntax = "call usp_vchrposition(\"".$organism."\",\"".$chromosomes[0]."\",\"".$start."\",\"".$stop."\")";
@@ -469,7 +498,7 @@ if ($dbdata){ #if db 2 data mode selected
                                 if ($row[5] =~ /^-/){ $row[5] = ''; }
                                 $SAMPLE{$row[0]}{$row[1]}{$row[5]} = [@row];
                             }
-                            unless ($newcount > 0) { printerr "NOTICE:\t No variants are associated with chromosomal region '$chrheader'\n"; } #if gene is in the database     
+                            unless ($log) { unless ($newcount > 0) { printerr "NOTICE:\t No variants are associated with chromosomal region '$chrheader'\n"; } } #if gene is in the database     
                         }
                     } #end if region
                     else { # if only one chromosome is specified and no region
@@ -483,7 +512,7 @@ if ($dbdata){ #if db 2 data mode selected
                                 if ($row[5] =~ /^-/){ $row[5] = ''; }
                                 $SAMPLE{$row[0]}{$row[1]}{$row[5]} = [@row];
                             }
-                            unless ($newcount > 0) { printerr "NOTICE:\t No variants are associated with chromosome '$chromosomes[0]'\n"; } #if gene is in the database     
+                            unless ($log) { unless ($newcount > 0) { printerr "NOTICE:\t No variants are associated with chromosome '$chromosomes[0]'\n"; } } #if gene is in the database     
                         } else {
                             $syntax .= " and chrom = '$chromosomes[0]'";
                             $vcfsyntax .= " and chrom = '$chromosomes[0]'";
@@ -505,7 +534,7 @@ if ($dbdata){ #if db 2 data mode selected
                                 if ($row[5] =~ /^-/){ $row[5] = ''; }
                                 $SAMPLE{$row[0]}{$row[1]}{$row[5]} = [@row];
                             }
-                            unless ($newcount > 0) { printerr "NOTICE:\t No variants are associated with chromosome '$_'\n"; } #if gene is in the database     
+                            unless ($log) { unless ($newcount > 0) { printerr "NOTICE:\t No variants are associated with chromosome '$_'\n"; } } #if gene is in the database     
                         }
                         $vcfsyntax .= "chrom = '$_' or ";
                     }
@@ -514,7 +543,7 @@ if ($dbdata){ #if db 2 data mode selected
                 }
             } #end if chromosome
             else {
-                $verbose and printerr "NOTICE:\t Chromosome(s) selected: 'all chromosomes'\n"; $chrheader="all chromosomes";
+                unless ($log) { $verbose and printerr "NOTICE:\t Chromosome(s) selected: 'all chromosomes'\n"; $chrheader="all chromosomes"; }
                 unless ($found){
                     $syntax = "call usp_vall(\"".$organism."\")";
                     $sth = $dbh->prepare($syntax);
@@ -579,7 +608,7 @@ if ($dbdata){ #if db 2 data mode selected
         else {
             my @genes = split(",", $gene); undef $gene;
             foreach (@genes){ $_ =~ s/^\s+|\s+$//g; $gene .= $_.","; } chop $gene;
-            $verbose and printerr "NOTICE:\t Gene(s) selected: '$gene'\n";
+            unless ($log) { $verbose and printerr "NOTICE:\t Gene(s) selected: '$gene'\n"; }
             foreach my $subgene (@genes) {
                 if ($found) { 
                     my $gsyntax = $syntax." and genename like '%".uc($subgene)."%'\" -o $nosql";
@@ -589,7 +618,7 @@ if ($dbdata){ #if db 2 data mode selected
                     else {
                         foreach (@nosqlcontent) {
                             chomp; $count++;
-                             $syntax = "ibis -d $vfastbit -q \"select chrom,position,refallele,altallele,variantclass,consequence,group_concat(genename),group_concat(dbsnpvariant), group_concat(sampleid) where organism='$organism'";
+                             $syntax = "$ibis -d $vfastbit -q \"select chrom,position,refallele,altallele,variantclass,consequence,group_concat(genename),group_concat(dbsnpvariant), group_concat(sampleid) where organism='$organism'";
                             my @arraynosqlA = split (",",$_,3); foreach (@arraynosqlA[0..1]) { $_ =~ s/"//g;}
                             my @arraynosqlB = split("\", \"", $arraynosqlA[2]); foreach (@arraynosqlB) { $_ =~ s/"//g ; $_ =~ s/NULL/-/g;}
                             push my @row, @arraynosqlA[0..1], @arraynosqlB[0..3], join(",", uniq(sort(split(", ", $arraynosqlB[4])))) , join(",", uniq(sort(split(", ", $arraynosqlB[5])))), join (",", uniq(sort(split (", ", $arraynosqlB[6]))));
@@ -605,7 +634,7 @@ if ($dbdata){ #if db 2 data mode selected
                          $count++; $newcount++;
                         $SAMPLE{$subgene}{$row[0]}{$row[1]}{$row[5]} = [@row];
                     }
-                    unless ($newcount > 0) { printerr "NOTICE:\t No variants are associated with gene '$subgene'\n"; } #if gene is in the database
+                    unless ($log) { unless ($newcount > 0) { printerr "NOTICE:\t No variants are associated with gene '$subgene'\n"; } }#if gene is in the database
                 } #if not in nosql
             }
             foreach my $aa (keys %SAMPLE){ #getting content to output
@@ -619,7 +648,6 @@ if ($dbdata){ #if db 2 data mode selected
                 }
             } #end parsing the results to arrayquery
         } #end if gene
-        
         @header = qw(Chrom Position Refallele Altallele Variantclass Consequence Genename Dbsnpvariant Sampleid);
         tr/a-z/A-Z/ for @header;
         $table = Text::TabularDisplay->new(@header); #header
@@ -658,26 +686,29 @@ if ($dbdata){ #if db 2 data mode selected
                 foreach my $a (sort {$a <=> $b} keys %ARRAYQUERY){
                     $table->add(@{$ARRAYQUERY{$a}});
                 }
-                printerr $table-> render, "\n"; #print display
+                unless ($log) { printerr $table-> render, "\n"; }#print display
             }    
-            $verbose and printerr "NOTICE:\t Summary: $count rows in result\n";
-        } else { printerr "\nNOTICE:\t No Results based on search criteria \n"; }
+            unless ($log) { $verbose and printerr "NOTICE:\t Summary: $count rows in result\n"; }
+        } else { unless ($log) { printerr "\nNOTICE:\t No Results based on search criteria \n"; } }
     } #end of varanno module
 } #end of db2data module
 #output: the end
-printerr "-----------------------------------------------------------------\n";
-printerr $status;
-unless ($count == 0) { if ($output) { printerr "NOTICE:\t Successful export of user report to '$outfile'\n"; } }
-printerr ("NOTICE:\t Summary in log file $efile\n");
-printerr "-----------------------------------------------------------------\n";
-print LOG "TransAtlasDB Completed:\t", scalar(localtime),"\n";
-close (LOG);
-
+unless ($log) { 
+    printerr "-----------------------------------------------------------------\n";
+    printerr $status;
+    unless ($count == 0) { if ($output) { printerr "NOTICE:\t Successful export of user report to '$outfile'\n"; } }
+    printerr ("NOTICE:\t Summary in log file $efile\n");
+    printerr "-----------------------------------------------------------------\n";
+    print LOG "TransAtlasDB Completed:\t", scalar(localtime),"\n";
+    close (LOG);
+} else {
+    `rm -rf $efile`;
+}
 #--------------------------------------------------------------------------------
 
 sub processArguments {
     my @commandline = @ARGV;
-  GetOptions('verbose|v'=>\$verbose, 'help|h'=>\$help, 'man|m'=>\$man, 'query=s'=>\$query, 'db2data'=>\$dbdata, 'o|output'=>\$output,
+  GetOptions('verbose|v'=>\$verbose, 'help|h'=>\$help, 'man|m'=>\$man, 'query=s'=>\$query, 'db2data'=>\$dbdata, 'o|output'=>\$output,'w'=>\$log,
                          'avgfpkm'=>\$avgfpkm, 'gene=s'=>\$gene, 'tissue=s'=>\$tissue, 'species=s'=>\$organism, 'genexp'=>\$genexp,'vcf'=>\$vcf,
                          'samples|sample=s'=>\$sample, 'chrvar'=>\$chrvar, 'chromosome=s'=>\$chromosome, 'varanno'=>\$varanno,'region=s'=>\$region) or pod2usage ();
 
@@ -695,22 +726,25 @@ sub processArguments {
     if ($output) {
         @ARGV==1 or pod2usage("ERROR:\t Syntax error. Specify the output filename");
         $output = $ARGV[0];
-        $output = fileparse($output, qr/\.[^.]*(\..*)?$/).".txt";
-        $output = fileparse($output, qr/\.[^.]*(\..*)?$/).".vcf" if ($vcf);
+        my ($base,$path) = fileparse($output,qr{\.\S+});
+        $output = $path.$base."\.txt";
+        $output = $path.$base."\.vcf" if ($vcf);
     }
     
   $verbose ||=0;
   my $get = dirname(abs_path $0); #get source path
   $connect = $get.'/.connect.txt';
   #setup log file
-    $efile = @{ open_unique("db.tad_status.log") }[1];
+    $efile = @{ open_unique("db.tad_status.log") }[1]; `rm -rf $efile`;
     $tmpout = @{ open_unique(".export.txt") }[1]; `rm -rf $tmpout`;
     $nosql = @{ open_unique(".nosqlexport.txt") }[1]; `rm -rf $nosql`;
-  open(LOG, ">>", $efile) or die "\nERROR:\t cannot write LOG information to log file $efile $!\n";
-  print LOG "TransAtlasDB Version:\t",$VERSION,"\n";
-  print LOG "TransAtlasDB Information:\tFor questions, comments, documentation, bug reports and program update, please visit $default \n";
-  print LOG "TransAtlasDB Command:\t $0 @commandline\n";
-  print LOG "TransAtlasDB Started:\t", scalar(localtime),"\n";
+  unless ($log) {
+    open(LOG, ">>", $efile) or die "\nERROR:\t cannot write LOG information to log file $efile $!\n";
+    print LOG "TransAtlasDB Version:\t",$VERSION,"\n";
+    print LOG "TransAtlasDB Information:\tFor questions, comments, documentation, bug reports and program update, please visit $default \n";
+    print LOG "TransAtlasDB Command:\t $0 @commandline\n";
+    print LOG "TransAtlasDB Started:\t", scalar(localtime),"\n";
+  }
 }
 
 sub main {

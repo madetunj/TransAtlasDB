@@ -1,14 +1,18 @@
 #package CC::Create;
 use strict;
 use Cwd qw(abs_path);
-use lib dirname(abs_path $0) . '/lib/lib/perl5/darwin-thread-multi-2level';
 use DBD::mysql;
 use IO::File;
 
-
 sub DEFAULTS {
-  my $default = "https://github.com/modupeore/TAD";
+  my $default = "https://github.com/modupeore/TransAtlasDB";
   return $default;
+}
+
+sub fastbit_name {
+  my $ibis = `which ibis`; $ibis = &clean($ibis);
+  my $ardea = `which ardea`; $ardea = &clean($ardea);
+  return $ibis, $ardea;
 }
 
 sub clean {
@@ -21,6 +25,7 @@ sub mysql_create {
   my $dbh = DBI -> connect($dsn, $_[1], $_[2]) or die "Connection Error: $DBI::errstr\n";
   return $dbh;
 }
+
 sub mysql {
   my $dsn = 'dbi:mysql:database='.$_[0].';host=localhost;port=3306';
   my $dbh = DBI -> connect($dsn, $_[1], $_[2]) or die "\nConnection Error: Database $_[0] doesn't exist. Run 'INSTALL-tad.pL' first\n";
@@ -34,7 +39,7 @@ sub fastbit {
 
 sub connection {
   our %DBS = ("MySQL", 1,"FastBit", 2,);
-  our %interest = ("username", 1, "password", 2, "databasename", 3, "path", 4, "foldername", 5);
+  our %interest = ("username", 1, "password", 2, "databasename", 3, "path", 4, "foldername", 5, "ibis", 6, "ardea", 7);
   my %ALL;
   open (CONTENT, $_[0]) or die "Error: Can't open connection file. Run 'connect-tad.pL'\n"; 
   my @contents = <CONTENT>; close (CONTENT);

@@ -17,7 +17,7 @@ our $AUTHOR= '$ Author:Modupe Adetunji <amodupe@udel.edu> $';
 
 #--------------------------------------------------------------------------------
 
-our ($verbose, $efile, $help, $man, $nosql, $vnosql, $gnosql, $transaction);
+our ($verbose, $efile, $help, $man, $nosql, $vnosql, $gnosql, $log, $transaction);
 our ($metadata, $tab, $excel, $datadb, $gene, $variant, $all, $vep, $annovar, $delete); #command options
 our ($file2consider,$connect); #connection and file details
 my ($sth,$dbh,$schema); #connect to database;
@@ -47,31 +47,35 @@ my $date = `date +%Y-%m-%d`;
 #--------------------------------------------------------------------------------
 
 sub printerr; #declare error routine
+our ($ibis, $ardea) = fastbit_name(); #ibis and ardea location
 our $default = DEFAULTS(); #default error contact
 processArguments(); #Process input
 
 my %all_details = %{connection($connect, $default)}; #get connection details
+if (length($ibis) < 1){ ($ibis, $ardea) = ($all_details{'FastBit-ibis'}, $all_details{'FastBit-ardea'}); } #alternative for ibis and ardea location 
+
 
 #PROCESSING METADATA
 if ($metadata){
 	$dbh = mysql($all_details{'MySQL-databasename'}, $all_details{'MySQL-username'}, $all_details{'MySQL-password'}); #connect to mysql
   	if ($tab) { #unix tab delimited file
-    		printerr "JOB:\t Importing Sample Information from tab-delimited file => $file2consider\n"; #status
-	    	my %filecontent = %{ tabcontent($file2consider) }; #get content from tab-delimited file
-    		foreach my $row (sort keys %filecontent){
-	      		if (exists $filecontent{$row}{'sample name'}) { #sample name
+		printerr "JOB:\t Importing Sample Information from tab-delimited file => $file2consider\n"; #status
+		my %filecontent = %{ tabcontent($file2consider) }; #get content from tab-delimited file
+		foreach my $row (sort keys %filecontent){
+			if (exists $filecontent{$row}{'sample name'}) { #sample name
 				my $sheetid = "$filecontent{$row}{'first name'} $filecontent{$row}{'middle initial'} $filecontent{$row}{'last name'}"; #scientist name
 				if (length $sheetid > 3) { #Person Name 
-	  				$sth = $dbh->prepare("select personid from Person where personid = '$sheetid'"); $sth->execute(); $found = $sth->fetch();
-		  			unless ($found) { # if person is not in the database
-		    				$sth = $dbh->prepare("insert into Person (personid, firstname, lastname, middleinitial) values (?,?,?,?)");
-	    					$sth->execute($sheetid, $filecontent{$row}{'first name'}, $filecontent{$row}{'last name'}, $filecontent{$row}{'middle initial'}) or die "\nERROR:\t Complication in Person table\n";
+					$sth = $dbh->prepare("select personid from Person where personid = '$sheetid'"); $sth->execute(); $found = $sth->fetch();
+					unless ($found) { # if person is not in the database
+						$sth = $dbh->prepare("insert into Person (personid, firstname, lastname, middleinitial) values (?,?,?,?)");
+						$sth->execute($sheetid, $filecontent{$row}{'first name'}, $filecontent{$row}{'last name'}, $filecontent{$row}{'middle initial'}) or die "\nERROR:\t Complication in Person table\n";
 					}
 					$NAME{$sheetid} = $sheetid;
 				} else {
 					undef $sheetid;
 				}
-				$sheetid = $filecontent{$row}{'organization name'}; #organization name
+				$sheetid = $filecontent{$row}{'organization'}; #organization name
+				print $sheetid;
 				if ($sheetid) { #Organization Name
 					$sth = $dbh->prepare("select organizationname from Organization where organizationname = '$sheetid'"); $sth->execute(); $found = $sth->fetch();
 					unless ($found) { # if person is not in the database
@@ -126,6 +130,20 @@ if ($metadata){
 					printerr "Duplicate: SampleID '$sheetid' already exists in Sample table. Moving on.\n";
 					printerr "Optional: To delete $sheetid ; Execute: tad-import.pl -delete $sheetid\n";
 				}
+				foreach (keys %NAME) {
+					$sth = $dbh->prepare("select sampleid, personid from SamplePerson where sampleid = '$sheetid' and personid = '$_'"); $sth->execute(); $found =$sth->fetch();
+					unless ($found) { # if sample-person is not in the database
+						$sth = $dbh->prepare("insert into SamplePerson (sampleid, personid) values (?,?)");
+						$sth->execute($sheetid, $_) or die "\nERROR:\t Complication in SamplePerson table\n";
+					}
+				}
+				foreach (keys %ORGANIZATION) {
+					$sth = $dbh->prepare("select sampleid, organizationname from SampleOrganization where sampleid = '$sheetid' and organizationname = '$_'"); $sth->execute(); $found =$sth->fetch();
+					unless ($found) { # if sample-organization is not in the database
+						$sth = $dbh->prepare("insert into SampleOrganization (sampleid, organizationname) values (?,?)");
+						$sth->execute($sheetid, $_) or die "\nERROR:\t Complication in SampleOrganization table\n";
+					}
+				}		
 			} else {
 				pod2usage("\nFAILED:\t Error in tab-delimited file \"$file2consider\".\n\tCheck => ROW: $row, COLUMN: \"Sample Name\"");
 			} #end of if sample name is real
@@ -594,13 +612,13 @@ if ($datadb) {
   	} #end if data in sample table
 }
 if ($delete){ #delete section
-	my (%KEYDELETE);
+	my (%KEYDELETE, $decision);
 	my ($i,$alldelete) = (0,0);
-	printerr "JOB:\t Deleting Existing Records in Database\n"; #status
+	unless ($log) { printerr "JOB:\t Deleting Existing Records in Database\n"; } #status
 	$dbh = mysql($all_details{'MySQL-databasename'}, $all_details{'MySQL-username'}, $all_details{'MySQL-password'}); #connect to mysql
   	$sth = $dbh->prepare("select sampleid from Sample where sampleid = '$delete'"); $sth->execute(); $found = $sth->fetch();
 	if ($found) {
-		printerr "NOTICE:\t This module deletes records from ALL database systems for TransAtlasDB. Proceed with caution\n";
+		unless ($log) { printerr "NOTICE:\t This module deletes records from ALL database systems for TransAtlasDB. Proceed with caution\n"; }
 		$sth = $dbh->prepare("select sampleid from Sample where sampleid = '$delete'"); $sth->execute(); $found =$sth->fetch();
     		if ($found) {
 			$i++; $KEYDELETE{$i} = "Sample Information";
@@ -617,14 +635,18 @@ if ($delete){ #delete section
     		if ($found) {
 			$i++; $KEYDELETE{$i} = "Variant Information";
 		}
-		print "--------------------------------------------------------------------------\n";
+		unless ($log) {
+			print "--------------------------------------------------------------------------\n";
     		print "The following details match the sampleid '$delete' provided\n";
     		foreach (sort {$a <=> $b} keys %KEYDELETE) { print "  ", uc($_),"\.  $KEYDELETE{$_}\n";}
+		}
 		$KEYDELETE{0} = "ALL information relating to '$delete'";
-		print "  0\.  ALL information relating to '$delete'\n";
-		print "--------------------------------------------------------------------------\n";
-		print "Choose which information you want remove (multiple options separated by comma) or press ENTER to leave ? ";
-		chomp (my $decision = (<>)); print "\n";
+		unless ($log) {
+			print "  0\.  ALL information relating to '$delete'\n";
+			print "--------------------------------------------------------------------------\n";
+			print "Choose which information you want remove (multiple options separated by comma) or press ENTER to leave ? ";
+			chomp ($decision = (<>)); print "\n";
+		} else {$decision = $log; }
 		if (length $decision >0) {
 			my @allverdict = split(",",$decision);
 			foreach my $verdict (sort {$b<=>$a} @allverdict) {
@@ -640,9 +662,10 @@ if ($delete){ #delete section
 								$sth = $dbh->prepare("delete from VarAnnotation where sampleid = '$delete'"); $sth->execute(); printerr ".";
 								$sth = $dbh->prepare("delete from VarResult where sampleid = '$delete'"); $sth->execute(); printerr ".";
 								$sth = $dbh->prepare("delete from VarSummary where sampleid = '$delete'"); $sth->execute(); printerr ".";
-								my $execute = "ibis -d $vfastbit -y \"sampleid = '$delete'\" -z";
+								my $execute = "$ibis -d $vfastbit -y \"sampleid = '$delete'\" -z";
 								`$execute 2>> $efile`; printerr ".";
 								`rm -rf $vfastbit/*sp $vfastbit/*old $vfastbit/*idx $vfastbit/*dic $vfastbit/*int `; #removing old indexes
+								`ibis -d $vfastbit -query "select genename, sampleid, chrom, tissue, organism, consequence, dbsnpvariant" 2>> $efile`; #create a new index based on genename
 								printerr " Done\n";
 							}
 						} else {
@@ -652,9 +675,10 @@ if ($delete){ #delete section
 							$sth = $dbh->prepare("delete from VarAnnotation where sampleid = '$delete'"); $sth->execute(); printerr ".";
 							$sth = $dbh->prepare("delete from VarResult where sampleid = '$delete'"); $sth->execute(); printerr ".";
 							$sth = $dbh->prepare("delete from VarSummary where sampleid = '$delete'"); $sth->execute(); printerr ".";
-							my $execute = "ibis -d $vfastbit -y \"sampleid = '$delete'\" -z";
+							my $execute = "$ibis -d $vfastbit -y \"sampleid = '$delete'\" -z";
 							`$execute 2>> $efile`; printerr ".";
 							`rm -rf $vfastbit/*sp $vfastbit/*old $vfastbit/*idx $vfastbit/*dic $vfastbit/*int `; #removing old indexes
+							`ibis -d $vfastbit -query "select genename, sampleid, chrom, tissue, organism, consequence, dbsnpvariant" 2>> $efile`; #create a new index based on genename
 							printerr " Done\n";
 						}
 					}
@@ -665,12 +689,12 @@ if ($delete){ #delete section
 								my $gfastbit = $ffastbit."/gene-information"; # specifying the gene section.
 								
 								printerr "NOTICE:\t Deleting records for $delete in Gene tables ";
-								$sth = $dbh->prepare("delete from GenesFpkm where sampleid = '$delete'"); $sth->execute(); printerr ".";
 								$sth = $dbh->prepare("delete from GeneStats where sampleid = '$delete'"); $sth->execute(); printerr ".";
 								
-								my $execute = "ibis -d $gfastbit -y \"sampleid = '$delete'\" -z";
+								my $execute = "$ibis -d -v $gfastbit -y \"sampleid = '$delete'\" -z";
 								`$execute 2>> $efile`; printerr ".";
 								`rm -rf $gfastbit/*sp $gfastbit/*old $gfastbit/*idx $gfastbit/*dic $gfastbit/*int `; #removing old indexes
+								`ibis -d $gfastbit -query "select genename, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 								printerr " Done\n";
 							}
 						} else {
@@ -678,12 +702,12 @@ if ($delete){ #delete section
 							my $gfastbit = $ffastbit."/gene-information"; # specifying the gene section.
 							
 							printerr "NOTICE:\t Deleting records for $delete in Gene tables ";
-							$sth = $dbh->prepare("delete from GenesFpkm where sampleid = '$delete'"); $sth->execute(); printerr ".";
 							$sth = $dbh->prepare("delete from GeneStats where sampleid = '$delete'"); $sth->execute(); printerr ".";
 							
-							my $execute = "ibis -d $gfastbit -y \"sampleid = '$delete'\" -z";
+							my $execute = "$ibis -d -v $gfastbit -y \"sampleid = '$delete'\" -z";
 							`$execute 2>> $efile`; printerr ".";
 							`rm -rf $gfastbit/*sp $gfastbit/*old $gfastbit/*idx $gfastbit/*dic $gfastbit/*int `; #removing old indexes
+							`ibis -d $gfastbit -query "select genename, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 							printerr " Done\n";
 						}
 					}
@@ -759,28 +783,30 @@ if ($delete){ #delete section
 	}
 }
 #output: the end
-printerr "-----------------------------------------------------------------\n";
-if ($metadata){
-  	printerr ("SUCCESS: Import of Sample Information in \"$file2consider\"\n");
-} #end if complete RNASeq metadata
-if ($datadb){
-  	printerr ("SUCCESS: Import of RNA Seq analysis information in \"$file2consider\"\n");
-} #end if completed RNASeq data2db
-printerr $additional;
-$transaction = "data to database import" if $datadb;
-$transaction = "METADATA IMPORT(s)" if $metadata;
-$transaction = "DELETE '$delete' activity" if $delete;
-printerr ("NOTICE:\t Summary of $transaction in log file $efile\n");
-printerr "-----------------------------------------------------------------\n";
-print LOG "TransAtlasDB Completed:\t", scalar(localtime),"\n";
-close (LOG);
+unless ($log) {
+	printerr "-----------------------------------------------------------------\n";
+	if ($metadata){
+	  	printerr ("SUCCESS: Import of Sample Information in \"$file2consider\"\n");
+	} #end if complete RNASeq metadata
+	if ($datadb){
+	  	printerr ("SUCCESS: Import of RNA Seq analysis information in \"$file2consider\"\n");
+	} #end if completed RNASeq data2db
+	printerr $additional;
+	$transaction = "data to database import" if $datadb;
+	$transaction = "METADATA IMPORT(s)" if $metadata;
+	$transaction = "DELETE '$delete' activity" if $delete;
+	printerr ("NOTICE:\t Summary of $transaction in log file $efile\n");
+	printerr "-----------------------------------------------------------------\n";
+	print LOG "TransAtlasDB Completed:\t", scalar(localtime),"\n";
+	close (LOG);
+} else { `rm -rf $efile`; }
 #--------------------------------------------------------------------------------
 
 sub processArguments {
 	my @commandline = @ARGV;
   	GetOptions('verbose|v'=>\$verbose, 'help|h'=>\$help, 'man|m'=>\$man, 'metadata'=>\$metadata,
 		'data2db'=>\$datadb, 'gene'=>\$gene, 'variant'=>\$variant, 'all'=>\$all, 'vep'=>\$vep,
-		'annovar'=>\$annovar, 't|tab'=>\$tab, 'x|excel'=>\$excel, 'delete=s'=>\$delete ) or pod2usage ();
+		'annovar'=>\$annovar, 't|tab'=>\$tab, 'x|excel'=>\$excel, 'w=s'=>\$log, 'delete=s'=>\$delete ) or pod2usage ();
 
 	$help and pod2usage (-verbose=>1, -exitval=>1, -output=>\*STDOUT);
   	$man and pod2usage (-verbose=>2, -exitval=>1, -output=>\*STDOUT);  
@@ -797,15 +823,17 @@ sub processArguments {
 	my $get = dirname(abs_path $0); #get source path
 	$connect = $get.'/.connect.txt';
 	#setup log file
-	$efile = @{ open_unique("db.tad_status.log") }[1];
+	$efile = @{ open_unique("db.tad_status.log") }[1]; `rm -rf $efile`;
 	$nosql = @{ open_unique(".nosqlimport.txt") }[1]; `rm -rf $nosql`;
 	$vnosql = @{ open_unique(".nosqlvimport.txt") }[1]; `rm -rf $vnosql`;
 	$gnosql = @{ open_unique(".nosqlgimport.txt") }[1]; `rm -rf $gnosql`;
-	open(LOG, ">>", $efile) or die "\nERROR:\t cannot write LOG information to log file $efile $!\n";
-	print LOG "TransAtlasDB Version:\t",$VERSION,"\n";
-	print LOG "TransAtlasDB Information:\tFor questions, comments, documentation, bug reports and program update, please visit $default \n";
-	print LOG "TransAtlasDB Command:\t $0 @commandline\n";
-	print LOG "TransAtlasDB Started:\t", scalar(localtime),"\n";
+	unless ($log) {
+		open(LOG, ">>", $efile) or die "\nERROR:\t cannot write LOG information to log file $efile $!\n";
+		print LOG "TransAtlasDB Version:\t",$VERSION,"\n";
+		print LOG "TransAtlasDB Information:\tFor questions, comments, documentation, bug reports and program update, please visit $default \n";
+		print LOG "TransAtlasDB Command:\t $0 @commandline\n";
+		print LOG "TransAtlasDB Started:\t", scalar(localtime),"\n";
+	}
 }
 
 sub LOGFILE { #subroutine for getting metadata
@@ -894,8 +922,8 @@ sub GENES_FPKM { #subroutine for getting gene information
 	$sth = $dbh->prepare("select status from GeneStats where sampleid = '$_[0]' and status ='done'"); $sth->execute(); $found = $sth->fetch();
 	unless ($found) {
 		my $ffastbit = fastbit($all_details{'FastBit-path'}, $all_details{'FastBit-foldername'});  #connect to fastbit
-		my $gfastbit = $ffastbit."/gene-information"; # specifying the variant section.
-		`ibis -d $gfastbit -q 'select count(sampleid) where sampleid = "$_[0]"' -o $nosql 2>>$efile`;
+		my $gfastbit = $ffastbit."/gene-information"; # specifying the gene section.
+		`$ibis -d $gfastbit -q 'select count(sampleid) where sampleid = "$_[0]"' -o $nosql 2>>$efile`;
 		open(IN,"<",$nosql);
 		no warnings;
 		chomp($genecount = <IN>);
@@ -915,7 +943,7 @@ sub GENES_FPKM { #subroutine for getting gene information
 				unless ($genecount == 0 ) {
 					$verbose and printerr "NOTICE:\t Removed incomplete records for $_[0] in GenesFpkm table\n";
 		      # $sth = $dbh->prepare("delete from GenesFpkm where sampleid = '$_[0]'"); $sth->execute();
-					`ibis -d $gfastbit -y \"sampleid = '$delete'\" -z 2>> $efile`;
+					`$ibis -d $gfastbit -y \"sampleid = '$delete'\" -z 2>> $efile`;
 					`rm -rf $gfastbit/*sp $gfastbit/*old $gfastbit/*idx $gfastbit/*dic $gfastbit/*int `; #removing old indexes
 				}
 				printerr "NOTICE:\t Importing $diffexpress expression information for $_[0] to GenesFpkm table ...";
@@ -931,7 +959,7 @@ sub GENES_FPKM { #subroutine for getting gene information
 						if($coverage =~ /-/){$coverage = 0;} if (length $gene < 1) { $gene = "NULL"; } if (length $gene_name < 1) {$gene_name = "NULL";}
 						my ($chrom_no, $chrom_start, $chrom_stop) = $locus =~ /^(.+)\:(.+)\-(.+)$/; $chrom_start++;
 
-						print NOSQL "'$_[0]','$chrom_no','$gene','$gene_name','$species'.'$fpkm_stat','$tissue',$coverage,$fpkm,$fpkm_low,$fpkm_high,$chrom_start,$chrom_stop\n";
+						print NOSQL "'$_[0]','$chrom_no','$gene','$gene_name','$species'.'$fpkm_stat','$tissue',$coverage,0,$fpkm,$fpkm_low,$fpkm_high,$chrom_start,$chrom_stop\n";
 						#$gene, $gene_name, $chrom_no, $chrom_start, $chrom_stop, $coverage, $fpkm, $fpkm_low, $fpkm_high, $fpkm_stat
 						#$sth ->execute($_[0], $gene, $gene_name, $chrom_no, $chrom_start, $chrom_stop, $coverage, $fpkm, $fpkm_low, $fpkm_high, $fpkm_stat ) or die "\nERROR:\t Complication in GenesFpkm table, consult documentation\n";
 					}
@@ -939,10 +967,12 @@ sub GENES_FPKM { #subroutine for getting gene information
 				close NOSQL; #end of nosql portion
 		
 				my $ffastbit = fastbit($all_details{'FastBit-path'}, $all_details{'FastBit-foldername'});  #connect to fastbit
-				my $gfastbit = $ffastbit."/gene-information"; # specifying the variant section.
-				my $execute = "ardea -d $gfastbit -m 'sampleid:text,chrom:key,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,fpkm:double,fpkmconflow:double,fpkmconfhigh:double,start:int,stop:int' -t $gnosql";
+				my $gfastbit = $ffastbit."/gene-information"; # specifying the gene section.
+				my $execute = "$ardea -d $gfastbit -m 'sampleid:text,chrom:text,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,tpm:double,fpkm:double,fpkmconflow:double,fpkmconfhigh:double,start:int,stop:int' -t $gnosql";
 				`$execute 2>> $efile` or die "\nERROR\t: Complication importing Expression information to FastBit, contact $AUTHOR\n";
-				`rm -rf $gnosql`;
+				`rm -rf $gfastbit/*sp`; #removeing old indexes
+				`ibis -d $gfastbit -query "select genename, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+				`chmod 777 $gfastbit && rm -rf $gnosql`;
 				
 				printerr " Done\n";
 				#set GeneStats to Done
@@ -995,7 +1025,7 @@ sub GENES_FPKM { #subroutine for getting gene information
 						unless (exists $DLFPKM{$dstax}{$Drest{'conf_lo'}}){ #FPKM_lo
 							$DLFPKM{$dstax}{$Drest{'conf_lo'}}= $Drest{'conf_lo'};
 						}
-						$ARFPKM{$dstax}= "'$_[0]','$chrom_no','$Drest{'gene_id'}'";
+						$ARFPKM{$dstax}= "'$_[0]','$chrom_no','$Drest{'gene_id'}','$Drest{'gene_id'}'";
 					}
 				} close FPKM;
 				#sorting the fpkm values and coverage results.
@@ -1036,15 +1066,17 @@ sub GENES_FPKM { #subroutine for getting gene information
 					foreach my $a (keys %ARFPKM){
 						#my @array = split(",",$ARFPKM{$a});
 						#$sth -> execute(@array, $BEFPKM{$a}, $CHFPKM{$a}, $cfpkm{$a}, $dfpkm{$a}, $dlfpkm{$a}, $dhfpkm{$a}) or die "\nERROR:\t Complication in $_[0] table, consult documentation\n";
-						print NOSQL "$ARFPKM{$a},'NULL','$species','NULL','$tissue',$cfpkm{$a},$dfpkm{$a},$dlfpkm{$a},$dhfpkm{$a},$BEFPKM{$a},$CHFPKM{$a}\n";
+						print NOSQL "$ARFPKM{$a},'$species','NULL','$tissue',$cfpkm{$a},0,$dfpkm{$a},$dlfpkm{$a},$dhfpkm{$a},$BEFPKM{$a},$CHFPKM{$a}\n";
 					}
 					close NOSQL; #end of nosql portion
 					
 					my $ffastbit = fastbit($all_details{'FastBit-path'}, $all_details{'FastBit-foldername'});  #connect to fastbit
 					my $gfastbit = $ffastbit."/gene-information"; # specifying the variant section.
-					my $execute = "ardea -d $gfastbit -m 'sampleid:text,chrom:key,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,fpkm:double,fpkmconflow:double,fpkmconfhigh:double,start:int,stop:int' -t $gnosql";
+					my $execute = "$ardea -d $gfastbit -m 'sampleid:text,chrom:text,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,tpm:double,fpkm:double,fpkmconflow:double,fpkmconfhigh:double,start:int,stop:int' -t $gnosql";
 					`$execute 2>> $efile` or die "\nERROR\t: Complication importing Expression information to FastBit, contact $AUTHOR\n";
-					`rm -rf $gnosql`;
+					`rm -rf $gfastbit/*sp`; #removeing old indexes
+					`ibis -d $gfastbit -query "select genename, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+					`chmod 777 $gfastbit && rm -rf $gnosql`;
 				
 					printerr " Done\n";
 					#set GeneStats to Done
@@ -1094,7 +1126,7 @@ sub GENES_FPKM { #subroutine for getting gene information
 							$TPM{$dstax}{$Drest{'TPM'}}= $Drest{'TPM'};
 						}
 						unless ($Drest{'ref_gene_name'}){
-							$ARFPKM{$dstax}= "$_[0],$Drest{'gene_id'}, ,$chrom_no";
+							$ARFPKM{$dstax}= "'$_[0]','$chrom_no','$Drest{'gene_id'}','NULL'";
 						} else {
 							$ARFPKM{$dstax}= "'$_[0]','$chrom_no','$Drest{'gene_id'}','$Drest{'ref_gene_name'}'";
 						}
@@ -1134,15 +1166,17 @@ sub GENES_FPKM { #subroutine for getting gene information
 					foreach my $a (keys %ARFPKM){
 						#my @array = split(",",$ARFPKM{$a});
 						#$sth -> execute(@array, $BEFPKM{$a}, $CHFPKM{$a}, $cfpkm{$a}, $dfpkm{$a}, $dlfpkm{$a}, $dhfpkm{$a}) or die "\nERROR:\t Complication in $_[0] table, consult documentation\n";
-						print NOSQL "$ARFPKM{$a},'$species','NULL','$tissue',$cfpkm{$a},$tpm{$a},$dfpkm{$a},$BEFPKM{$a},$CHFPKM{$a}\n";
+						print NOSQL "$ARFPKM{$a},'$species','NULL','$tissue',$cfpkm{$a},$tpm{$a},$dfpkm{$a},0,0,$BEFPKM{$a},$CHFPKM{$a}\n";
 					}
 					close NOSQL; #end of nosql portion
 					
 					my $ffastbit = fastbit($all_details{'FastBit-path'}, $all_details{'FastBit-foldername'});  #connect to fastbit
 					my $gfastbit = $ffastbit."/gene-information"; # specifying the variant section.
-					my $execute = "ardea -d $gfastbit -m 	'sampleid:text,chrom:key,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,tpm:double,fpkm:double,start:int,stop:int' -t $gnosql";
+					my $execute = "$ardea -d $gfastbit -m 'sampleid:text,chrom:text,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,tpm:double,fpkm:double,fpkmconflow:double,fpkmconfhigh:double,start:int,stop:int' -t $gnosql";
 					`$execute 2>> $efile` or die "\nERROR\t: Complication importing Expression information to FastBit, contact $AUTHOR\n";
-					`rm -rf $gnosql`;
+					`rm -rf $gfastbit/*sp`; #removing old indexes
+					`ibis -d $gfastbit -query "select genename, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+					`chmod 777 $gfastbit && rm -rf $gnosql`;
 				
 					printerr " Done\n";
 					#set GeneStats to Done
@@ -1458,9 +1492,11 @@ sub NOSQL {
 	my $ffastbit = fastbit($all_details{'FastBit-path'}, $all_details{'FastBit-foldername'});  #connect to fastbit
 	my $vfastbit = $ffastbit."/variant-information"; # specifying the variant section.
 	printerr "NOTICE:\t Importing $_[0] - Variant Annotation to NoSQL '$ffastbit' ...";
-	my $execute = "ardea -d $vfastbit -m 'variantclass:key,zygosity:key,dbsnpvariant:text,source:text,consequence:text,geneid:text,genename:text,transcript:text,feature:text,genetype:text,refallele:char,altallele:char,tissue:text,chrom:key,aachange:text,codonchange:text,organism:text,sampleid:text,quality:double,position:int,proteinposition:int' -t $vnosql";
+	my $execute = "$ardea -d $vfastbit -m 'variantclass:char,zygosity:char,dbsnpvariant:text,source:text,consequence:text,geneid:text,genename:text,transcript:text,feature:text,genetype:text,refallele:char,altallele:char,tissue:text,chrom:text,aachange:text,codonchange:text,organism:text,sampleid:text,quality:double,position:int,proteinposition:int' -t $vnosql";
 	`$execute 2>> $efile` or die "\nERROR\t: Complication importing to FastBit, contact $AUTHOR\n";
-	`rm -rf $vnosql`;
+	`rm -rf $vfastbit/*sp`; #removing old indexes
+	`ibis -d $vfastbit -query "select genename, sampleid, chrom, tissue, organism, consequence, dbsnpvariant" 2>> $efile`; #create a new index based on genename
+	`chmod 777 $vfastbit && rm -rf $vnosql`;
 	$sth = $dbh->prepare("update VarSummary set nosql = 'done' where sampleid = '$_[0]'"); $sth ->execute(); #update database nosql : DONE
 	
 	#removing records from MySQL

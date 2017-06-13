@@ -22,6 +22,7 @@ my ($sth,$dbh,$schema); #connect to database;
 our @dbtables = qw|Sample Animal MapStats GeneStats Metadata  GenesFpkm IsoformsFpkm VarAnnotation VarResult VarSummary|;
 #--------------------------------------------------------------------------------
 sub printerr; #declare error routine
+our ($ibis, $ardea) = fastbit_name(); #ibis and ardea location
 our $default = DEFAULTS(); #default error contact
 processArguments(); #Process input
 
@@ -74,7 +75,7 @@ $dbh->disconnect();
 #create FastBit path on connection details
 our $ffastbit = fastbit($location, $fbname);
 #check if ibis and ardea can be found
-`mkdir -p $ffastbit`;
+`mkdir -p $ffastbit && chmod 777 $ffastbit`;
 my $check = `ls $ffastbit`;
 $verdict = "no";
 if (length $check > 0){
@@ -132,8 +133,21 @@ sub processArguments {
   print LOG "TransAtlasDB Started:\t", scalar(localtime),"\n";
   $sqlfile = "$get/schema/\.transatlasdb-ddl.sql";
   open(CONNECT, ">$get/\.connect.txt"); 
-  my $connectcontent = "MySQL\n  username $username\n  password $password\n  databasename $dbname\nFastBit\n  path $location\n  foldername $fbname";
+  my $connectcontent = "MySQL\n  username $username\n  password $password\n  databasename $dbname\nFastBit\n  path $location\n  foldername $fbname\n  ibis $ibis\n  ardea $ardea";
   print CONNECT $connectcontent; close (CONNECT);
+  `tar -xzf $get/.web.tgz -C $get`;
+  open(CONFIG, ">$get/web/config.php");
+  print CONFIG "<?php
+  define('DB_SERVER', 'localhost');
+  define('DB_USERNAME', '$username');
+  define('DB_PASSWORD', '$password');
+  define('DB_DATABASE', '$dbname');
+  \$db_conn = mysqli_connect(DB_SERVER,DB_USERNAME,DB_PASSWORD,DB_DATABASE);
+  \$basepath = '$get';
+?>
+";
+close (CONFIG);
+
 }
 
 sub SCHEMA {

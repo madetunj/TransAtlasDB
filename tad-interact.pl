@@ -25,10 +25,13 @@ my $date = `date +%Y-%m-%d`;
 my ($opa, $opb, $opc, $opd,$ope, $opf, $opg, $opj);
 #--------------------------------------------------------------------------------
 OPTIONS();
+our ($ibis, $ardea) = fastbit_name(); #ibis and ardea location
 our $default = DEFAULTS(); #default error contact
 processArguments(); #Process input
 
 my %all_details = %{connection($connect, $default)}; #get connection details
+if (length($ibis) < 1){ ($ibis, $ardea) = ($all_details{'FastBit-ibis'}, $all_details{'FastBit-ardea'}); } #alternative for ibis and ardea location 
+
 print "\tWELCOME TO TRANSATLASDB INTERACTIVE MODULE\n";
 my $count =0;
 MAINMENU:
@@ -75,11 +78,11 @@ while ($choice < 1){
 		SUMMARY($dbh, $efile) if $verdict =~ /^a/;
 		METADATA($dbh, $efile) if $verdict =~ /^b/;
 		TRANSCRIPT($dbh,$efile) if $verdict =~ /^c/;
-		AVERAGE($dbh,$efile,$fastbit,$nosql) if $verdict =~ /^d/;
-		GENEXP($dbh,$efile,$fastbit,$nosql) if $verdict =~ /^e/;
+		AVERAGE($dbh,$efile,$fastbit,$nosql,$ibis) if $verdict =~ /^d/;
+		GENEXP($dbh,$efile,$fastbit,$nosql,$ibis) if $verdict =~ /^e/;
 		CHRVAR($dbh,$efile) if $verdict =~ /^f/;
-		VARANNO($dbh,$fastbit,$efile,$nosql) if $verdict =~ /^g/;
-		CHRANNO($dbh,$fastbit,$efile,$nosql) if $verdict =~ /^h/;
+		VARANNO($dbh,$fastbit,$efile,$nosql,$ibis) if $verdict =~ /^g/;
+		CHRANNO($dbh,$fastbit,$efile,$nosql,$ibis) if $verdict =~ /^h/;
 	} elsif ($verdict =~ /^x/) {
 		$choice = 1;
 	} elsif ($verdict =~ /^q/) {

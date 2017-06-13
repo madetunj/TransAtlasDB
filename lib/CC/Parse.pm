@@ -9,7 +9,7 @@ use List::MoreUtils qw(uniq);
 use Sort::Key::Natural qw(natsort);
 
 
-my ($sth, $dbh, $t);
+my ($sth, $dbh, $ibis, $t);
 my ($precount, $count, $verdict);
 
 sub excelcontent { #read excel content
@@ -229,7 +229,7 @@ sub AVERAGE { #tad-interact option D
 	print colored("D.\tAVERAGE FPKM VALUES OF INDIVIDUAL GENES.", 'bright_red on_black'),"\n";
 	print LOG "D.\tAVERAGE FPKM VALUES OF INDIVIDUAL GENES.\n";
 	my $gfastbit = $_[2]."/gene-information";
-	$dbh = $_[0];
+	$dbh = $_[0]; $ibis = $_[4];
 	my (%TISSUE, %GENES, %AVGFPKM, $tissue, $genes , $species, %ORGANISM);
 	$count = 0;
 	$sth = $dbh->prepare("select distinct organism from vw_sampleinfo where genes is not null"); #get organism(s)
@@ -297,7 +297,7 @@ sub AVERAGE { #tad-interact option D
 				#my $syntax = "call usp_gdtissue(\"".$gene."\",\"".$ftissue."\",\"". $species."\")";
 				#$sth = $dbh->prepare($syntax);
 				#$sth->execute() or die "SQL Error: $DBI::errstr\n";
-				`ibis -d $gfastbit -q 'select genename, max(fpkm), avg(fpkm), min(fpkm) where genename like "%$gene%" and tissue = "$ftissue" and organism = "$species"' -o $_[3] 2>>$_[1]`;
+				`$ibis -d $gfastbit -q 'select genename, max(fpkm), avg(fpkm), min(fpkm) where genename like "%$gene%" and tissue = "$ftissue" and organism = "$species"' -o $_[3] 2>>$_[1]`;
 				my $found = `head -n 1 $_[3]`;
 				if (length($found) > 1) {
 					open(IN,"<",$_[3]);
@@ -308,10 +308,10 @@ sub AVERAGE { #tad-interact option D
 						if ($genename =~ /NULL/) { $genename = "-"; }
 						$AVGFPKM{$genename}{$ftissue} = "$max|$avg|$min";
 					}
-					$genes .= $gene;
+					$genes .= $gene.",";
 				} else {
 					printerr "NOTICE:\t No Results found with gene '$gene'\n";
-				}
+				} 
 				`rm -rf $_[3]`;
 		
 				#my $found = $sth->fetch();
@@ -351,7 +351,7 @@ sub AVERAGE { #tad-interact option D
 	} else {
 		$indent = "Only";
 	}
-
+	chop $genes;
 	if ($count > 0 ) {
 		print colored("$precount out of $count results displayed.", 'underline'), "\n";
 		print LOG "$precount out of $count results displayed.\n";
@@ -386,7 +386,7 @@ sub GENEXP { #tad-interact option E
 	print colored("E.\tGENE EXPRESSION ACROSS SAMPLES.", 'bright_red on_black'),"\n";
 	print LOG "E.\tGENE EXPRESSION ACROSS SAMPLES.\n";
 	my $gfastbit = $_[2]."/gene-information";
-	$dbh = $_[0];
+	$dbh = $_[0]; $ibis = $_[4];
 	my (%FPKM, %POSITION, %ORGANISM, %SAMPLE, %REALPOST, %CHROM, $species, $sample, $finalsample, $genes, $syntax, @row, $indent);
 	$count = 0;
 	$sth = $dbh->prepare("select distinct organism from vw_sampleinfo where genes is not null"); #get organisms
@@ -473,7 +473,7 @@ sub GENEXP { #tad-interact option E
 		}
 		#$sth = $dbh->prepare($syntax);
 		#$sth->execute or die "SQL Error:$DBI::errstr\n";
-		`ibis -d $gfastbit -q "$syntax" -o $_[3] 2>>$_[1]`;
+		`$ibis -d $gfastbit -q "$syntax" -o $_[3] 2>>$_[1]`;
 		$count = 0;
 		open(IN,"<",$_[3]);
 		while (<IN>){
@@ -783,7 +783,7 @@ sub VARANNO {
 	print colored("G.\tGENE ASSOCIATED VARIANTS ANNOTATION.", 'bright_red on_black'),"\n";
 	print LOG "G.\tGENE ASSOCIATED VARIANTS ANNOTATION.\n";
 	
-	$dbh = $_[0];
+	$dbh = $_[0]; $ibis = $_[4];
 	my $vfastbit = $_[1]."/variant-information";
 	my ($genes, $genes2, %ORGANISM, %GENEVAR, @genes, $indent, $species, $vfound);
 
@@ -827,7 +827,7 @@ sub VARANNO {
 			foreach my $gene (@genes){
 				if ($found) {
 					#using fastbit
-					my $syntax = "ibis -d $vfastbit -q \"select chrom,position,refallele,altallele,variantclass,consequence,group_concat(genename),group_concat(dbsnpvariant), 	group_concat(sampleid) where genename like '%".$gene."%' and organism='$species'\" -o $_[3]";
+					my $syntax = "$ibis -d $vfastbit -q \"select chrom,position,refallele,altallele,variantclass,consequence,group_concat(genename),group_concat(dbsnpvariant), 	group_concat(sampleid) where genename like '%".$gene."%' and organism='$species'\" -o $_[3]";
 					`$syntax 2>> $_[2]`;
 					open(IN,'<',$_[3]); my @nosqlcontent = <IN>; close IN; `rm -rf $_[3]`;
 					if ($#nosqlcontent < 0) {printerr "NOTICE:\t No variants are associated with gene '$gene'\n";}
@@ -932,10 +932,10 @@ sub CHRANNO {
 	open(LOG, ">>", $_[2]) or die "\nERROR:\t cannot write LOG information to log file $_[1] $!\n";
 	print colored("H.\tCHROMSOMAL REGIONS WITH VARIANTS & ANNOTATION.", 'bright_red on_black'),"\n";
 	print LOG "H.\tCHROMSOMAL REGIONS WITH VARIANTS & ANNOTATION.\n";
-	$dbh = $_[0];
+	$dbh = $_[0]; $ibis = $_[4];
 	my $vfastbit = $_[1]."/variant-information";
 	my ($chromosome, %ORGANISM, %CHRVAR, %CHROM, @chromosomes, $species,$indent,$region);
-	my $syntax = "ibis -d $vfastbit -q \"select chrom,position,refallele,altallele,variantclass,consequence,group_concat(genename),group_concat(dbsnpvariant), group_concat(sampleid) where ";
+	my $syntax = "$ibis -d $vfastbit -q \"select chrom,position,refallele,altallele,variantclass,consequence,group_concat(genename),group_concat(dbsnpvariant), group_concat(sampleid) where ";
 	$count = 0;
 	$sth = $dbh->prepare("select distinct a.organism from vw_sampleinfo a join VarSummary b on a.sampleid = b.sampleid"); #get organism with annotation information
 	$sth->execute or die "SQL Error: $DBI::errstr\n";
@@ -962,7 +962,7 @@ sub CHRANNO {
 		printerr "\nORGANISM : $species\n";
 		$sth = $dbh->prepare("select group_concat(distinct a.nosql) from VarSummary a join vw_sampleinfo b on a.sampleid = b.sampleid where b.organism = '$species' and a.nosql is not null group by a.nosql");$sth->execute(); my $found =$sth->fetch();
 		$verdict = undef;
-		$sth = $dbh->prepare("select distinct chrom from VarResult where sampleid = (select sampleid from Sample a join Animal b on a.derivedfrom = b.animalid where b.organism = '$species' order by a.date desc limit 1) order by length(chrom), chrom");
+		$sth = $dbh->prepare("select distinct chrom from VarResult where sampleid = (select a.sampleid from VarSummary a join vw_sampleinfo b on a.sampleid = b.sampleid where b.organism = '$species' order by a.date desc limit 1) order by length(chrom), chrom");
 		$sth->execute or die "SQL Error: $DBI::errstr\n";
 		$number = 0;
 		while (my $row = $sth->fetchrow_array() ) {
