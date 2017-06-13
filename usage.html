@@ -74,7 +74,7 @@ A link <font color="#0">/usr/local/mysql</font> (pointing to the MySQL installat
 <strong>IMPORTANT:</strong> Save the mysql temporary password provided.</li><br>
  		  <li>Setup auto start package for MySQL on OS X, by<br>
 		  <ul>
-			<li>Restarting the operating system #not yet tested, or</li>
+			<li>Restarting the operating system, or</li>
 			<li>STARTing the mysql server in your System Preferences.</li></ul>
 <ol>
 </div>
@@ -86,10 +86,10 @@ A link <font color="#0">/usr/local/mysql</font> (pointing to the MySQL installat
 		<li>Create aliases of mysql in your profile - <d>$HOME/.bash_profile</d>.
 			<pre class="highlight"><code>alias mysqladmin=/usr/local/mysql/bin/mysqladmin<br>alias mysql=/usr/local/mysql/bin/mysql</code></pre></li>
 		<li>Reload your updated profile<pre><code>source $HOME/.bash_profile</code></pre></li>
-		<li>Log into mysql using temporary password<br>
-	<pre class="highlight"><code><span>mysql -uroot -p<font color="#d14">'mysql_temporary_password_provided'</font></span></code></pre></li>
+		<li>Log into mysql using the syntax below and paste the temporary password when requested<br>
+	<pre class="highlight"><code><span>mysql -uroot -p</font></span></code></pre></li>
 		<li>In the mysql interface, change temporary password to a new password<br><strong>NOTE:</strong> Avoid using special characters such as <d><font style="arial"> $ & ! \ [ ] < > ` </d>
-	<pre><code>SET PASSWORD=PASSWORD(<font color="#d14">'your_new_password'</font>);</code></pre></li>
+	<pre><code>SET PASSWORD=PASSWORD('<font color="#d14">your_new_password</font>');</code></pre></li>
 		<li>Exit from MySQL<pre><code>exit</code></pre></li>
 	</ol>
 <br>
@@ -131,8 +131,8 @@ Once downloaded.
 <li><A name="perlmodule" href="usage.html#perlmodule"><h3>Perl modules</h3></a></li>
 <p>The easiest way to install Perl modules is using <a href="http://search.cpan.org/~miyagawa/App-cpanminus-1.7043/lib/App/cpanminus.pm" target="_blank">cpanminus</a>.</p>
 <ol type="i">
-	<li>Install cpanm using curl
-<pre class="highlight"><code><span class="c1"># Mac OSX</span><br><span>sudo curl -L http://cpanmin.us | perl - App::cpanminus</span></code></pre>
+	<li>Install cpanm using curl <br> <strong>NOTE:</strong> Users must have admin access to use <d>sudo</d>
+<pre class="highlight"><code><span class="c1"># Mac OSX</span><br><span>curl -L http://cpanmin.us | perl - App::cpanminus --sudo</span></code></pre>
 <pre class="highlight"><code><span class="c1"># Ubuntu</span><br><span>sudo apt install cpanminus</span></code></pre></li>
 	<li>Install required Perl modules
 	<ol type="a"><li>DBD::mysql<pre><code>sudo cpanm DBD::mysql</code></pre></li>
@@ -151,7 +151,7 @@ Once downloaded.
       </section>
       <br>
       <footer>
-        <p>This project is maintained by <a href="https://modupeore.github.io" target=_blank>Modupeore</a></p>
+        <p>This project is maintained by <a href="https://github.com/modupeore" target=_blank>Modupeore</a></p>
       </footer>
     </div>
     <script src="/TransAtlasDB/assets/js/scale.fix.js"></script>
