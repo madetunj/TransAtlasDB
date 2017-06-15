@@ -44,108 +44,145 @@
         <br>
         <p class="view"><a href="https://github.com/modupeore/TransAtlasDB">View the Project on GitHub <small></small></a></p>  
         <nav>
-       <ul><h1><font color="#8f4724" size="5px">Navigation:</font></h1></ul>
-       <ul><h2><A href="#relational">MySQL</a></h2></ul>
-       <ul><h2><A href="#nonrelational">FastBit (NoSQL)</a></h2></ul>
-       <ul><h2><A href="#perlmodule"><h2>Perl modules</a></h2></ul>
-      </nav><br>
+					<ul><h1><font color="#8f4724" size="5px">Navigation:</font></h1></ul>
+					<ul><h2><A href="#relational">MySQL</a></h2></ul>
+					<ul><h2><A href="#nonrelational">FastBit (NoSQL)</a></h2></ul>
+					<ul><h2><A href="#perlmodule"><h2>Perl modules</a></h2></ul>
+					<ul><h2><A href="#phpapache"><h2>PHP & Apache</a></h2></ul>
+					<ul><h2><A href="#vmware"><h2><font color='red' size="2%">[easy-install]</font> VMware</a></h2></ul>
+			 </nav><br>
         <ul>
           <li><a href="download/transatlasdb.zip">Download <strong>ZIP File</strong></a></li>
           <li><a href="download/transatlasdb.tgz">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/modupeore/TransAtlasDB">View On <strong>GitHub</strong></a></li>
+          <li><a href="download/tranatlasdbVMware.ova.gz">Download <strong>VMware</strong></a></li>
         </ul>       
       </header>
       <br>
       <section>
-        <h2>TransAtlasDB Downloads</h2>
-	<p>TransAtlasDB can be deployed on <font color="#0">Ubuntu Linux</font> and <font color="#0">Mac OSX</font> operating systems using the latest available MySQL and FastBit software.</p>
-        <p>The following are required for successful utilization of TransAtlasDB toolkit.</p>
-          <ol>
-            <li><A name="relational" href="usage.html#relational"><h3>Relational Database <i><font color="gray">- MySQL </font></i></h3></a></li>
-		<div class="pushit">
-		<h4>For Mac OSX</h4>
-		<ol type="i">
-		  <li>The MySQL community server is required and can be downloaded <a target="_blank" href="https://dev.mysql.com/downloads/mysql/">here</a>.</li><br>
-		  <li>Download the <b><font color="#0">DMG Archive</font></b> file.</li><br>
-		  <li>Unpack the download <i>.dmg</i> file.</li><br>
-		  <li>Click on the mysql server package from unpacked files and complete the installation process.<br>
-Once the installer has finished successfully, all MySQL related files should be installed under <font color="#0">/usr/local/mysql-VERSION </font>directory. 
-A link <font color="#0">/usr/local/mysql</font> (pointing to the MySQL installation directory) should also have been created.<br>
-<strong>IMPORTANT:</strong> Save the mysql temporary password provided.</li><br>
- 		  <li>Setup auto start package for MySQL on OS X, by<br>
-		  <ul>
-			<li>Restarting the operating system, or</li>
-			<li>STARTing the mysql server in your System Preferences.</li></ul>
-<ol>
-</div>
-<table style="max-width:600pt; border:0pt; margin:0pt padding:0pt"><tr border="0"><td rowspan=2><img src="images/mysql-mac-1.png" height="220pt" width="300pt"></td><td><img src="images/mysql-mac-2.png" height="100pt" width="300pt"></td></tr><tr><td><img src="images/mysql-mac-3.png" height="100pt" width="300pt"></td></tr></table>
-<div class="pushit">
-<ol type="i" start="6">
-		<li>Add the mysql location (<font color="#0">/usr/local/mysql/bin/</font>) to your PATH. Save this path in your profile - <d>$HOME/.bash_profile</d>. 
-			<pre class="highlight"><code>export PATH=${PATH}:/usr/local/mysql/bin </code></pre></li>
-		<li>Create aliases of mysql in your profile - <d>$HOME/.bash_profile</d>.
-			<pre class="highlight"><code>alias mysqladmin=/usr/local/mysql/bin/mysqladmin<br>alias mysql=/usr/local/mysql/bin/mysql</code></pre></li>
-		<li>Reload your updated profile<pre><code>source $HOME/.bash_profile</code></pre></li>
-		<li>Log into mysql using the syntax below and paste the temporary password when requested<br>
-	<pre class="highlight"><code><span>mysql -uroot -p</font></span></code></pre></li>
-		<li>In the mysql interface, change temporary password to a new password<br><strong>NOTE:</strong> Avoid using special characters such as <d><font style="arial"> $ & ! \ [ ] < > ` </d>
-	<pre><code>SET PASSWORD=PASSWORD('<font color="#d14">your_new_password</font>');</code></pre></li>
-		<li>Exit from MySQL<pre><code>exit</code></pre></li>
-	</ol>
-<br>
-	<h4>For Ubuntu</h4>
-	<ol type="i">
-		<li>Update apt-get<pre><code>sudo apt-get update</code></pre></li>
-		<li>Install mysql-server & set your mysql password when prompted <br><strong>NOTE:</strong> Avoid using special characters such as <d><font style="arial"> $ & ! \ [ ] < > ` </d>
-	<pre><code>sudo apt-get install mysql-server</code></pre></li>
-		<li>Install the mysqlclient <pre><code>sudo apt-get install libmysqlclient-dev</code></pre></li>
-	</ol>
-</div>
-<center><h5><font size="3pt">You have successfully installed MySQL !</font></h5></center><br>
-<hr>
+      <h2>TransAtlasDB Downloads</h2>
+				<p>TransAtlasDB can be deployed on <font color="#0">Ubuntu Linux</font> and <font color="#0">Mac OSX</font> operating systems using the latest available MySQL and FastBit software and Perl programming language.</p>
+				<p>However, for an easier and quicker install process, the <a href="#vmware">VMware package</a> is configured with the Ubuntu 16.04 OS and contains all the required programs and perl dependencies listed below.</p>
+				<p>The following are required for successful utilization of TransAtlasDB toolkit on your local machine or server.</p>
+        <ol>
+          <li><A name="relational" href="usage.html#relational"><h3>Relational Database <i><font color="gray">- MySQL </font></i></h3></a></li>
+					<div class="pushit">
+						<h4>For Mac OSX</h4>
+						<ol type="i">
+							<li>The MySQL community server is required and can be downloaded <a target="_blank" href="https://dev.mysql.com/downloads/mysql/">here</a>.</li><br>
+							<li>Download the <b><font color="#0">DMG Archive</font></b> file.</li><br>
+							<li>Unpack the download <i>.dmg</i> file.</li><br>
+							<li>Click on the mysql server package from unpacked files and complete the installation process.<br>
+									Once the installer has finished successfully, all MySQL related files should be installed under <font color="#0">/usr/local/mysql-VERSION </font>directory. 
+									A link <font color="#0">/usr/local/mysql</font> (pointing to the MySQL installation directory) should also have been created.<br>
+									<strong>IMPORTANT:</strong> Save the mysql temporary password provided.</li><br>
+							<li>Setup auto start package for MySQL on OS X, by<br>
+								<ul>
+									<li>Restarting the operating system, or</li>
+									<li>STARTing the mysql server in your System Preferences.</li></ul>
+					</div>
+					<table style="max-width:600pt; border:0pt; margin:0pt padding:0pt"><tr border="0"><td rowspan=2><img src="images/mysql-mac-1.png" height="220pt" width="300pt"></td><td><img src="images/mysql-mac-2.png" height="100pt" width="300pt"></td></tr><tr><td><img src="images/mysql-mac-3.png" height="100pt" width="300pt"></td></tr></table>
+					<div class="pushit">
+						<ol type="i" start="6">
+							<li>Add the mysql location (<font color="#0">/usr/local/mysql/bin/</font>) to your PATH. Save this path in your profile - <d>$HOME/.bash_profile</d>. 
+								<pre class="highlight"><code>echo 'export PATH=${PATH}:/usr/local/mysql/bin' >> $HOME/.bash_profile </code></pre></li>
+							<li>Create aliases of mysql in your profile - <d>$HOME/.bash_profile</d>.
+								<pre class="highlight"><code>echo 'alias mysqladmin=/usr/local/mysql/bin/mysqladmin' >> $HOME/.bash_profile<br>echo 'alias mysql=/usr/local/mysql/bin/mysql' >> $HOME/.bash_profile</code></pre></li>
+							<li>Reload your updated profile<pre><code>source $HOME/.bash_profile</code></pre></li>
+							<li>Log into mysql using the syntax below and paste the temporary password when requested<br>
+								<pre class="highlight"><code><span>mysql -uroot -p</font></span></code></pre></li>
+							<li>In the mysql interface, change temporary password to a new password<br><strong>NOTE:</strong> Avoid using special characters such as <d><font style="arial"> $ & ! \ [ ] < > ` </d>
+								<pre><code>SET PASSWORD=PASSWORD('<font color="#d14">your_new_password</font>');</code></pre></li>
+							<li>Exit from MySQL<pre><code>exit</code></pre></li>
+						</ol>
+						<br>
+						<h4>For Ubuntu</h4>
+						<ol type="i">
+							<li>Update apt-get<pre><code>sudo apt-get update</code></pre></li>
+							<li>Install mysql-server & set your mysql password when prompted <br><strong>NOTE:</strong> Avoid using special characters such as <d><font style="arial"> $ & ! \ [ ] < > ` </d>
+								<pre><code>sudo apt-get install mysql-server</code></pre></li>
+							<li>Install the mysqlclient <pre><code>sudo apt-get install libmysqlclient-dev</code></pre></li>
+						</ol>
+				</div>
+				<center><h5><font size="3pt">You have successfully installed MySQL !</font></h5></center><br>
+				<hr>
+					
 
-
-<li><A name="nonrelational" href="usage.html#nonrelational"><h3>Non-Relational Database<i><font color="gray"> - FastBit </font></i></h3></a></li>
-<p>The FastBit software can be downloaded <a href="download/fastbit-latest.zip">here</a>.<br>
-Once downloaded.
-<ol type="i">
-	<li>Unzip the fastbit-latest.zip file.<pre class="highlight"><code>unzip fastbit-latest.zip</code></pre></li>
-	<li>Unpack the download <i>.tar.gz</i> file.<pre class="highlight"><code>tar -xzvf fastbit-<font color="#d14">version</font>.tar.gz</code></pre></li>
-	<li>In the unpacked directory, configure the fastbit software.<br>
-( if Mac OSX: ensure Xcode install has been previously configured; the option to install with automatically appear when you run the command below ).<br>
-<strong>NOTE:</strong> This step takes about 15 - 30 minutes to complete.
-<pre class="highlight"><code>./configure && make</code></pre></li>
-	<li>Install the fastbit software.<pre class="highlight"><code><span>sudo make install</span></code></pre></li>
+				<li><A name="nonrelational" href="usage.html#nonrelational"><h3>Non-Relational Database<i><font color="gray"> - FastBit </font></i></h3></a></li>
+				<p>The FastBit software can be downloaded <a href="download/fastbit-latest.zip">here</a>.<br>
+					Once downloaded.
+					<ol type="i">
+						<li>Unzip the fastbit-latest.zip file.<pre class="highlight"><code>unzip fastbit-latest.zip</code></pre></li>
+						<li>Unpack the download <i>.tar.gz</i> file.<pre class="highlight"><code>tar -xzvf fastbit-<font color="#d14">version</font>.tar.gz</code></pre></li>
+						<li>In the unpacked directory, configure the fastbit software.<br>
+							( if Mac OSX: ensure Xcode install has been previously configured; the option to install with automatically appear when you run the command below ).<br>
+							<strong>NOTE:</strong> This step takes about 15 - 30 minutes to complete.
+							<pre class="highlight"><code>./configure && make</code></pre></li>
+						<li>Install the fastbit software.<pre class="highlight"><code><span>sudo make install</span></code></pre></li>
 <!-- <br><span class="c1"># However, if you don't have admin priviledges, run</span><br><span>make prefix=${HOME} install #not yet tested</span></code></pre></li>-->
-	<li>Add the library path to your profile<br>
-<font color="grey"><strong>NOTE:</strong><ul type="circle"><li><b>For Mac OSX:</b> Your profile is <d>$HOME/.bash_profile</d></li><li><b>For Ubuntu:</b> Your profile is <d>$HOME/.bashrc</d</li></ul>
-<pre class="highlight"><code><span>export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib</span></code></pre></li>
-<li>Reload your updated profile
-<pre class="highlight"><code><span class="c1"># Mac OSX</span><br><span>source $HOME/.bash_profile</span></code></pre><pre class="highlight"><code><span class="c1"># Ubuntu</span><br><span>source $HOME/.bashrc</span></code></pre></li>
-</ol>
-<center><h5><font size="3pt">You have successfully installed FastBit !</font></h5></center>
-<br>
-<hr>
+						<li>Add the library path to your profile<br>
+							<font color="grey"><strong>NOTE:</strong>
+								<ul type="circle">
+									<li><b>For Mac OSX:</b> Your profile is <d>$HOME/.bash_profile</d></li>
+									<li><b>For Ubuntu:</b> Your profile is <d>$HOME/.bashrc</d</li>
+								</ul>
+							</font>
+							<pre class="highlight"><code><span class="c1"># Mac OSX</span><br><span>echo 'export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib' >> $HOME/.bash_profile </span></code></pre>
+							<pre class="highlight"><code><span class="c1"># Ubuntu</span><br><span>echo 'export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib' >> $HOME/.bash_rc </span></code></pre></li>
+						<li>Reload your updated profile
+							<pre class="highlight"><code><span class="c1"># Mac OSX</span><br><span>source $HOME/.bash_profile</span></code></pre><pre class="highlight"><code><span class="c1"># Ubuntu</span><br><span>source $HOME/.bashrc</span></code></pre></li>
+					</ol>
+					<center><h5><font size="3pt">You have successfully installed FastBit !</font></h5></center>
+					<br>
+					<hr>
+					
+					
+					<li><A name="perlmodule" href="usage.html#perlmodule"><h3>Perl modules</h3></a></li>
+					<p>The easiest way to install Perl modules is using <a href="http://search.cpan.org/~miyagawa/App-cpanminus-1.7043/lib/App/cpanminus.pm" target="_blank">cpanminus</a>.</p>
+					<ol type="i">
+						<li>Install cpanm using curl <br> <strong>NOTE:</strong> Users must have admin access to use <d>sudo</d>
+							<pre class="highlight"><code><span class="c1"># Mac OSX</span><br><span>curl -L http://cpanmin.us | perl - App::cpanminus --sudo</span></code></pre>
+							<pre class="highlight"><code><span class="c1"># Ubuntu</span><br><span>sudo apt install cpanminus</span></code></pre></li>
+						<li>Install required Perl modules
+							<ol type="a">
+								<li>DBD::mysql<pre><code>sudo cpanm DBD::mysql</code></pre></li>
+								<li>Spreadsheet::Read<pre><code>sudo cpanm Spreadsheet::Read</code></pre></li>
+								<li>Spreadsheet::XLSX<pre><code>sudo cpanm Spreadsheet::XLSX</code></pre></li>
+								<li>Text::TabularDisplay<pre><code>sudo cpanm Text::TabularDisplay</code></pre></li>
+								<li>Sort::Key<pre><code>sudo cpanm Sort::Key</code></pre></li>
+							</ol>
+						</li>
+					</ol>
+					<center><h5><font size="3pt">You have successfully installed the required Perl modules !</font></h5></center>
+					<br>
+					<hr>
 
-
-<li><A name="perlmodule" href="usage.html#perlmodule"><h3>Perl modules</h3></a></li>
-<p>The easiest way to install Perl modules is using <a href="http://search.cpan.org/~miyagawa/App-cpanminus-1.7043/lib/App/cpanminus.pm" target="_blank">cpanminus</a>.</p>
-<ol type="i">
-	<li>Install cpanm using curl <br> <strong>NOTE:</strong> Users must have admin access to use <d>sudo</d>
-<pre class="highlight"><code><span class="c1"># Mac OSX</span><br><span>curl -L http://cpanmin.us | perl - App::cpanminus --sudo</span></code></pre>
-<pre class="highlight"><code><span class="c1"># Ubuntu</span><br><span>sudo apt install cpanminus</span></code></pre></li>
-	<li>Install required Perl modules
-	<ol type="a"><li>DBD::mysql<pre><code>sudo cpanm DBD::mysql</code></pre></li>
-		<li>Spreadsheet::Read<pre><code>sudo cpanm Spreadsheet::Read</code></pre></li>
-                <li>Spreadsheet::XLSX<pre><code>sudo cpanm Spreadsheet::XLSX</code></pre></li>
-                <li>Text::TabularDisplay<pre><code>sudo cpanm Text::TabularDisplay</code></pre></li>
-                <li>Sort::Key<pre><code>sudo cpanm Sort::Key</code></pre></li>
-	</ol>
-</li>
-<center><h5><font size="3pt">You have successfully installed the required Perl modules !<br>
-==> Proceed to the <a href="tutorial.html">Tutorial</a> <== </font></h5></center>
-</ol>
-<br><hr><br>
+					<li><A name="phpapache" href="usage.html#phpapache"><h3>PHP & APACHE</h3></a></li>
+					<p>Have required PHP and Apache dependencies with MySQL installed on desired local machine or server.</p>
+					<ul>
+						<li>Recommended configuration for Ubuntu <a href="https://www.digitalocean.com/community/tutorials/how-to-install-linux-apache-mysql-php-lamp-stack-on-ubuntu" target="_blank">here</a>.</li>
+						<li>Recommended configuration for Mac OSX <a href="https://jason.pureconcepts.net/2012/10/install-apache-php-mysql-mac-os-x/" target="_blank">here</a>.</li>
+					</ul>
+					<center><h5><font size="3pt">You have successfully installed configured Apache and PHP with MySQL !<br>
+					==> Proceed to the <a href="tutorial.html">Tutorial</a> <== </font></h5></center>				
+					<br>
+				</ol>
+				<hr>
+				<A name="vmware" href="usage.html#vmware"><h3>VMware</h3></a>
+				<p>This is a virtual machine created using VMware with the <strong>Ubuntu 16.04 LTS</strong> operating system installed. The VM is preconfigured with all the above softwares and dependencies listed above.<br>
+				This method provides users a simple way to get started on installing and using the TransAtlasDB.</p>
+				The login details are provided below:
+					<ul>
+						<li>Ubuntu Account:<br>
+							<font color="#0">user account : </font><d>TransAtlasDB</d><br>
+							<font color="#0">user pasword : </font><d>rainbow</d>
+						</li><br>
+						<li>MySQL Root Login<br>
+							<font color="#0">username : </font><d>root</d><br>
+							<font color="#0">password : </font><d>rainbow</d>
+						</li>
+					</ul>
+					<center><h5><font size="3pt">==> Proceed to the <a href="tutorial.html">Tutorial</a> <== </font></h5></center>		
+					<br><hr><br>
         <p>Please click the menu items to navigate through this repository. If you have questions, comments and bug reports, please <a href="mailto:amodupe@udel.edu">email me </a>directly. </p>
         <p>Thank you very much for your help and support!</p>
       </section>

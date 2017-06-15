@@ -45,7 +45,7 @@
         <p class="view"><a href="https://github.com/modupeore/TransAtlasDB">View the Project on GitHub <small></small></a></p>  
         <nav>
        <ul><h1><font color="#8f4724" size="5px">Navigation:</font></h1></ul>
-       <!--<ul><h2><A href="#tadinstall">Installation</a></h2></ul>-->
+       <ul><h2><A href="#tadinstall">Installation</a></h2></ul>
        <ul><h2><A href="#tadimport">Data import</a></h2></ul>
        <ul><h2><A href="#tadexport"><h2>Data retrieval</a></h2></ul>
        <ul><h2><A href="#web"><h2>Web Interface</a></h2></ul>
@@ -53,7 +53,7 @@
         <ul>
           <li><a href="download/transatlasdb.zip">Download <strong>ZIP File</strong></a></li>
           <li><a href="download/transatlasdb.tgz">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/modupeore/TransAtlasDB">View On <strong>GitHub</strong></a></li>
+          <li><a href="download/tranatlasdbVMware.ova.gz">Download <strong>VMware</strong></a></li>
         </ul>       
       </header>
       <br>
@@ -132,18 +132,14 @@
   <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">data2db</span> <span class="o">-</span><span class="nb">all</span> <span class="s">example/sample_sxt/GGA_UD_1004</span> <span class="o">-</span><span class="nb">annovar</span>
 </code></pre></div>
         <div class="pushit"><p><strong>NOTE:</strong> The analysis data should be stored in a single folder for each sample and the folder-name must be the same <b><i>sample name</i></b> as represented in the samples metadata. A typical folder directory structure is shown <a href="sample.html#folder">here</a>.</p>
-        <!--<h4>Deleting data </h4>
-        <p>Sample results can only be imported once to ensure data integrity, nonetheless, previously imported data can be cautiously deleted using <d>-delete</d> followed by sample name.
-        </div>
-        <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for deleting sample 'GGA_UD_1004' from the database.</span>
-  <span class="k">tad-import.pl</span> <span class="o">-</span><span class="nb">delete</span> <span class="s">GGA_UD_1004</span>
-</code></pre></div>-->
+
         <center><figure><img src="images/import.png">
         <figcaption>Data import procedure for samples metadata (A) and RNAseq data (B) respectively.</figcaption></figure></center>
         <hr/>
         <A name="tadexport"><h3>DATA RETRIEVAL</h3></a>
         <div class="pushit">
-          <p>Transcriptome analysis data previously stored can be retrieved using <b><font color="#000"><i>tad-export.pl</i></font></b>.</p>
+          <p>Transcriptome analysis data previously stored can be retrieved using <b><font color="#000"><i>tad-export.pl</i></font></b>.<br>
+					<strong>NOTE:</strong> Analysis data can also be retrieved using the <a href="#web">web interface</a>.</p>
           <p>The export module offers two methods of extracting data from the database; one by performing data manipulation language (DML) SQL statements using <d>-query</d> and the second method consisting of pre-defined queries of research interest using <d>-db2data</d>.</p>
           <h4>Performing DML Statements</h4>
           <p>Users can execute direct SQL statements via <d>-query</d> to the relational database and the query must be wrapped with single quotation.<br>
@@ -220,11 +216,6 @@
   <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">db2data</span> <span class="o">-</span><span class="nb">varanno</span> <span class="o">-</span><span class="nb">chromosome</span> <span class="s">'chr1'</span> <span class="o">-</span><span class="nb">region</span> <span class="s">50000-900000</span> <span class="o">-</span><span class="nb">species</span> <span class="s">'Gallus gallus'</span> <span class="o">-</span><span class="nb">o</span> <span class="o">-</span><span class="nb">vcf</span> <span class="s">output.vcf</span>
 </code></pre></div>
           <div class="pushit">
-            <!--<h4>Interacting with TransAtlasDB using <font color="#000"><i>tad-interact.pl</i></font></h4>
-          <p>If uncertain on how to proceed with the export module, the interaction module provides an easy-to-use menu-driven interface.<br>
-          The menu offers seven choices of exploratory research interest and provides a detailed description of what can be done from the module.</p>
-          <p>However, the interaction module only outputs a small subset of results, nevertheless, further instructions on how to export the complete results will be displayed.</p>
-        -->
         <center><figure><img src="images/export.png">
         <figcaption>Data retrieval procedure.</figcaption></figure></center>
         
@@ -247,8 +238,50 @@
 </code></pre></div>
 					</div>
         <hr>
-   
-	 
+				
+					 <A name="web"><h3>WEB ENVIRONMENT</h3></a>
+        <div class="pushit">
+          TransAtlasDB web portal can be viewed using PHP and Apache. Biologist can benefit from using the web interface to interact with the analysis data stored in the TransAtlasDB system using the <a href="#tadimport">data import module</a>.<br>
+					The web interface is designed into five major sections:
+					<h4>About</h4>
+					The about page gives the summary statistics of the samples data imported in the database, and consist of four parts.
+					<ul><li>Organisms:<br>This sections displays the organisms and total number of samples present in the database.</li></ul>
+						<center><img src="images/about1.png"></center>
+					<ul><li>Samples:<br>This section displays the organisms and total number of samples for each tissue in the database.</li></ul>
+						<center><img src="images/about2.png"></center>
+					<ul><li>Samples Processed:<br>This section displays the summary counts of the samples already archived in the database.</li></ul>
+						<center><img src="images/about3.png"></center>
+					<ul><li>Database Content:<br>This section displays the summary count of the variants and genes present in the database.</li></ul>
+						<center><img src="images/about4.png"></center>
+					<h4>Data Import</h4>
+					The data import page provides two methods of importing the samples metadata. Storing the large data files such as the gene expression profiling and variants analysis results can only be done using the Perl toolkit as explained above.
+					<ul><li>File Upload:<br>Samples metadata are uploaded from a sample file, either using the sample tab-delimited <a href="samples-template.txt" target="_blank" download="template.txt">template</a> or FAANG <a href="FAANG_template.xlsx" target="_blank" download="faangtemplate.xlsx">spreadsheet</a>.</li></ul>
+						<center><img src="images/import1.png"></center>
+					<ul><li>Manual Entry:<br>Samples metadata can also be inserted by manually entering the information.</li></ul>
+						<center><img src="images/import2.png"></center>
+					<h4>Metadata</h4>
+					The metadata page displays the samples stored in the database and an overview of each sample storage-status as well as the analysis summary where applicable. The samples can be exported as a tab-delimited file.
+					<ul><li>Samples Metadata and storage status:<br>View samples metadata currently in the database based on search criteria.</li></ul>
+						<center><figure><img src="images/metadata1.png"><figcaption>Displays all samples in the database by pressing GO.</figcaption></figure></center>
+					<ul><li>RNAseq results metadata:<br>View samples analysis metadata.</li></ul>
+						<center><figure><img src="images/metadata2.png"><figcaption>Displays all sample analysis metadata in the database by pressing GO.</figcaption></figure></center>
+					<h4>Gene Expression</h4>
+					The gene expression data can be viewed based on the individual sample-gene expression or average expression profiles of multiple genes across all samples and tissues. By specifying one or more genes by their gene symbols, a fuzzy search is performed based on the characters specified.
+					<ul><li>Gene Expression summary across all samples.</li></ul>
+						<center><figure><img src="images/gene1.png"><figcaption>Displays all 'OPTN' genes expression summary statistics for all <i>G. gallus</i> samples.</figcaption></figure></center>
+					<ul><li>Gene Expression for each sample</li></ul>
+						<center><figure><img src="images/gene2.png"><figcaption>Displays all 'OPTN' gene expression for each sample selected.</figcaption></figure></center>
+					<h4>Variants</h4>
+					Variants can be viewed through querying gene symbols or chromosomal regions.
+					<ul><li>Variant distribution per chromosome and sample</li></ul>
+						<center><figure><img src="images/variant1.png"><figcaption>Displays the total number of variants, SNPs and INDELs found in chromosomes (chr1, chr2, chr3) for sample 'GGA_UD_1014'.</figcaption></figure></center>
+					<ul><li>Variants found in genomic regions of specified genes</li></ul>
+						<center><figure><img src="images/variant2.png"><figcaption>Displays all the variants and annotations for the 'OPTN' gene in <i>G. gallus</i> organism.</figcaption></figure></center>
+					<ul><li>Variants found based on chromosomal regions specified</li></ul>
+						<center><figure><img src="images/variant3.png"><figcaption>Displays all the variants and annotations found in <i>G. gallus</i> along chr1:6540000-6580000.</figcaption></figure></center>
+				</div>
+        <hr>
+
         <p>Please click the menu items to navigate through this repository. If you have questions, comments and bug reports, please <a href="mailto:amodupe@udel.edu">email me </a>directly. </p>
         <p>Thank you very much for your help and support!</p>
       </section>
