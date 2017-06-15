@@ -16,7 +16,7 @@ our $AUTHOR= '$ Author:Modupe Adetunji <amodupe@udel.edu> $';
 #--------------------------------------------------------------------------------
 
 our ($verbose, $efile, $help, $man);
-our ($sqlfile,$connect, $dbverdict, $schemaverdict, $verdict, $found);
+our ($sqlfile,$connect, $dbverdict, $schemaverdict, $root, $verdict, $found);
 my ($dbname,$username,$password,$location,$fbname);
 my ($sth,$dbh,$schema); #connect to database;
 our @dbtables = qw|Sample Animal MapStats GeneStats Metadata  GenesFpkm IsoformsFpkm VarAnnotation VarResult VarSummary|;
@@ -24,6 +24,7 @@ our @dbtables = qw|Sample Animal MapStats GeneStats Metadata  GenesFpkm Isoforms
 sub printerr; #declare error routine
 our ($ibis, $ardea) = fastbit_name(); #ibis and ardea location
 our $default = DEFAULTS(); #default error contact
+my $localhost = 'localhost';
 processArguments(); #Process input
 
 #creating or using databases
@@ -50,7 +51,7 @@ $dbh = mysql($dbname, $username, $password); #connect to mysql
 SCHEMA();
 printerr "JOB:\t MySQL = $dbname and NoSQL = $fbname creation\n";
 if ($schemaverdict) { # if tables are in the database
-  print "\nWARNING: Database has requisite tables with content\n";
+  print "\nWARNING: Relational Database has requisite tables with content\n";
   print "\t Do you still want to recreate database? (Y/N): ";
   chomp ($verdict = lc (<>));
   print "\n";
@@ -99,6 +100,10 @@ $verbose and printerr "EXECUTED: Created Fastbit folder $ffastbit\n";
 printerr "-----------------------------------------------------------------\n";
 printerr ("NOTICE:\t Successful creation of MySQL database ==> \"$dbname\"\n");
 printerr ("NOTICE:\t Successful creation of FastBit folder ==> \"".$ffastbit."\"\n");
+if (-e "$root/web/config.php") {
+	$root =~ s/\/$//g;
+	printerr ("NOTICE:\t Successful creation of Web Interface ==> \"".$root."/web\"\n\t View web interface at your 'http://$localhost/web'\n");
+} else {print $root; }
 printerr ("NOTICE:\t Summary in log file $efile\n");
 printerr "-----------------------------------------------------------------\n";
 print LOG "TransAtlasDB Completed:\t", scalar(localtime),"\n";
@@ -107,6 +112,7 @@ close (LOG);
 
 sub processArguments {
 	my @commandline = @ARGV;
+	if ($> != 0) { pod2usage ("ERROR:\t TranAtlasDB requires root priviledges to proceed with installation.\n\t Provide root access by using \t'sudo perl $0 @commandline'") };
   GetOptions('verbose|v'=>\$verbose, 'help|h'=>\$help, 'man|m'=>\$man, 'databasename|d=s'=>\$dbname,
 		'username|u=s'=>\$username, 'password|p=s'=>\$password, 'location|l=s'=>\$location,
 		'fastbitname|n=s'=>\$fbname ) or pod2usage ();
@@ -135,9 +141,28 @@ sub processArguments {
   open(CONNECT, ">$get/\.connect.txt"); 
   my $connectcontent = "MySQL\n  username $username\n  password $password\n  databasename $dbname\nFastBit\n  path $location\n  foldername $fbname\n  ibis $ibis\n  ardea $ardea";
   print CONNECT $connectcontent; close (CONNECT);
-  `tar -xzf $get/.web.tgz -C $get`;
-  open(CONFIG, ">$get/web/config.php");
-  print CONFIG "<?php
+  printerr "NOTICE:\t Establishing the TransAtlasDB web interface\n";
+	print "\t Do you want to configure the web application (Y/N): ";
+	undef $verdict; chomp ($verdict = lc(<>)); print "\n";
+	if ($verdict =~ /^y/) {
+		$verdict = "conf";
+	  `which apachectl` or (printerr "ERROR:\t TransAtlasDB web requires Apache.\n\t Can not find Apache. Download Apache to use the web interface." and $verdict = "dont");
+	  `which php` or (printerr "ERROR:\t TransAtlasDB web requires PHP scripting languange.\n\t Can not find PHP. Download PHP and configure to mysql inorder to use the web interface." and $verdict = "dont");
+		if ($verdict =~ /conf/){
+			if (`uname` =~ /linux/i){ $root = '/var/www/html/'; }
+			elsif (`uname` =~ /darwin/i) { $root = '/Library/WebServer/Documents/'; }
+			else { $root = $get; }
+			print " Specify apache location, if other than '$root', else press enter : ";
+			undef $verdict; chomp ($verdict = (<>)); print "\n"; 
+			if ($verdict) {
+				$verdict =~ s/\s+$//g; 
+				if (-d $verdict) { $root = $verdict; $localhost = '<web_server_url>'; $verdict = "config"; }
+				else { printerr "ERROR: Directory $verdict can not be found, Web Interface not configured\n"; }
+			} else { $verdict = "config"; }
+			if ($verdict =~ /config/) {
+				`tar -xzf $get/.web.tgz -C $root`;
+				open(CONFIG, ">$root/web/config.php");
+				print CONFIG "<?php
   define('DB_SERVER', 'localhost');
   define('DB_USERNAME', '$username');
   define('DB_PASSWORD', '$password');
@@ -145,9 +170,16 @@ sub processArguments {
   \$db_conn = mysqli_connect(DB_SERVER,DB_USERNAME,DB_PASSWORD,DB_DATABASE);
   \$basepath = '$get';
 ?>
-";
-close (CONFIG);
+				";
+				close (CONFIG);
+			} # end if config
 
+		} #end if conf...
+	} elsif ($verdict) {
+		printerr "NOTICE:\t Moving on, Web Interface not configured\n";
+	} else {
+		printerr "NOTICE:\t Response not provided, Web Interface not configured\n";
+	}
 }
 
 sub SCHEMA {
