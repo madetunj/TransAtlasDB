@@ -181,7 +181,7 @@ a small { font-size: 11px; color: #777; margin-top: -0.3em; display: block; }
 
 a:hover small { color: #777; }
 
-.wrapper { width: 860px; margin: 0 auto; }
+.wrapper { width: 960px; margin: 0 auto; }
 
 blockquote { border-left: 1px solid #fff; margin: 0; padding: 0 0 20px 20px; font-style: italic; }
 
@@ -225,7 +225,7 @@ header ul li + li + li { border-right: none; width: 89px; }
 
 header ul a strong { font-size: 14px; display: block; color: #2a0d45; }
 
-section { width: 500px; float: right; padding-bottom: 50px; }
+section { width: 600px; float: right; padding-bottom: 50px; }
 
 small { font-size: 11px; }
 
@@ -246,7 +246,7 @@ a:hover h4 {color:#39c;}
 .back-to-top { background: none; margin: 0; position: fixed; bottom: 20px;  right: 0; text-align: center; width: 70px; height: inherit; z-index: 100; display: none; text-decoration: blink; color: #fff; font-weight: bolder; background-color: #af6e18; } 
 .back-to-top i { font-size: 60px; }
 
-@media print, screen and (max-width: 1060px) { div.wrapper { width: auto; margin: 0; }
+@media print, screen and (max-width: 1160px) { div.wrapper { width: auto; margin: 0; }
   header, section, footer { float: none; position: static; width: auto; }
   header { padding-right: 420px; }
   section { border: 1px solid #e5e5e5; border-width: 1px 0; padding: 20px 0; margin: 0 0 20px; }
