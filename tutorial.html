@@ -242,7 +242,7 @@
 				
 					 <A name="web"><h3>WEB ENVIRONMENT</h3></a>
         <div class="pushit">
-          TransAtlasDB web portal can be viewed using PHP and Apache. Biologist can benefit from using the web interface to interact with the analysis data stored in the TransAtlasDB system using the <a href="#tadimport">data import module</a>.<br>
+          TransAtlasDB web portal can be viewed using PHP and Apache. Biologist can benefit from using the web interface to interact with the analysis data previously stored using the <a href="#tadimport">data import module</a>.<br>
 					The web interface is designed into five major sections:
 					<h4>About</h4>
 					The about page gives the summary statistics of the samples data imported in the database, and consist of four parts.
@@ -256,18 +256,19 @@
 						<center><a target="_blank" href="images/about4.png"><img src="images/about4.png"></a></center>
 					<h4>Data Import</h4>
 					The data import page provides two methods of importing the samples metadata. Storing the large data files such as the gene expression profiling and variants analysis results can only be done using the Perl toolkit as explained above.
-					<ul><li>File Upload:<br>Samples metadata are uploaded from a sample file, either using the sample tab-delimited <a href="samples-template.txt" target="_blank" download="template.txt">template</a> or FAANG <a href="FAANG_template.xlsx" target="_blank" download="faangtemplate.xlsx">spreadsheet</a>.</li></ul>
-						<center><a target="_blank" href="images/import1.png>"<img src="images/import1.png"></a></center>
+					<ul><li>File Upload:<br>Sample metadata are uploaded from a sample file, either using the sample tab-delimited <a href="samples-template.txt" target="_blank" download="template.txt">template</a> or FAANG <a href="FAANG_template.xlsx" target="_blank" download="faangtemplate.xlsx">spreadsheet</a>.<br>
+					<strong>NOTE:</strong> At this point, only sample metadata files can be uploaded via the web interface. RNAseq analyses data files should be imported through the <a href="#tadimport">command-line toolkit</a>.</li></ul>
+						<center><figure><a target="_blank" href="images/import1.png"><img src="images/import1.png"></a><figcaption>Data import file upload page.</figcaption></figure></center>
 					<ul><li>Manual Entry:<br>Samples metadata can also be inserted by manually entering the information.</li></ul>
-						<center><a target="_blank" href="images/import2.png"><img src="images/import2.png"></a></center>
+						<center><figure><a target="_blank" href="images/import2.png"><img src="images/import2.png"></a><figcaption>Data import manual entry page.</figcaption></figure></center>
 					<h4>Metadata</h4>
 					The metadata page displays the samples stored in the database and an overview of each sample storage-status as well as the analysis summary where applicable. The samples can be exported as a tab-delimited file.
 					<ul><li>Samples Metadata and storage status:<br>View samples metadata currently in the database based on search criteria.</li></ul>
-						<center><figure><a target="_blank" href="images/metadata1.png"><img src="images/metadata1.png"></a><figcaption>Displays all samples in the database by pressing GO.</figcaption></figure></center>
+						<center><figure><a target="_blank" href="images/metadata1.png"><img src="images/metadata1.png"></a><figcaption>Displays all samples in the database by clicking on 'GO'.</figcaption></figure></center>
 					<ul><li>RNAseq results metadata:<br>View samples analysis metadata.</li></ul>
-						<center><figure><a target="_blank" href="images/metadata2.png"><img src="images/metadata2.png"></a><figcaption>Displays all sample analysis metadata in the database by pressing GO.</figcaption></figure></center>
+						<center><figure><a target="_blank" href="images/metadata2.png"><img src="images/metadata2.png"></a><figcaption>Displays all sample analysis metadata in the database by clicking on 'GO'.</figcaption></figure></center>
 					<h4>Gene Expression</h4>
-					The gene expression data can be viewed based on the individual sample-gene expression or average expression profiles of multiple genes across all samples and tissues. By specifying one or more genes by their gene symbols, a fuzzy search is performed based on the characters specified.
+					The gene expression data can be viewed based on the individual sample-gene expression or average expression profiles of multiple genes across all samples and tissues. By specifying one or more genes by their gene symbols, a fuzzy search is performed based on the characters specified. The results can be saved in a tab-delimited file.
 					<ul><li>Gene Expression summary across all samples.</li></ul>
 						<center><figure><a target="_blank" href="images/gene1.png"><img src="images/gene1.png"></a><figcaption>Displays all 'OPTN' genes expression summary statistics for all <i>G. gallus</i> samples.</figcaption></figure></center>
 					<ul><li>Gene Expression for each sample</li></ul>
@@ -276,9 +277,9 @@
 					Variants can be viewed through querying gene symbols or chromosomal regions.
 					<ul><li>Variant distribution per chromosome and sample</li></ul>
 						<center><figure><a target="_blank" href="images/variant1.png"><img src="images/variant1.png"></a><figcaption>Displays the total number of variants, SNPs and INDELs found in chromosomes (chr1, chr2, chr3) for sample 'GGA_UD_1014'.</figcaption></figure></center>
-					<ul><li>Variants found in genomic regions of specified genes</li></ul>
+					<ul><li>Variants found in genomic regions of specified genes. One or more genes can be specified and a fuzzy search is performed for each gene queried. The results can be exported as a tab-delimited file.</li></ul>
 						<center><figure><a target="_blank" href="images/variant2.png"><img src="images/variant2.png"></a><figcaption>Displays all the variants and annotations for the 'OPTN' gene in <i>G. gallus</i> organism.</figcaption></figure></center>
-					<ul><li>Variants found based on chromosomal regions specified</li></ul>
+					<ul><li>Variants found based on chromosomal regions specified. These results can be exported as a tab-delimited file or a VCF file for downstream analysis or visualization.</li></ul>
 						<center><figure><a target="_blank" href="images/variant3.png"><img src="images/variant3.png"></a><figcaption>Displays all the variants and annotations found in <i>G. gallus</i> along chr1:6540000-6580000.</figcaption></figure></center>
 				</div>
         <hr>
