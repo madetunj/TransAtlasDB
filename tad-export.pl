@@ -256,9 +256,9 @@ if ($dbdata){ #if db 2 data mode selected
                         $CHROM{"$geneid|$chrom"} = $chrom;
                         $POSITION{"$geneid|$chrom"}{$library} = "$start|$stop";
                     } close (IN); `rm -rf $nosql`;
-                } 
+                } # end foreach gene
             } else {
-                $newsyntax = $syntax." sampleid = '$_' ORDER BY geneid desc;";
+                $newsyntax = $syntax." sampleid = '$header' ORDER BY geneid desc;";
                 `$ibis -d $gfastbit -q "$newsyntax" -o $nosql 2>>$efile`;
                 
                 open(IN,"<",$nosql);

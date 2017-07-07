@@ -58,7 +58,7 @@ if (length($ibis) < 1){ ($ibis, $ardea) = ($all_details{'FastBit-ibis'}, $all_de
 #PROCESSING METADATA
 if ($metadata){
 	$dbh = mysql($all_details{'MySQL-databasename'}, $all_details{'MySQL-username'}, $all_details{'MySQL-password'}); #connect to mysql
-  	if ($tab) { #unix tab delimited file
+  if ($tab) { #unix tab delimited file
 		printerr "JOB:\t Importing Sample Information from tab-delimited file => $file2consider\n"; #status
 		my %filecontent = %{ tabcontent($file2consider) }; #get content from tab-delimited file
 		foreach my $row (sort keys %filecontent){
@@ -75,7 +75,6 @@ if ($metadata){
 					undef $sheetid;
 				}
 				$sheetid = $filecontent{$row}{'organization'}; #organization name
-				print $sheetid;
 				if ($sheetid) { #Organization Name
 					$sth = $dbh->prepare("select organizationname from Organization where organizationname = '$sheetid'"); $sth->execute(); $found = $sth->fetch();
 					unless ($found) { # if person is not in the database
