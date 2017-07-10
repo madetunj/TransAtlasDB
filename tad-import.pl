@@ -63,6 +63,7 @@ if ($metadata){
 		my %filecontent = %{ tabcontent($file2consider) }; #get content from tab-delimited file
 		foreach my $row (sort keys %filecontent){
 			if (exists $filecontent{$row}{'sample name'}) { #sample name
+				$filecontent{$row}{'organism part'} = lc($filecontent{$row}{'organism part'});
 				my $sheetid = "$filecontent{$row}{'first name'} $filecontent{$row}{'middle initial'} $filecontent{$row}{'last name'}"; #scientist name
 				if (length $sheetid > 3) { #Person Name 
 					$sth = $dbh->prepare("select personid from Person where personid = '$sheetid'"); $sth->execute(); $found = $sth->fetch();
@@ -111,7 +112,7 @@ if ($metadata){
 					die "\nFAILED:\t Error in tab-delimited file \"$file2consider\".\n\tCheck => ROW: $row, COLUMN: \"Derived From\"\n";
 				}
 				if (exists $filecontent{$row}{'organism part'}) { #organism part / tissue
-					$sheetid  = $filecontent{$row}{'organism part'};
+					$sheetid  = $filecontent{$row}{'organism part'}; 
 					$sth = $dbh->prepare("select tissue from Tissue where tissue = '$sheetid'"); $sth->execute(); $found = $sth->fetch();
 					unless ($found) { # if is not in the database
 						$sth = $dbh->prepare("insert into Tissue (tissue) values ('$sheetid')");
@@ -301,7 +302,8 @@ if ($metadata){
 								}
 							}
 							if (length $value[$columnpos{'organism part'}] > 1) {
-								$sheetid  = "$value[$columnpos{'organism part'}]";
+								$value[$columnpos{'organism part'}] = lc($value[$columnpos{'organism part'}]);
+								$sheetid  = "$value[$columnpos{'organism part'}]"; 
 								my $loc = $columnpos{'organism part'};
 								$sth = $dbh->prepare("select tissue from Tissue where tissue = '$sheetid'"); $sth->execute(); $found = $sth->fetch();
 								unless ($found) { # if is not in the database
