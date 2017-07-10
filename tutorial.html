@@ -74,7 +74,8 @@
 	</div><hr>
         <A name="tadinstall"><h3>INSTALLATION</h3></a>
         <div class="pushit">
-          <p>The TransAtlasDB database system and necessary components need to be installed to a local disk using <b><font color="#000"><i>INSTALL-tad.pL</i></font></b> and user must have root priviledges to install.</p>
+          <p>The TransAtlasDB database system and necessary components need to be installed to a local disk using <b><font color="#000"><i>INSTALL-tad.pL</i></font></b> and user must have root privileges to install.<br>
+					<strong>IMPORTANT:</strong> TransAtlasDB installation requires superuser (root) privileges.</p>
           <p>Only the <d>–password</d> argument is required if the user has root or admin privileges to the MySQL server, else specify the username and password.
         </div>
         <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for installing TransAtlasDB using defaults and mysql password as 'mysql-password'.</span>
@@ -84,12 +85,12 @@
             <p>Otherwise, arguments such as the mysql username <d>-username</d> is required and optionally the database name <d>-databasename</d>, else the default name <i><font color="#d14">transatlasdb</font></i> will be assigned.</p>
           </div>
           <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for installing TransAtlasDB specifying username as 'mysql-username' and databasename as 'mysql-databasename'.</span>
-  <span class="k">INSTALL-tad.pL</span> <span class="o">-</span><span class="nb">p</span> <span class="s">mysql-password</span> <span class="o">-</span><span class="nb">username</span> <span class="s">mysql-username</span> <span class="o">-</span><span class="nb">databasename</span> <span class="s">mysql-databasename</span>
+  sudo perl <span class="k">INSTALL-tad.pL</span> <span class="o">-</span><span class="nb">p</span> <span class="s">mysql-password</span> <span class="o">-</span><span class="nb">username</span> <span class="s">mysql-username</span> <span class="o">-</span><span class="nb">databasename</span> <span class="s">mysql-databasename</span>
 </code></pre></div>
           <div class="pushit">
           <p>The NoSQL folder-name <d>-fastbitname</d> and system's path <d>-location</d> can be optionally specified, if not, a default folder <i><font color="#d14">transatlasfb</font></i> will be created in the working directory.</p></div>
           <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax for installing TransAtlasDB specifying username as 'mysql-username' and databasename as 'mysql-databasename' with nosql folder 'nosqlfolder'.</span>
-  <span class="k">INSTALL-tad.pL</span> <span class="o">-</span><span class="nb">p</span> <span class="s">mysql-password</span>  <span class="o">-</span><span class="nb">u</span> <span class="s">mysql-username</span> <span class="o">-</span><span class="nb">d</span> <span class="s">mysql-databasename</span> <span class="o">-</span><span class="nb">fastbitname</span> <span class="s"><i>nosqlfolder</i></span>
+  sudo perl <span class="k">INSTALL-tad.pL</span> <span class="o">-</span><span class="nb">p</span> <span class="s">mysql-password</span>  <span class="o">-</span><span class="nb">u</span> <span class="s">mysql-username</span> <span class="o">-</span><span class="nb">d</span> <span class="s">mysql-databasename</span> <span class="o">-</span><span class="nb">fastbitname</span> <span class="s"><i>nosqlfolder</i></span>
 </code></pre></div>
           <div class="pushit"><h4>Connecting to the database using <font color="#000"><i>connect-tad.pL</i></font></h4>
 <p>The installational module needs to be carried out once per local disk to prevent database access conflict. However, if such conflict arises user settings can be viewed and/or corrected for using <b><i>connect-tad.pL</i></b>.</p></div>
