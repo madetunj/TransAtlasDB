@@ -16,7 +16,7 @@ our $AUTHOR= '$ Author:Modupe Adetunji <amodupe@udel.edu> $';
 #--------------------------------------------------------------------------------
 
 our ($verbose, $efile, $help, $man);
-our ($sqlfile,$connect, $dbverdict, $schemaverdict, $root, $verdict, $found);
+our ($sqlfile,$connect, $dbverdict, $schemaverdict, $root, $additional, $verdict, $found);
 my ($dbname,$username,$password,$location,$fbname);
 my ($sth,$dbh,$schema); #connect to database;
 our @dbtables = qw|Sample Animal MapStats GeneStats Metadata  GenesFpkm IsoformsFpkm VarAnnotation VarResult VarSummary|;
@@ -100,10 +100,7 @@ $verbose and printerr "EXECUTED: Created Fastbit folder $ffastbit\n";
 printerr "-----------------------------------------------------------------\n";
 printerr ("NOTICE:\t Successful creation of MySQL database ==> \"$dbname\"\n");
 printerr ("NOTICE:\t Successful creation of FastBit folder ==> \"".$ffastbit."\"\n");
-if (-e "$root/web/config.php") {
-	$root =~ s/\/$//g;
-	printerr ("NOTICE:\t Successful creation of Web Interface ==> \"".$root."/web\"\n\t View web interface at your 'http://$localhost/web'\n");
-} else {print $root; }
+if ($additional) { printerr $additional; };
 printerr ("NOTICE:\t Summary in log file $efile\n");
 printerr "-----------------------------------------------------------------\n";
 print LOG "TransAtlasDB Completed:\t", scalar(localtime),"\n";
@@ -175,6 +172,11 @@ sub processArguments {
 			} # end if config
 
 		} #end if conf...
+		if (-e "$root/web/config.php") {
+			$root =~ s/\/$//g;
+			$additional = "NOTICE:\t Successful creation of Web Interface ==> \"".$root."/web\"\n\t View web interface at your 'http://$localhost/web'\n";
+		} #print completed statement, if successful.
+		
 	} elsif ($verdict) {
 		printerr "NOTICE:\t Moving on, Web Interface not configured\n";
 	} else {
