@@ -46,7 +46,7 @@
         <ul>
           <li><a href="download/transatlasdb.zip">Download <strong>ZIP File</strong></a></li>
           <li><a href="download/transatlasdb.tgz">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://drive.google.com/uc?id=0BzTtjBPaYymgS3JRQlNlWmhDU3M&export=download" target="_blank">Download <strong>VMA File</strong></a></li>
+          <li><a href="https://drive.google.com/uc?id=1GFECcPLSjOuVq0RUNzYG0LcAf2_OsP1U&export=download" target="_blank">Download <strong>VMA File</strong></a></li>
         </ul>      
       </header>
       <br>
@@ -128,20 +128,19 @@ Otherwise, the sample information can be manually inserted using SQL insert stat
               The Alignment information is comprised of the alignment files generated from either RNAseq read mappers; TopHat2 or HISAT2.
               Depending on the RNAseq read mapper used, the expected files are;<br>
               <ol type="i"><li>
-              <b>HISAT2</b></li>
-              <ul class="tools"><li>Align sam file ( suffix: <i><font color="#d14">.sam</font></i> )</li>
-              <li>Summary file ( i.e. <i><font color="#d14">align_summary.txt</font></i> )</li>
-              <font size="2pt" color=#333><i>NOTE</i>: The alignment summary, produced as stardard output at default, must be saved as 'align_summary.txt' file</font></ul>
+              BAM file ( suffix: <i><font color="#d14">.bam</font></i> )</li>
+              <font size="2pt" color=#333><i>NOTE</i>: HISAT2 default alignment SAM file must be converted to BAM.</font></ul>
               
-              <li><b>TopHat2 </b></li>
-              <ul class="tools"><li>Alignment Bam file ( suffix: <i><font color="#d14">.bam</font></i> )</li>
               <li>Summary file ( i.e. <i><font color="#d14">align_summary.txt</font></i> )</li>
+              <font size="2pt" color=#333><i>NOTE</i>: HISAT2 alignment summary, produced as stardard output at default, must be saved as 'align_summary.txt' file</font></ul>
+              
               <li>Bed files ( i.e. <i><font color="#d14">deletions.bed</font></i> , <i><font color="#d14">insertions.bed</font></i> , <i><font color="#d14">junctions.bed</font></i> )</li>
-              <li><i><font color="#d14">logs</font></i> folder</li></ul></ol>
+              <font size="2pt" color=#333><i>NOTE</i>: The bed files are optional.</font></ul>
+              </ol>
             </ol><p></p>
             <ol type= "a" start=3>
             <li><strong>Expression Information.</strong></li>
-              The Expression information consists of the genes FPKM (Fragments Per Kilobase of transcript per million) file generated using Cufflinks or StringTie, the required files are;<br>
+              The Expression information consists of the genes FPKM (Fragments Per Kilobase of transcript per million) file generated using Cufflinks or StringTie, and genomic features read counts using various feature summarization tools like HTSeq-count and featurecount. The required files are;<br>
               <ol type="i"><li>
              <b> StringTie</b></li>
               <ul class="tools"><li>Transcripts GTF ( suffix: <i><font color="#d14">.gtf</font></i> )</li>
@@ -149,7 +148,11 @@ Otherwise, the sample information can be manually inserted using SQL insert stat
               
               <li><b>Cufflinks </b></li>
               <ul class="tools"><li>Genes fpkm tracking table ( i.e. <i><font color="#d14">genes.fpkm_tracking</font></i> ), or </li>
-              <li>Transcripts GTF ( i.e. <i><font color="#d14">transcripts.gtf</font></i> )</li></ul></ol>
+              <li>Transcripts GTF ( i.e. <i><font color="#d14">transcripts.gtf</font></i> )</li></ul>
+              
+              <li><b>Feature summarization </b></li>
+              <ul class="tools"><li>Read Counts file ( suffix: <i><font color="#d14">.counts</font></i> )</li>
+              <font size="2pt" color=#333><i>NOTE</i>: The read counts should be saved with the suffix '.counts'</font></ul></ol>
             </ol><p></p>
             <ol type= "a" start=4>
             <li><strong>Variant Information.</strong></li>
