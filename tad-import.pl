@@ -702,7 +702,7 @@ if ($delete){ #delete section
 								my $execute = "$ibis -d $vfastbit -y \"sampleid = '$delete'\" -z";
 								`$execute 2>> $efile`; printerr ".";
 								`rm -rf $vfastbit/*sp $vfastbit/*old $vfastbit/*idx $vfastbit/*dic $vfastbit/*int `; #removing old indexes
-								`ibis -d $vfastbit -query "select genename, geneid, genetype, transcript, feature, codonchange, aachange, sampleid, chrom, tissue, organism, consequence, dbsnpvariant, source" 2>> $efile`; #create a new index based on genename
+								`$ibis -d $vfastbit -query "select genename, geneid, genetype, transcript, feature, codonchange, aachange, sampleid, chrom, tissue, organism, consequence, dbsnpvariant, source" 2>> $efile`; #create a new index based on genename
 								printerr " Done\n";
 							}
 						} else {
@@ -715,7 +715,7 @@ if ($delete){ #delete section
 							my $execute = "$ibis -d $vfastbit -y \"sampleid = '$delete'\" -z";
 							`$execute 2>> $efile`; printerr ".";
 							`rm -rf $vfastbit/*sp $vfastbit/*old $vfastbit/*idx $vfastbit/*dic $vfastbit/*int `; #removing old indexes
-							`ibis -d $vfastbit -query "select genename, geneid, genetype, transcript, feature, codonchange, aachange, sampleid, chrom, tissue, organism, consequence, dbsnpvariant, source" 2>> $efile`; #create a new index
+							`$ibis -d $vfastbit -query "select genename, geneid, genetype, transcript, feature, codonchange, aachange, sampleid, chrom, tissue, organism, consequence, dbsnpvariant, source" 2>> $efile`; #create a new index
 							printerr " Done\n";
 						}
 					}
@@ -733,13 +733,13 @@ if ($delete){ #delete section
 								my $execute = "$ibis -d -v $gfastbit -y \"sampleid = '$delete'\" -z";
 								`$execute 2>> $efile`; printerr ".";
 								`rm -rf $gfastbit/*sp $gfastbit/*old $gfastbit/*idx $gfastbit/*dic $gfastbit/*int `; #removing old indexes
-								`ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+								`$ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 								
 								#deleting gene_counts information from fastbit
 								$execute = "$ibis -d -v $cfastbit -y \"sampleid = '$delete'\" -z";
 								`$execute 2>> $efile`; printerr ".";
 								`rm -rf $cfastbit/*sp $cfastbit/*old $cfastbit/*idx $cfastbit/*dic $cfastbit/*int `; #removing old indexes
-								`ibis -d $cfastbit -query "select genename, sampleid, tissue, organism" 2>> $efile`; #create a new index based on genename
+								`$ibis -d $cfastbit -query "select genename, sampleid, tissue, organism" 2>> $efile`; #create a new index based on genename
 								
 								printerr " Done\n";
 							}
@@ -755,13 +755,13 @@ if ($delete){ #delete section
 							my $execute = "$ibis -d -v $gfastbit -y \"sampleid = '$delete'\" -z";
 							`$execute 2>> $efile`; printerr ".";
 							`rm -rf $gfastbit/*sp $gfastbit/*old $gfastbit/*idx $gfastbit/*dic $gfastbit/*int `; #removing old indexes
-							`ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+							`$ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 								
 							#deleting gene_counts information from fastbit
 							$execute = "$ibis -d -v $cfastbit -y \"sampleid = '$delete'\" -z";
 							`$execute 2>> $efile`; printerr ".";
 							`rm -rf $cfastbit/*sp $cfastbit/*old $cfastbit/*idx $cfastbit/*dic $cfastbit/*int `; #removing old indexes
-							`ibis -d $cfastbit -query "select genename, sampleid, tissue, organism" 2>> $efile`; #create a new index based on genename
+							`$ibis -d $cfastbit -query "select genename, sampleid, tissue, organism" 2>> $efile`; #create a new index based on genename
 								
 							printerr " Done\n";
 						}
@@ -1113,7 +1113,7 @@ sub READ_COUNT { #subroutine for read counts
 			my $execute = "$ardea -d $cfastbit -m 'sampleid:text,genename:text,organism:text,tissue:text,readcount:double' -t $cnosql";
 			`$execute 2>> $efile` or die "\nERROR\t: Complication importing RawCounts information to FastBit, contact $AUTHOR\n";
 			`rm -rf $cfastbit/*sp`; #removeing old indexes
-			`ibis -d $cfastbit -query "select genename, sampleid, tissue, organism" 2>> $efile`; #create a new index based on genename
+			`$ibis -d $cfastbit -query "select genename, sampleid, tissue, organism" 2>> $efile`; #create a new index based on genename
 			`chmod 777 $cfastbit && rm -rf $cnosql`;
 			
 			$sth = $dbh->prepare("update GeneStats set countstool = '$counttool', countstatus = 'done' where sampleid= '$_[0]'"); $sth ->execute(); #updating GeneStats table.
@@ -1184,7 +1184,7 @@ sub GENES_FPKM { #subroutine for getting gene information
 				my $execute = "$ardea -d $gfastbit -m 'sampleid:text,chrom:text,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,tpm:double,fpkm:double,fpkmconflow:double,fpkmconfhigh:double,start:int,stop:int' -t $gnosql";
 				`$execute 2>> $efile` or die "\nERROR\t: Complication importing Expression information to FastBit, contact $AUTHOR\n";
 				`rm -rf $gfastbit/*sp`; #removeing old indexes
-				`ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+				`$ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 				`chmod 777 $gfastbit && rm -rf $gnosql`;
 				
 				printerr " Done\n";
@@ -1283,7 +1283,7 @@ sub GENES_FPKM { #subroutine for getting gene information
 					my $execute = "$ardea -d $gfastbit -m 'sampleid:text,chrom:text,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,tpm:double,fpkm:double,fpkmconflow:double,fpkmconfhigh:double,start:int,stop:int' -t $gnosql";
 					`$execute 2>> $efile` or die "\nERROR\t: Complication importing Expression information to FastBit, contact $AUTHOR\n";
 					`rm -rf $gfastbit/*sp`; #removeing old indexes
-					`ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+					`$ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 					`chmod 777 $gfastbit && rm -rf $gnosql`;
 				
 					printerr " Done\n";
@@ -1381,7 +1381,7 @@ sub GENES_FPKM { #subroutine for getting gene information
 					my $execute = "$ardea -d $gfastbit -m 'sampleid:text,chrom:text,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,tpm:double,fpkm:double,fpkmconflow:double,fpkmconfhigh:double,start:int,stop:int' -t $gnosql";
 					`$execute 2>> $efile` or die "\nERROR\t: Complication importing Expression information to FastBit, contact $AUTHOR\n";
 					`rm -rf $gfastbit/*sp`; #removing old indexes
-					`ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+					`$ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 					`chmod 777 $gfastbit && rm -rf $gnosql`;
 				
 					printerr " Done\n";
@@ -1436,7 +1436,7 @@ sub GENES_FPKM { #subroutine for getting gene information
 					my $execute = "$ardea -d $gfastbit -m 'sampleid:text,chrom:text,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,tpm:double,fpkm:double,fpkmconflow:double,fpkmconfhigh:double,start:int,stop:int' -t $gnosql";
 					`$execute 2>> $efile` or die "\nERROR\t: Complication importing Expression information to FastBit, contact $AUTHOR\n";
 					`rm -rf $gfastbit/*sp`; #removing old indexes
-					`ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+					`$ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 					`chmod 777 $gfastbit && rm -rf $gnosql`;
 				
 					printerr " Done\n";
@@ -1489,7 +1489,7 @@ sub GENES_FPKM { #subroutine for getting gene information
 					my $execute = "$ardea -d $gfastbit -m 'sampleid:text,chrom:text,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,tpm:double,fpkm:double,fpkmconflow:double,fpkmconfhigh:double,start:int,stop:int' -t $gnosql";
 					`$execute 2>> $efile` or die "\nERROR\t: Complication importing Expression information to FastBit, contact $AUTHOR\n";
 					`rm -rf $gfastbit/*sp`; #removing old indexes
-					`ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+					`$ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 					`chmod 777 $gfastbit && rm -rf $gnosql`;
 				
 					printerr " Done\n";
@@ -1892,7 +1892,7 @@ sub NOSQL {
 	my $execute = "$ardea -d $vfastbit -m 'variantclass:char,zygosity:char,dbsnpvariant:text,source:text,consequence:text,geneid:text,genename:text,transcript:text,feature:text,genetype:text,refallele:char,altallele:char,tissue:text,chrom:text,aachange:text,codonchange:text,organism:text,sampleid:text,quality:double,position:int,proteinposition:int' -t $vnosql";
 	`$execute 2>> $efile` or die "\nERROR\t: Complication importing to FastBit, contact $AUTHOR\n";
 	`rm -rf $vfastbit/*sp`; #removing old indexes
-	`ibis -d $vfastbit -query "select genename, geneid, genetype, transcript, feature, codonchange, aachange, sampleid, chrom, tissue, organism, consequence, dbsnpvariant, source" 2>> $efile`; #create a new index
+	`$ibis -d $vfastbit -query "select genename, geneid, genetype, transcript, feature, codonchange, aachange, sampleid, chrom, tissue, organism, consequence, dbsnpvariant, source" 2>> $efile`; #create a new index
 	`chmod 777 $vfastbit && rm -rf $vnosql`;
 	$sth = $dbh->prepare("update VarSummary set nosql = 'done' where sampleid = '$_[0]'"); $sth ->execute(); #update database nosql : DONE
 	
