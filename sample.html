@@ -125,13 +125,12 @@
 Otherwise, the sample information can be manually inserted using SQL insert statements.</p> </ol>
             <ol type= "a" start=2>
               <li><strong>Alignment Information.</strong></li>
-              The Alignment information is comprised of the alignment files generated from either RNAseq read mappers; TopHat2 or HISAT2.
+              The Alignment information is comprised of the alignment files generated from either RNAseq read mappers.
               Depending on the RNAseq read mapper used, the expected files are;<br>
               <ol type="i"><li>
               BAM file ( suffix: <i><font color="#d14">.bam</font></i> )</li>
-              <font size="2pt" color=#333><i>NOTE</i>: HISAT2 default alignment SAM file must be converted to BAM.</font></ul>
               
-              <li>Summary file ( i.e. <i><font color="#d14">align_summary.txt</font></i> )</li>
+              <li>Summary file ( i.e. <i><font color="#d14">align_summary.txt</font></i> or <i><font color="#d14">Log.final.out</font></i> )</li>
               <font size="2pt" color=#333><i>NOTE</i>: HISAT2 alignment summary, produced as stardard output at default, must be saved as 'align_summary.txt' file</font></ul>
               
               <li>Bed files ( i.e. <i><font color="#d14">deletions.bed</font></i> , <i><font color="#d14">insertions.bed</font></i> , <i><font color="#d14">junctions.bed</font></i> )</li>
@@ -142,28 +141,32 @@ Otherwise, the sample information can be manually inserted using SQL insert stat
             <li><strong>Expression Information.</strong></li>
               The Expression information consists of the genes FPKM (Fragments Per Kilobase of transcript per million) file generated using Cufflinks or StringTie, and genomic features read counts using various feature summarization tools like HTSeq-count and featurecount. The required files are;<br>
               <ol type="i"><li>
-             <b> StringTie</b></li>
+             <b> StringTie / Cufflinks</b></li>
               <ul class="tools"><li>Transcripts GTF ( suffix: <i><font color="#d14">.gtf</font></i> )</li>
               <font size="2pt" color=#333><i>NOTE</i>: The transcripts details should be saved with the suffix '.gtf'</font></ul>
               
-              <li><b>Cufflinks </b></li>
-              <ul class="tools"><li>Genes fpkm tracking table ( i.e. <i><font color="#d14">genes.fpkm_tracking</font></i> ), or </li>
-              <li>Transcripts GTF ( i.e. <i><font color="#d14">transcripts.gtf</font></i> )</li></ul>
+              <li><b>Kallisto </b> : Transcripts TSV file ( suffix: <i><font color="#d14">.tsv</font></i> ), or </li>
+              <li><b>Salmon </b> : Transcripts SF file ( suffix: <i><font color="#d14">.sf</font></i> ), or </li></ul>
               
               <li><b>Feature summarization </b></li>
-              <ul class="tools"><li>Read Counts file ( suffix: <i><font color="#d14">.counts</font></i> )</li>
-              <font size="2pt" color=#333><i>NOTE</i>: The read counts should be saved with the suffix '.counts'</font></ul></ol>
+              <ul class="tools"><li>htseq-count / featureCounts ( suffix: <i><font color="#d14">.counts</font></i> )</li>
+              <font size="2pt" color=#333><i>NOTE</i>: The read counts should be saved with the suffix '.counts'</font></ul>
+              <ul class="tools"><li>STAR ( suffix: <i><font color="#d14">ReadsPerGene.out.tab</font></i> )</li></ul></ol>
             </ol><p></p>
             <ol type= "a" start=4>
             <li><strong>Variant Information.</strong></li>
               The Variant information includes the variant VCF file ( suffix: <i><font color="#d14">.vcf</font></i> ) from variant callers, such as GATK, SAMtools (BCFtools).<br>
               Optionally, the functional annotations of variants predicted by different bioinformatics tools can also be provided in a tab-delimited format. TransAtlasDB currently accepts functional annotations from two annotation software;
-              <ul type="square"><li>Ensembl Variant Effect Predictor (VEP) : The output file should be named with suffix: <i><font color="#d14">.vep.txt</font></i>.</li>
-              <li>ANNOVAR : The default output file with suffix: <i><font color="#d14">multianno.txt</font></i> will be imported. </li></ul>
+              <ul type="square"><li>Ensembl Variant Effect Predictor (VEP) : The output file should be named with suffix <i><font color="#d14">.vep.txt</font></i>.</li>
+              <li>ANNOVAR : The default output file with suffix <i><font color="#d14">multianno.txt</font></i> will be imported. </li></ul>
           </ol>
-          The input data should be stored in a single folder for each sample, shown below. The folder name must be the sample name as denoted in the metadata.
-          <center><figure><A name="folder"><img src="images/sampledir.png"></a>
-        <figcaption>Directory structure layout for each sample. The Folder Name must be the sample name as denoted in the metadata. Output files from the specified software for RNAseq analysis, TopHat and Cufflinks (A), or HISAT and StringTie (B) can be stored in the parent folder, otherwise, can be reorganized in subfolders listed. The solid-line boxes are required, while the optional files are represented in dashed-line boxes.</figcaption></figure></center>
+            <ol type= "a" start=5>
+              <li><strong>FASTQ details.</strong></li>
+              This is an optional feature to store the sequence files information if previously unavailable. This requires the FASTQC zipped folder (suffix: <i><font color="#d14">.zip</font></i> ).
+            </ol><p></p>
+          The input data files accepted via the TransAtlasDB toolkit are shown below. All input data files should be stored in a single folder, the folder name must be the sample name as denoted in the metadata.
+          <center><figure><A name="folder"><img src="images/sample-suffixes.png"></a>
+        <figcaption>The required output files (i.e suffix name) for the various RNAseq analysis tools accepted by TransAtlasDB. All files should be stored in the same folder named as the sample name denoted in the metadata.</figcaption></figure></center>
         </div>
         <hr/>
         <h3>OUTPUT FORMAT</h3></a>
@@ -177,7 +180,7 @@ Otherwise, the sample information can be manually inserted using SQL insert stat
           <h4>Variant Call Format</h4>
           <p>Predicted functional annotations and sample metadata are added in the INFO field of the VCF file, using the key “CSQ” and “MTD” respectively. <br>
           Data fields are encoded separated by “|”; the order of fields is written in the VCF header. <br>
-          VCFs produced by TransAtlasDB follow the standard VCF version 4 file format, and can be used for further downstream analysis or visualization using various variant viewers such as the University of California Santa Cruz (UCSC) Genome Browser, Integrative Genomics Viewer (IGV), and other programs that accept VCF files.
+          VCFs produced by TransAtlasDB follow the standard VCF version 4 file format, and can be used for further downstream analysis or visualization using various variant viewers such as the University of California Santa Cruz (UCSC) Genome Browser, JBrowse, Integrative Genomics Viewer (IGV), and other programs that accept VCF files.
           </p>
           
           </div>

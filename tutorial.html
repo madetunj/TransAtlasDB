@@ -144,13 +144,16 @@
 					<strong>NOTE:</strong> Analysis data can also be retrieved using the <strong><a href="#web">web interface</a></strong>.</p>
           <p>The export module offers two methods of extracting data from the database; one by performing data manipulation language (DML) SQL statements using <d>-query</d> and the second method consisting of pre-defined queries of research interest using <d>-db2data</d>.</p>
           <h4>Performing DML Statements</h4>
-          <p>Users can execute direct SQL statements via <d>-query</d> to the relational database and the query must be wrapped with single quotation.<br>
+          <p>Users can execute direct SQL statements via <d>-query</d> to both the relational and nonrelational database (using <d>-nosql</d>) and all queries must be wrapped with single quotation.<br>
+					More information on writing Select statements to FastBit can be viewed <a href="https://sdm.lbl.gov/fastbit/doc/ibisCommandLine.html" target="_blank">here</a>.
           For instance, executing <i><font color="#d14">'show tables'</font></i> will retrieve all the rows currently in the database, which can be stored as a tab-delimited file.</p>
         </div>
         <div class="language-perl highlighter-rouge"><pre class="highlight"><code><span class="c1"># Syntax to view all the tables in the database.</span>
   <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">query</span> <span class="s">'show tables'</span>
 </code><code><span class="c1"># Syntax to retrieve all the rows in the Sample table and store the results in a tab-delimited file 'output.txt'.</span>
   <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">query</span> <span class="s">'select * from Sample'</span> <span class="o">-</span><span class="nb">output</span> <span class="s">output.txt</span>
+</code><code><span class="c1"># Syntax on nosql database, to view the first ten rows in the gene-information folder.</span>
+  <span class="k">tad-export.pl</span> <span class="o">-</span><span class="nb">nosql</span> <span class="s">gene-information</span> <span class="o">-</span><span class="nb">query</span> <span class="s">'select genename,organism,tissue,fpkm,tpm where 1=1 limit 10'</span>
 </code></pre></div>
         
           <div class="pushit">
@@ -250,12 +253,14 @@
 					The about page gives the summary statistics of the samples data imported in the database, and consist of four parts.
 					<ul><li>Organisms:<br>This sections displays the organisms and total number of samples present in the database.</li></ul>
 						<center><a target="_blank" href="images/about1.png"><img src="images/about1.png"></a></center>
-					<ul><li>Samples:<br>This section displays the organisms and total number of samples for each tissue in the database.</li></ul>
+					<ul><li>Animals:<br>This section displays the number of animals for each organism in the database.</li></ul>
 						<center><a target="_blank" href="images/about2.png"><img src="images/about2.png"></a></center>
+					<ul><li>Samples:<br>This section displays the organisms and total number of samples for each tissue in the database.</li></ul>
+						<center><a target="_blank" href="images/about2.png"><img src="images/about3.png"></a></center>
 					<ul><li>Samples Processed:<br>This section displays the summary counts of the samples already archived in the database.</li></ul>
-						<center><a target="_blank" href="images/about3.png"><img src="images/about3.png"></a></center>
+						<center><a target="_blank" href="images/about3.png"><img src="images/about4.png"></a></center>
 					<ul><li>Database Content:<br>This section displays the summary count of the variants and genes present in the database.</li></ul>
-						<center><a target="_blank" href="images/about4.png"><img src="images/about4.png"></a></center>
+						<center><a target="_blank" href="images/about4.png"><img src="images/about5.png"></a></center>
 					<h4>Data Import</h4>
 					The data import page provides two methods of importing the samples metadata. Storing the large data files such as the gene expression profiling and variants analysis results can only be done using the Perl toolkit as explained above.
 					<ul><li>File Upload:<br>Sample metadata are uploaded from a sample file, either using the sample tab-delimited <a href="download/samples-template.txt" target="_blank" download="template.txt">template</a> or FAANG <a href="download/FAANG_template.xlsx" target="_blank" download="FAANG_template.xlsx">spreadsheet</a>.<br>
@@ -269,6 +274,12 @@
 						<center><figure><a target="_blank" href="images/metadata1.png"><img src="images/metadata1.png"></a><figcaption>Displays all samples in the database by clicking on 'GO'.</figcaption></figure></center>
 					<ul><li>RNAseq results metadata:<br>View samples analysis metadata.</li></ul>
 						<center><figure><a target="_blank" href="images/metadata2.png"><img src="images/metadata2.png"></a><figcaption>Displays all sample analysis metadata in the database by clicking on 'GO'.</figcaption></figure></center>
+					<h4>SQL Query</h4>
+					Select statements can be performed on both the MySQL relational database and FastBit NoSQL database. Statements performed will return a table of records based on the select expression, which can be saved as a tab-delimited file.
+					<ul><li>Relational database.</li></ul>
+						<center><figure><a target="_blank" href="images/sqlquery1.png"><img src="images/sqlquery1.png"></a><figcaption>Querying '<i>Metadata</i>' table to view all samples in the database.</figcaption></figure></center>
+					<ul><li>Nonrelational database.</li></ul>
+						<center><figure><a target="_blank" href="images/sqlquery2.png"><img src="images/sqlquery2.png"></a><figcaption>Querying '<i>gene-information</i>' folder to view the first 10 gene records found in the Dog samples provided in the database.</figcaption></figure></center>
 					<h4>Gene Expression</h4>
 					The gene expression data can be viewed based on the individual sample-gene expression or average expression profiles of multiple genes across all samples and tissues. By specifying one or more genes by their gene symbols, a fuzzy search is performed based on the characters specified. The results can be saved in a tab-delimited file.
 					<ul><li>Gene Expression summary across all samples.</li></ul>
