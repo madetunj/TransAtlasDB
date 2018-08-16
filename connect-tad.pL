@@ -174,7 +174,7 @@ successful processing.
 
 Detailed documentation for TransAtlasDB should be viewed on https://modupeore.github.io/TransAtlasDB/.
 
-=over 8
+=over
 
 =item * B<invalid input>
 
@@ -184,93 +184,21 @@ Users should manually examine this file and identify sources of error.
 
 =back
 
-=head2 Sample Tab-delimited file
+=head2 INSTALLATION REQUIREMENTS
 
-A sample tab-delimited file contains one sample per line, with the fields being sample name,
-derived from, organism, organism part, sample description, first name, middle initial,
-last name, organization. The 1st four fields (sample name, derived from, organism, organism part)
-are required, while the other five fields may contain optional details in regards to the sample.
-The 'sample name' must be a word and can be alphanumeric. An example is shown below.
+=over 
 
-  Sample Name	Derived from	Organism	Organism Part	Sample description	Organization
-  GGA_UD_1004	GGA_UD_1004	Gallus gallus	Pituitary gland	21 day male Ross 708	University of Delaware
-  GGA_UD_1014	GGA_UD_1014	Gallus gallus	Pituitary gland	21 day male Ross 708	University of Delaware
+=item * B<FastBit>
+FastBit is an open-source data processing library. It provides a SQL platform
+to search and query compressed bitmap indexes.
+More details can be viewed at https://sdm.lbl.gov/fastbit/
 
-=head2 Directory/Folder structure
 
-A sample directory structure contains all the files required for successful utilization
-of TransAtlasDB, such as the mapping file outputs from either the TopHat2 or
-HISAT2 software; expression file outputs from either the Cufflinks or StringTie software;
-variant file from any bioinformatics variant analysis package
-such as GATK, SAMtools, and (optional) variant annotation results from ANNOVAR 
-or Ensembl VEP in tab-delimited format having suffix '.multianno.txt' and '.vep.txt' 
-respectively.
-The sample directory must be named the same 'sample_name' as with it's corresponding 'sample_name'
-in the sample information previously imported.
+=item * B<MySQL>
+MySQL is an open-source relational database management system.
 
-=over 8
-
-=item * B<TopHat2 and Cufflinks directory structure>
-The default naming scheme from the above software are required.
-The sub_folders <tophat_folder>,  <cufflinks_folder>, <variant_folder> are optional.
-All files pertaining to such 'sample_name' must be in the same folder.
-An example of TopHat and Cufflinks results directory is shown below:
-
-	/sample_name/
-	/sample_name/<tophat_folder>/
-	/sample_name/<tophat_folder>/accepted_hits.bam
-	/sample_name/<tophat_folder>/align_summary.txt
-	/sample_name/<tophat_folder>/deletions.bed
-	/sample_name/<tophat_folder>/insertions.bed
-	/sample_name/<tophat_folder>/junctions.bed
-	/sample_name/<cufflinks_folder>/
-	/sample_name/<cufflinks_folder>/genes.fpkm_tracking
-	/sample_name/<cufflinks_folder>/transcripts.gtf
-	/sample_name/<variant_folder>/
-	/sample_name/<variant_folder>/<filename>.vcf
-	/sample_name/<variant_folder>/<filename>.multianno.txt
-	/sample_name/<variant_folder>/<filename>.vep.txt
-	
-=item * B<HISAT2 and StringTie directory structure>
-The required files from HISAT2 are the SAM mapping file (suffix = '.sam') and the
-alignment summary details. The alignment summary is generated as a standard
-output, which should be stored in a file named 'align_summary.txt'.
-The required file from StringTie is the transcripts file with suffix = '.gtf').
-The sub_folders <hisat_folder>,  <stringtie_folder>, <variant_folder> are optional.
-All files pertaining to such 'sample_name' must be in the same folder.
-An example of HiSAT2 and Stringtie results directory is shown below:
-
-	/sample_name/
-	/sample_name/<hisat_folder>/
-	/sample_name/<hisat_folder>/align_summary.txt
-	/sample_name/<hisat_folder>/<filename>.sam
-	/sample_name/<stringtie_folder>/
-	/sample_name/<stringtie_folder>/<filename>.gtf
-	/sample_name/<variant_folder>/
-	/sample_name/<variant_folder>/<filename>.vcf
-	/sample_name/<variant_folder>/<filename>.multianno.txt
-	/sample_name/<variant_folder>/<filename>.vep.txt
-
-=back
-
-=head2 Variant file format (VCF)
-
-A sample variant file contains one variant per line, with the fields being chr,
-start, end, reference allele, observed allele, other information. The other
-information can be anything (for example, it may contain sample identifiers for
-the corresponding variant.) An example is shown below:
-
-        16      49303427        49303427        C       T       rs2066844       R702W (NOD2)
-        16      49314041        49314041        G       C       rs2066845       G908R (NOD2)
-        16      49321279        49321279        -       C       rs2066847       c.3016_3017insC (NOD2)
-        16      49290897        49290897        C       T       rs9999999       intronic (NOD2)
-        16      49288500        49288500        A       T       rs8888888       intergenic (NOD2)
-        16      49288552        49288552        T       -       rs7777777       UTR5 (NOD2)
-        18      56190256        56190256        C       T       rs2229616       V103I (MC4R)
-				
-TransAtlasDB accepts variants file from GATK and SAMtools (BCFtools)
-
-=over 8
+=item * B<SAMtools>
+SAMtools is a set of utilities for interacting with and post-processing short DNA sequence read alignments in the SAM, BAM and CRAM formats, written by Heng Li.
 
 =back
 

@@ -34,7 +34,7 @@ our ($refgenome, $refgenomename, $stranded, $sequences, $annotationfile, $mparam
 my $additional;
 
 #genes import
-our ($bamfile, @fastqcfolder, $alignfile, $staralignfile, $version, $readcountfile, $starcountfile, $genesfile, $deletionsfile, $insertionsfile, $transcriptsgtf, $junctionsfile, $variantfile, $vepfile, $annofile);
+our ($bamfile, $fastqcfolder, $alignfile, $staralignfile, $version, $readcountfile, $starcountfile, $genesfile, $deletionsfile, $insertionsfile, $transcriptsgtf, $junctionsfile, $variantfile, $vepfile, $annofile);
 our ($kallistofile, $kallistologfile, $salmonfile, $salmonlogfile);
 our ($totalreads, $mapped, $alignrate, $deletions, $insertions, $junctions, $genes, $mappingtool, $annversion, $diffexpress, $counttool);
 my (%ARFPKM,%CHFPKM, %BEFPKM, %CFPKM, %DFPKM, %TPM, %cfpkm, %dfpkm, %tpm, %DHFPKM, %DLFPKM, %dhfpkm, %dlfpkm, %ALL);
@@ -403,7 +403,7 @@ if ($datadb){
   my @foldercontent = split("\n", `find $file2consider -type f -print0 | xargs -0 ls -tr `); #get details of the folder
 		
   foreach (grep /\.gtf/, @foldercontent) { unless (`head -n 3 $_ | wc -l` <= 0 && $_ =~ /skipped/) { $transcriptsgtf = $_; } }
-	@fastqcfolder = (grep /fastqc.zip$/, @foldercontent); unless (@fastqcfolder) { @fastqcfolder = (grep /fastqc_data.txt$/, @foldercontent) ; }
+	$fastqcfolder = (grep /fastqc.zip$/, @foldercontent)[0]; unless ($fastqcfolder) { $fastqcfolder = (grep /fastqc_data.txt$/, @foldercontent)[0]; }
 	$alignfile = (grep /summary.txt/, @foldercontent)[0];
   $genesfile = (grep /genes.fpkm/, @foldercontent)[0];
   $deletionsfile = (grep /deletions.bed/, @foldercontent)[0];
@@ -702,7 +702,7 @@ if ($delete){ #delete section
 								my $execute = "$ibis -d $vfastbit -y \"sampleid = '$delete'\" -z";
 								`$execute 2>> $efile`; printerr ".";
 								`rm -rf $vfastbit/*sp $vfastbit/*old $vfastbit/*idx $vfastbit/*dic $vfastbit/*int `; #removing old indexes
-								`$ibis -d $vfastbit -query "select genename, geneid, genetype, transcript, feature, codonchange, aachange, sampleid, chrom, tissue, organism, consequence, dbsnpvariant, source" 2>> $efile`; #create a new index based on genename
+								`ibis -d $vfastbit -query "select genename, geneid, genetype, transcript, feature, codonchange, aachange, sampleid, chrom, tissue, organism, consequence, dbsnpvariant, source" 2>> $efile`; #create a new index based on genename
 								printerr " Done\n";
 							}
 						} else {
@@ -715,7 +715,7 @@ if ($delete){ #delete section
 							my $execute = "$ibis -d $vfastbit -y \"sampleid = '$delete'\" -z";
 							`$execute 2>> $efile`; printerr ".";
 							`rm -rf $vfastbit/*sp $vfastbit/*old $vfastbit/*idx $vfastbit/*dic $vfastbit/*int `; #removing old indexes
-							`$ibis -d $vfastbit -query "select genename, geneid, genetype, transcript, feature, codonchange, aachange, sampleid, chrom, tissue, organism, consequence, dbsnpvariant, source" 2>> $efile`; #create a new index
+							`ibis -d $vfastbit -query "select genename, geneid, genetype, transcript, feature, codonchange, aachange, sampleid, chrom, tissue, organism, consequence, dbsnpvariant, source" 2>> $efile`; #create a new index
 							printerr " Done\n";
 						}
 					}
@@ -733,13 +733,13 @@ if ($delete){ #delete section
 								my $execute = "$ibis -d -v $gfastbit -y \"sampleid = '$delete'\" -z";
 								`$execute 2>> $efile`; printerr ".";
 								`rm -rf $gfastbit/*sp $gfastbit/*old $gfastbit/*idx $gfastbit/*dic $gfastbit/*int `; #removing old indexes
-								`$ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+								`ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 								
 								#deleting gene_counts information from fastbit
 								$execute = "$ibis -d -v $cfastbit -y \"sampleid = '$delete'\" -z";
 								`$execute 2>> $efile`; printerr ".";
 								`rm -rf $cfastbit/*sp $cfastbit/*old $cfastbit/*idx $cfastbit/*dic $cfastbit/*int `; #removing old indexes
-								`$ibis -d $cfastbit -query "select genename, sampleid, tissue, organism" 2>> $efile`; #create a new index based on genename
+								`ibis -d $cfastbit -query "select genename, sampleid, tissue, organism" 2>> $efile`; #create a new index based on genename
 								
 								printerr " Done\n";
 							}
@@ -755,13 +755,13 @@ if ($delete){ #delete section
 							my $execute = "$ibis -d -v $gfastbit -y \"sampleid = '$delete'\" -z";
 							`$execute 2>> $efile`; printerr ".";
 							`rm -rf $gfastbit/*sp $gfastbit/*old $gfastbit/*idx $gfastbit/*dic $gfastbit/*int `; #removing old indexes
-							`$ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+							`ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 								
 							#deleting gene_counts information from fastbit
 							$execute = "$ibis -d -v $cfastbit -y \"sampleid = '$delete'\" -z";
 							`$execute 2>> $efile`; printerr ".";
 							`rm -rf $cfastbit/*sp $cfastbit/*old $cfastbit/*idx $cfastbit/*dic $cfastbit/*int `; #removing old indexes
-							`$ibis -d $cfastbit -query "select genename, sampleid, tissue, organism" 2>> $efile`; #create a new index based on genename
+							`ibis -d $cfastbit -query "select genename, sampleid, tissue, organism" 2>> $efile`; #create a new index based on genename
 								
 							printerr " Done\n";
 						}
@@ -895,25 +895,16 @@ sub processArguments {
 }
 
 sub LOGFILE { #subroutine for getting metadata
-	if (@fastqcfolder) { #if the fastqcfolder exist
+	if ($fastqcfolder) { #if the fastqcfolder exist
 		my ($fastqcfilename, $parentfastqc);
-		foreach my $fastqcfolder (@fastqcfolder) {
-			if ($fastqcfolder =~ /zip$/) { #making sure if it's a zipped file
-				`unzip $fastqcfolder`;
-				$parentfastqc = fileparse($fastqcfolder, qr/\.[^.]*(\.zip)?$/);
-				$fastqcfilename = fileparse($fastqcfolder, qr/\.[^.]*(\.zip)?$/)."/fastqc_data.txt";
-			} else { $fastqcfilename = $fastqcfolder; } #else it will be the actual file
-			$sequences .= (split(" ",`grep "Filename" $fastqcfilename`))[-1].",";
-			unless ($totalreads) {
-				$totalreads = (split(" ",`grep "Total Sequences" $fastqcfilename`))[-1];
-			} else {
-				my $temptotalreads = (split(" ",`grep "Total Sequences" $fastqcfilename`))[-1];
-				unless ($totalreads == $temptotalreads){printerr "WARN:\t FASTQ files $sequences have different total number of sequences. Only one will be imported\n"; }
-			}
-			if ($fastqcfolder =~ /zip$/) { `rm -rf $parentfastqc`; } #removing the unzipped folder
-		} #end foreach fastqc folder
-		chop $sequences;
-	} #end if fastqcfolder
+		if ($fastqcfolder =~ /zip$/) { #making sure if it's a zipped file
+			`unzip $fastqcfolder`;
+			$parentfastqc = fileparse($fastqcfolder, qr/\.[^.]*(\.zip)?$/);
+			$fastqcfilename = fileparse($fastqcfolder, qr/\.[^.]*(\.zip)?$/)."/fastqc_data.txt";
+		} else { $fastqcfilename = $fastqcfolder; } #else it will be the actual file
+		$totalreads = `grep "Total Sequences" $fastqcfilename | awk -F" " '{print \$3}'`;
+		if ($fastqcfolder =~ /zip$/) { `rm -rf $parentfastqc`; } #removing the unzipped folder
+	}
 	if ($bamfile){
 		my $headerdetails = `samtools view -H $bamfile | grep -m 1 "\@PG" | head -1`;
 		if ($headerdetails =~ /\sCL\:/) { #making sure mapping tool has the tool information or not 
@@ -924,21 +915,19 @@ sub LOGFILE { #subroutine for getting metadata
 			$mparameters =~ /\-x\s(\S+)\s/;
 			$refgenome = $1; #reference genome name
 			$refgenomename = (split('\/', $refgenome))[-1];
-			unless ($sequences) {
-				if ($mparameters =~ /-1/){ #paired-end reads
-					$mparameters =~ /\-1\s(\S+)\s-2\s(\S+)"$/;
-					my @nseq = split(",",$1); my @pseq = split(",",$2);
-					foreach (@nseq){ $sequences .= ( (split('\/', $_))[-1] ).",";}
-					foreach (@pseq){ $sequences .= ( (split('\/', $_))[-1] ).",";}
-					chop $sequences;
-				}
-				elsif ($mparameters =~ /-U/){ #single-end reads
-					$mparameters =~ /\-U\s(\S+)"$/;
-					my @nseq = split(",",$1);
-					foreach (@nseq){ $sequences .= ( (split('\/', $_))[-1] ).",";}
-					chop $sequences;
-				} #end if toggle for sequences
-			} #end unless sequences (from FastQC)
+			if ($mparameters =~ /-1/){ #paired-end reads
+				$mparameters =~ /\-1\s(\S+)\s-2\s(\S+)"$/;
+				my @nseq = split(",",$1); my @pseq = split(",",$2);
+				foreach (@nseq){ $sequences .= ( (split('\/', $_))[-1] ).",";}
+				foreach (@pseq){ $sequences .= ( (split('\/', $_))[-1] ).",";}
+				chop $sequences;
+			}
+			elsif ($mparameters =~ /-U/){ #single-end reads
+				$mparameters =~ /\-U\s(\S+)"$/;
+				my @nseq = split(",",$1);
+				foreach (@nseq){ $sequences .= ( (split('\/', $_))[-1] ).",";}
+				chop $sequences;
+			} #end if toggle for sequences
 			$stranded = undef;
 			$annotationfile = undef;
 		} # end if working with hisat.
@@ -970,13 +959,11 @@ sub LOGFILE { #subroutine for getting metadata
 		
 			$refgenome = $ALL{0}; my $seq = $ALL{1}; my $otherseq = $ALL{2};
 			$refgenomename = (split('\/', $ALL{0}))[-1]; 
-			unless ($sequences) {
-				unless(length($otherseq)<1){ #sequences
-					$sequences = ( ( split('\/', $seq) ) [-1]).",". ( ( split('\/', $otherseq) ) [-1]);
-				} else {
-					$sequences = ( ( split('\/', $seq) ) [-1]);
-				} #end if seq
-			} #end unless sequences
+			unless(length($otherseq)<1){ #sequences
+				$sequences = ( ( split('\/', $seq) ) [-1]).",". ( ( split('\/', $otherseq) ) [-1]);
+			} else {
+				$sequences = ( ( split('\/', $seq) ) [-1]);
+			} #end if seq
 		} # end if working with tophat
 		elsif ($mappingtool =~ /star/i) {
 			my ($annotation, $otherseq); undef %ALL; my $no = 0; $mparameters =~ s/\s+/ /g;
@@ -992,15 +979,13 @@ sub LOGFILE { #subroutine for getting metadata
 					#my $old = $number++;
 					my $seq = $newgeninfo[++$number]; 
 					my $new = $number+1;
-					unless ($sequences) {
-						unless ($newgeninfo[$new] =~ /^\-\-/) {
-							$otherseq = $newgeninfo[$new]; #if paired reads
-							$sequences = ( ( split('\/', $seq) ) [-1]).",". ( ( split('\/', $otherseq) ) [-1]);
-							$number++;
-						} else {
-							$sequences = ( ( split('\/', $seq) ) [-1]);
-						}
-					} #end unless sequences
+					unless ($newgeninfo[$new] =~ /^\-\-/) {
+						$otherseq = $newgeninfo[$new]; #if paired reads
+						$sequences = ( ( split('\/', $seq) ) [-1]).",". ( ( split('\/', $otherseq) ) [-1]);
+						$number++;
+					} else {
+						$sequences = ( ( split('\/', $seq) ) [-1]);
+					}
 				} #working with sequence names
 				$number++;
 			}
@@ -1020,14 +1005,12 @@ sub LOGFILE { #subroutine for getting metadata
 		$gparameters = `cat $kallistologfile | grep "call" | awk -F'":' '{print \$2}'`; $gparameters =~ s/\"//g;
 		$gparameters =~ /-i\s(\S+)/; $refgenome = $1; $refgenomename = (split('\/', $refgenome))[-1]; $annotationfile = $refgenomename;
 		my @newgeninfo = split(/\s/, $gparameters);
-		unless ($sequences) {
-			if ($gparameters =~ /--single/) {	
-				$sequences = ( ( split('\/', ($newgeninfo[-1])) ) [-1]);
-			} else { #paired end reads
-				$sequences = ( ( split('\/', $newgeninfo[-1]) ) [-2]).",". ( ( split('\/', $newgeninfo[-1]) ) [-1]);
-			}
+		if ($gparameters =~ /--single/) {	
+			$sequences = ( ( split('\/', ($newgeninfo[-1])) ) [-1]);
+		} else { #paired end reads
+			$sequences = ( ( split('\/', $newgeninfo[-1]) ) [-2]).",". ( ( split('\/', $newgeninfo[-1]) ) [-1]);
 		}
-		$stranded = undef; $mappingtool = undef;
+		$stranded = undef; $sequences = undef; $mappingtool = undef;
 	} # end if kallistologfile
 	if ($salmonlogfile){
 		my $versionnumber = `cat $salmonlogfile | grep "salmon_version" | awk -F'":' '{print \$2}'`; $versionnumber =~ s/\"//g; $versionnumber = substr($versionnumber,0,-2);
@@ -1035,12 +1018,10 @@ sub LOGFILE { #subroutine for getting metadata
 		$gparameters = `cat $salmonlogfile`;
 		$refgenome = `cat $salmonlogfile | grep "index" | awk -F'":' '{print \$2}'`; $refgenome =~ s/\"//g; $refgenome = substr($refgenome,0,-2);
 		$refgenomename = (split('\/', $refgenome))[-1]; $annotationfile = $refgenomename;
-		unless ($sequences) {
-			$sequences = `cat $salmonlogfile | grep "mate" | awk -F'":' '{print \$2}'`; $sequences =~ s/\"//g; $sequences = substr($sequences,0,-2); 
-			my @newgeninfo = split(/\n/, $sequences); $sequences = undef;
-			foreach (@newgeninfo) { $sequences .= (( split('\/', ($_)) ) [-1]); }
-		}
-		$stranded = undef; $mappingtool = undef;
+		$sequences = `cat $salmonlogfile | grep "mate" | awk -F'":' '{print \$2}'`; $sequences =~ s/\"//g; $sequences = substr($sequences,0,-2);
+		my @newgeninfo = split(/\n/, $sequences); $sequences = undef;
+		foreach (@newgeninfo) { $sequences .= (( split('\/', ($_)) ) [-1]); }
+		$stranded = undef; $sequences = undef; $mappingtool = undef;
 	} #end if salmonlogfile
 }
 
@@ -1113,7 +1094,7 @@ sub READ_COUNT { #subroutine for read counts
 			my $execute = "$ardea -d $cfastbit -m 'sampleid:text,genename:text,organism:text,tissue:text,readcount:double' -t $cnosql";
 			`$execute 2>> $efile` or die "\nERROR\t: Complication importing RawCounts information to FastBit, contact $AUTHOR\n";
 			`rm -rf $cfastbit/*sp`; #removeing old indexes
-			`$ibis -d $cfastbit -query "select genename, sampleid, tissue, organism" 2>> $efile`; #create a new index based on genename
+			`ibis -d $cfastbit -query "select genename, sampleid, tissue, organism" 2>> $efile`; #create a new index based on genename
 			`chmod 777 $cfastbit && rm -rf $cnosql`;
 			
 			$sth = $dbh->prepare("update GeneStats set countstool = '$counttool', countstatus = 'done' where sampleid= '$_[0]'"); $sth ->execute(); #updating GeneStats table.
@@ -1184,7 +1165,7 @@ sub GENES_FPKM { #subroutine for getting gene information
 				my $execute = "$ardea -d $gfastbit -m 'sampleid:text,chrom:text,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,tpm:double,fpkm:double,fpkmconflow:double,fpkmconfhigh:double,start:int,stop:int' -t $gnosql";
 				`$execute 2>> $efile` or die "\nERROR\t: Complication importing Expression information to FastBit, contact $AUTHOR\n";
 				`rm -rf $gfastbit/*sp`; #removeing old indexes
-				`$ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+				`ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 				`chmod 777 $gfastbit && rm -rf $gnosql`;
 				
 				printerr " Done\n";
@@ -1283,7 +1264,7 @@ sub GENES_FPKM { #subroutine for getting gene information
 					my $execute = "$ardea -d $gfastbit -m 'sampleid:text,chrom:text,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,tpm:double,fpkm:double,fpkmconflow:double,fpkmconfhigh:double,start:int,stop:int' -t $gnosql";
 					`$execute 2>> $efile` or die "\nERROR\t: Complication importing Expression information to FastBit, contact $AUTHOR\n";
 					`rm -rf $gfastbit/*sp`; #removeing old indexes
-					`$ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+					`ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 					`chmod 777 $gfastbit && rm -rf $gnosql`;
 				
 					printerr " Done\n";
@@ -1381,7 +1362,7 @@ sub GENES_FPKM { #subroutine for getting gene information
 					my $execute = "$ardea -d $gfastbit -m 'sampleid:text,chrom:text,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,tpm:double,fpkm:double,fpkmconflow:double,fpkmconfhigh:double,start:int,stop:int' -t $gnosql";
 					`$execute 2>> $efile` or die "\nERROR\t: Complication importing Expression information to FastBit, contact $AUTHOR\n";
 					`rm -rf $gfastbit/*sp`; #removing old indexes
-					`$ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+					`ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 					`chmod 777 $gfastbit && rm -rf $gnosql`;
 				
 					printerr " Done\n";
@@ -1436,7 +1417,7 @@ sub GENES_FPKM { #subroutine for getting gene information
 					my $execute = "$ardea -d $gfastbit -m 'sampleid:text,chrom:text,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,tpm:double,fpkm:double,fpkmconflow:double,fpkmconfhigh:double,start:int,stop:int' -t $gnosql";
 					`$execute 2>> $efile` or die "\nERROR\t: Complication importing Expression information to FastBit, contact $AUTHOR\n";
 					`rm -rf $gfastbit/*sp`; #removing old indexes
-					`$ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+					`ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 					`chmod 777 $gfastbit && rm -rf $gnosql`;
 				
 					printerr " Done\n";
@@ -1489,7 +1470,7 @@ sub GENES_FPKM { #subroutine for getting gene information
 					my $execute = "$ardea -d $gfastbit -m 'sampleid:text,chrom:text,geneid:text,genename:text,organism:text,fpkmstatus:char,tissue:text,coverage:double,tpm:double,fpkm:double,fpkmconflow:double,fpkmconfhigh:double,start:int,stop:int' -t $gnosql";
 					`$execute 2>> $efile` or die "\nERROR\t: Complication importing Expression information to FastBit, contact $AUTHOR\n";
 					`rm -rf $gfastbit/*sp`; #removing old indexes
-					`$ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
+					`ibis -d $gfastbit -query "select genename, geneid, sampleid, chrom, tissue, organism" 2>> $efile`; #create a new index based on genename
 					`chmod 777 $gfastbit && rm -rf $gnosql`;
 				
 					printerr " Done\n";
@@ -1892,7 +1873,7 @@ sub NOSQL {
 	my $execute = "$ardea -d $vfastbit -m 'variantclass:char,zygosity:char,dbsnpvariant:text,source:text,consequence:text,geneid:text,genename:text,transcript:text,feature:text,genetype:text,refallele:char,altallele:char,tissue:text,chrom:text,aachange:text,codonchange:text,organism:text,sampleid:text,quality:double,position:int,proteinposition:int' -t $vnosql";
 	`$execute 2>> $efile` or die "\nERROR\t: Complication importing to FastBit, contact $AUTHOR\n";
 	`rm -rf $vfastbit/*sp`; #removing old indexes
-	`$ibis -d $vfastbit -query "select genename, geneid, genetype, transcript, feature, codonchange, aachange, sampleid, chrom, tissue, organism, consequence, dbsnpvariant, source" 2>> $efile`; #create a new index
+	`ibis -d $vfastbit -query "select genename, geneid, genetype, transcript, feature, codonchange, aachange, sampleid, chrom, tissue, organism, consequence, dbsnpvariant, source" 2>> $efile`; #create a new index
 	`chmod 777 $vfastbit && rm -rf $vnosql`;
 	$sth = $dbh->prepare("update VarSummary set nosql = 'done' where sampleid = '$_[0]'"); $sth ->execute(); #update database nosql : DONE
 	

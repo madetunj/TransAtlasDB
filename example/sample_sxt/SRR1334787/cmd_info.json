@@ -1,0 +1,8 @@
+{
+    "salmon_version": "0.8.2",
+    "index": "/home/amodupe/workamodupe/DiffSamples/Cat/SALref/Felis_catus_index",
+    "libType": "A",
+    "unmatedReads": "/home/amodupe/workamodupe/DiffSamples/Cat/originalfastq/SRR1334787_1.fastq",
+    "output": "SRR1334787",
+    "auxDir": "aux_info"
+}

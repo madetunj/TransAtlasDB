@@ -1,0 +1,14 @@
+## htsjdk.samtools.metrics.StringHeader
+# QualityScoreDistribution CHART_OUTPUT=qualityscores.chart INPUT=/home/amodupe/workamodupe/DiffSamples/Hamster/SRR5409491/Aligned.sortedByCoord.out.bam OUTPUT=qualityscores.txt    ALIGNED_READS_ONLY=false PF_READS_ONLY=false INCLUDE_NO_CALLS=false ASSUME_SORTED=true STOP_AFTER=0 VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json USE_JDK_DEFLATER=false USE_JDK_INFLATER=false
+## htsjdk.samtools.metrics.StringHeader
+# Started on: Thu Dec 14 23:30:35 EST 2017
+
+
+## HISTOGRAM	java.lang.Byte
+QUALITY	COUNT_OF_Q
+14	165431991
+22	17891447
+27	162913469
+33	522649500
+37	5256916027
+
