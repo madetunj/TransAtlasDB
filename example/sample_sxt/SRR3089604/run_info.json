@@ -1,0 +1,9 @@
+{
+	"n_targets": 131496,
+	"n_bootstraps": 0,
+	"n_processed": 12789134,
+	"kallisto_version": "0.43.1",
+	"index_version": 10,
+	"start_time": "Mon Dec 11 21:41:38 2017",
+	"call": "/home/amodupe/.software/kallisto_linux-v0.43.1/kallisto quant -i KALref/Zea_mays_index -o SRR3089604 --pseudobam /home/amodupe/workamodupe/DiffSamples/Maize/originalfastq/SRR3089604_1.fastq /home/amodupe/workamodupe/DiffSamples/Maize/originalfastq/SRR3089604_2.fastq"
+}

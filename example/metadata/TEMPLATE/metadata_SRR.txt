@@ -1,0 +1,8 @@
+Sample Name	Sample description	Derived from	Organism	Organism Part	First name	Middle Initial	Last name	Organization
+SRR1772412	Cao-1 mutant alternate splicing	PRJNA273631	Arabidopsis thaliana	seedlings	Walid		Mahrez	Plant Biology, Swedish University of Agricultural Sciences
+SRR527164	Col-0 control replicate 1	PRJNA171024	Arabidopsis thaliana	seedlings				Queitsch Lab - Dept. Genome Science -University of Washington
+SRR3089603	maize WT root under mannitol treatment	PRJNA308155	Zea mays	seedlings				Northeast Normal University
+SRR3089604	maize WT root under mannitol treatment	PRJNA308155	Zea mays	seedlings				Northeast Normal University
+SRR5409491	DP12 cell line: high glucose	PRJNA378247	Cricetulus griseus	Ovary	Yogender	K	Gotham	Clemson University
+SRR1698098	canine NHL tumors	PRJNA268531	Canis familiaris	skin				Simon Fraser University
+SRR1334787	domestic short hair WTCAT	PRJNA251633	Fetus catus	skin				AECOM

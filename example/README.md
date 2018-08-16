@@ -26,15 +26,22 @@ The different types of information can be broadly grouped into four categories w
 All required input files should be stored in a single folder, which should be named the _Sample Name_ of the corresponding sample in the samples metadata, as shown.
 
 ### Folder details:
-* _**metadata**_ : contains the samples information for GGA_UD_1014 and GGA_UD_1004 using either the tab-delimited file or the FAANG biosamples spreadsheet.
+* _**metadata**_ : contains the samples information using either the tab-delimited file or the FAANG biosamples spreadsheet.
 
-* _**sample_sxt**_ : contains the mapping, expression and variant information for GGA_UD_1004 and GGA_UD_1014 generated from different tools to showcase the versatility of TransAtlasDB.
+* _**sample_sxt**_ : contains the mapping, expression and variant information generated from different tools to showcase the versatility of TransAtlasDB.
 
- | **Software**          | GGA_UD_1004    | GGA_UD_1014    |
- |:----------------------|:---------------|:---------------|
- | Mapping               | TopHat2        | HISAT2         |
- | Expression            | Cufflinks      | StringTie      |
- | Variant (Annotation)  | GATK (ANNOVAR) | SAMtools (VEP) |
+ | **Sample files**         | Mapping             | Expression   (ReadCounts)      | Variants  (Annotation )    |
+ |:-------------------------|:--------------------|:-------------------------------|:---------------------------|
+ | **GGA_UD_1004**          | TopHat2             | Cufflinks    (htseq-count)     | GATK      (ANNOVAR)        |
+ | **GGA_UD_1014**          | HISAT2              | StringTie    (featureCounts)   | Samtools  (VEP)            | 
+ | **SRR1334787**           |                     | Salmon                         |                            |
+ | **SRR1698098**           | HISAT2              |                                | Samtools                   | 
+ | **SRR1772412**           | TopHat2             |              (featureCounts)   |                            |
+ | **SRR3089603**           | HISAT2              | StringTie                      |                            |
+ | **SRR3089604**           | Kallisto            | Kallisto                       |                            |
+ | **SRR527164**            | HISAT2              |              (htseq-count)     |                            |
+ | **SRR5409491**           | STAR                |              (STAR quantMode)  | GATK      (VEP)            |
+
 
 **P.S.**: The data files provided are simulated for tutorial purposes.
 

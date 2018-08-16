@@ -134,8 +134,8 @@ sub OPTIONS {
 			a=>'Summary of samples in the database',
 			b=>'Metadata details of samples', 
 			c=>'Transcriptome analysis summary of samples',
-			d=>'Average expression (fpkm) values of individual genes',
-			e=>'Genes expression (fpkm) values across the samples',
+			d=>'Average expression values of individual genes',
+			e=>'Genes expression values across the samples',
 			f=>'Chromosomal variant distribution',
 			g=>'Gene-associated Variants with annotation information',
 			h=>'Chromosomal region-associated Variants and annotation information',
@@ -206,11 +206,11 @@ gene information summary of samples in the database.
 
 =item B<--avgfpkm>
 
-provides average expression (fpkm) values of specified genes.
+provides average expression (in fpkm or tpm) values of specified genes.
 
 =item B<--genexp>
 
-provides genes expression (fpkm) values of specified genes across samples
+provides genes expression (in fpkm or tpm) values of specified genes across samples
 
 =item B<--chrvar>
 

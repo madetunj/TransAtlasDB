@@ -37,8 +37,8 @@ DROP TABLE IF EXISTS `SampleStats`;
 DROP TABLE IF EXISTS `MapStats`;
 DROP TABLE IF EXISTS `GeneStats`;
 DROP TABLE IF EXISTS `Metadata`;
-DROP TABLE IF EXISTS `GenesFpkm`;
 DROP TABLE IF EXISTS `VarSummary`;
+DROP TABLE IF EXISTS `CommandSyntax`;
 DROP TABLE IF EXISTS `VarResult`;
 DROP TABLE IF EXISTS `VarAnnotation`;
 -- -----------------------------------------------------
@@ -125,12 +125,17 @@ CREATE TABLE `MapStats` (`sampleid` VARCHAR(150) NOT NULL, `totalreads` INT(11) 
 -- Table structure for table `GeneStats`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `GeneStats`;
-CREATE TABLE `GeneStats` (`sampleid` VARCHAR(150) NOT NULL, `genes` INT(11) NULL DEFAULT NULL, `diffexpresstool` VARCHAR(100) NULL DEFAULT NULL, `date` DATE NULL DEFAULT NULL, `status` CHAR(10) NULL,PRIMARY KEY (`sampleid`), CONSTRAINT `GeneStats_ibfk_1` FOREIGN KEY (`sampleid`) REFERENCES `MapStats` (`sampleid`)) ENGINE = InnoDB DEFAULT CHARACTER SET = latin1;
+CREATE TABLE `GeneStats` (`sampleid` VARCHAR(150) NOT NULL, `genes` INT(11) NULL DEFAULT NULL, `diffexpresstool` VARCHAR(100) NULL DEFAULT NULL, `countstool` VARCHAR(100) NULL DEFAULT NULL, `date` DATE NULL DEFAULT NULL, `countstatus` CHAR(10) NULL, `genestatus` CHAR(10) NULL,PRIMARY KEY (`sampleid`), CONSTRAINT `GeneStats_ibfk_1` FOREIGN KEY (`sampleid`) REFERENCES `MapStats` (`sampleid`)) ENGINE = InnoDB DEFAULT CHARACTER SET = latin1;
 -- -----------------------------------------------------
 -- Table structure for table `Metadata`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `Metadata`;
 CREATE TABLE `Metadata` ( `sampleid` VARCHAR(150) NOT NULL, `refgenome` VARCHAR(100) NULL DEFAULT NULL, `annfile` VARCHAR(50) NULL DEFAULT NULL, `stranded` VARCHAR(100) NULL DEFAULT NULL, `sequencename` TEXT NULL DEFAULT NULL, `mappingtool` VARCHAR(100) NULL DEFAULT NULL, CONSTRAINT `metadata_ibfk_1` FOREIGN KEY (`sampleid`) REFERENCES `MapStats` (`sampleid`)) ENGINE = InnoDB DEFAULT CHARACTER SET = latin1;
+-- -----------------------------------------------------
+-- Table structure for table `CommandSyntax`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `CommandSyntax`;
+CREATE TABLE `CommandSyntax` ( `sampleid` VARCHAR(150) NOT NULL, `mappingsyntax` TEXT NULL DEFAULT NULL, `expressionsyntax` TEXT NULL DEFAULT NULL, `countsyntax` TEXT NULL DEFAULT NULL, `variantsyntax` TEXT NULL DEFAULT NULL, CONSTRAINT `commandsyntax_ibfk_1` FOREIGN KEY (`sampleid`) REFERENCES `MapStats` (`sampleid`)) ENGINE = InnoDB DEFAULT CHARACTER SET = latin1;
 -- -----------------------------------------------------
 -- Table structure for table `VarSummary`
 -- -----------------------------------------------------
@@ -140,12 +145,12 @@ CREATE TABLE `VarSummary` (`sampleid` VARCHAR(150) NOT NULL, `totalvariants` INT
 -- Table structure for table `VarResult`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `VarResult`;
-CREATE TABLE `VarResult` ( `sampleid` VARCHAR(150) NOT NULL, `chrom` VARCHAR(100) NOT NULL DEFAULT '', `position` INT(11) NOT NULL DEFAULT '0', `refallele` VARCHAR(100) NULL DEFAULT NULL, `altallele` VARCHAR(100) NULL DEFAULT NULL, `quality` DOUBLE(20,5) NULL DEFAULT NULL, `variantclass` VARCHAR(100) NULL DEFAULT NULL, `zygosity` VARCHAR(100) NULL DEFAULT NULL, `dbsnpvariant` VARCHAR(100) NULL DEFAULT NULL, PRIMARY KEY (`sampleid`, `chrom`, `position`), CONSTRAINT `varresult_ibfk_1` FOREIGN KEY (`sampleid`) REFERENCES `VarSummary` (`sampleid`)) ENGINE = InnoDB DEFAULT CHARACTER SET = latin1;
+CREATE TABLE `VarResult` ( `sampleid` VARCHAR(150) NOT NULL, `chrom` VARCHAR(100) NOT NULL DEFAULT '', `position` INT(11) NOT NULL DEFAULT '0', `refallele` VARCHAR(1000) NULL DEFAULT NULL, `altallele` VARCHAR(1000) NULL DEFAULT NULL, `quality` DOUBLE(20,5) NULL DEFAULT NULL, `variantclass` VARCHAR(100) NULL DEFAULT NULL, `zygosity` VARCHAR(100) NULL DEFAULT NULL, `dbsnpvariant` VARCHAR(100) NULL DEFAULT NULL, PRIMARY KEY (`sampleid`, `chrom`, `position`), CONSTRAINT `varresult_ibfk_1` FOREIGN KEY (`sampleid`) REFERENCES `VarSummary` (`sampleid`)) ENGINE = InnoDB DEFAULT CHARACTER SET = latin1;
 -- -----------------------------------------------------
 -- Table structure for table `VarAnnotation`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `VarAnnotation`;
-CREATE TABLE `VarAnnotation` (`sampleid` VARCHAR(150) NOT NULL, `chrom` VARCHAR(100) NOT NULL DEFAULT '', `position` INT(11) NOT NULL DEFAULT '0', `consequence` VARCHAR(100) NOT NULL DEFAULT '', `source` VARCHAR(100) NULL DEFAULT NULL, `geneid` VARCHAR(100) NOT NULL DEFAULT '', `genename` VARCHAR(100) NULL DEFAULT NULL, `transcript` VARCHAR(250) NULL DEFAULT NULL, `feature` VARCHAR(100) NULL DEFAULT NULL, `genetype` VARCHAR(250) NULL DEFAULT NULL, `proteinposition` VARCHAR(100) NOT NULL DEFAULT '', `aachange` VARCHAR(100) NULL DEFAULT NULL, `codonchange` VARCHAR(100) NULL DEFAULT NULL, PRIMARY KEY (`consequence`, `geneid`, `proteinposition`, `sampleid`, `chrom`, `position`), INDEX `varannotation_indx_genename` (`genename` ASC), CONSTRAINT `varannotation_ibfk_1` FOREIGN KEY (`sampleid` , `chrom` , `position`) REFERENCES `VarResult` (`sampleid` , `chrom` , `position`)) ENGINE = InnoDB DEFAULT CHARACTER SET = latin1;
+CREATE TABLE `VarAnnotation` (`sampleid` VARCHAR(150) NOT NULL, `chrom` VARCHAR(100) NOT NULL DEFAULT '', `position` INT(11) NOT NULL DEFAULT '0', `consequence` VARCHAR(100) NOT NULL DEFAULT '', `source` VARCHAR(100) NULL DEFAULT NULL, `geneid` VARCHAR(1000) NOT NULL DEFAULT '', `genename` VARCHAR(1000) NULL DEFAULT NULL, `transcript` VARCHAR(250) NULL DEFAULT NULL, `feature` VARCHAR(100) NULL DEFAULT NULL, `genetype` VARCHAR(250) NULL DEFAULT NULL, `proteinposition` VARCHAR(100) NOT NULL DEFAULT '', `aachange` VARCHAR(1000) NULL DEFAULT NULL, `codonchange` VARCHAR(1000) NULL DEFAULT NULL, PRIMARY KEY (`consequence`, `geneid`, `proteinposition`, `sampleid`, `chrom`, `position`), INDEX `varannotation_indx_genename` (`genename` ASC), CONSTRAINT `varannotation_ibfk_1` FOREIGN KEY (`sampleid` , `chrom` , `position`) REFERENCES `VarResult` (`sampleid` , `chrom` , `position`)) ENGINE = InnoDB DEFAULT CHARACTER SET = latin1;
 -- -----------------------------------------------------
 -- procedure usp_vchrposition
 -- -----------------------------------------------------
@@ -224,8 +229,8 @@ CREATE VIEW `vw_vvcf` AS select `a`.`sampleid` as `sampleid`, `a`.`chrom` AS `ch
 -- -----------------------------------------------------
 DROP VIEW IF EXISTS `vw_seqstats`;
 DROP TABLE IF EXISTS `vw_seqstats`;
-CREATE TABLE `vw_seqstats` ( `sampleid` INT, `totalreads` INT, `alignmentrate` INT, `genes` INT, `totalvariants` INT, `mappingtool` INT, `annotationfile` INT, `mapdate` INT, `diffexpresstool` INT, `genedate` INT, `varianttool` INT, `variantannotationtool` INT, `variantdate` INT);
+CREATE TABLE `vw_seqstats` ( `sampleid` INT, `totalreads` INT, `alignmentrate` INT, `genes` INT, `totalvariants` INT, `mappingtool` INT, `annotationfile` INT, `mapdate` INT, `diffexpresstool` INT, `countstool` INT, `genedate` INT, `varianttool` INT, `variantannotationtool` INT, `variantdate` INT);
 DROP VIEW IF EXISTS `vw_seqstats`;
 DROP TABLE IF EXISTS `vw_seqstats`;
-CREATE VIEW `vw_seqstats` AS select `a`.`sampleid` AS `sampleid`,`a`.`totalreads` AS `totalreads`,`a`.`alignmentrate` AS `alignmentrate`,`a`.`genes` AS `genes`,`a`.`totalvariants` AS `totalvariants`,`b`.`mappingtool` AS `mappingtool`,`b`.`annfile` AS `annotationfile`,`c`.`date` AS `mapdate`,`d`.`diffexpresstool` AS `diffexpresstool`,`d`.`date` AS `genedate`,`e`.`varianttool` AS `varianttool`,`e`.`annversion` AS `variantannotationtool`,`e`.`date` AS `variantdate` from ((((`vw_sampleinfo` `a` join `Metadata` `b` on((`a`.`sampleid` = `b`.`sampleid`))) join `MapStats` `c` on((`a`.`sampleid` = `c`.`sampleid`))) left outer join `GeneStats` `d` on((`a`.`sampleid` = `d`.`sampleid`))) left outer join `VarSummary` `e` on((`a`.`sampleid` = `e`.`sampleid`))) order by `a`.`sampleid`;
+CREATE VIEW `vw_seqstats` AS select `a`.`sampleid` AS `sampleid`,`a`.`totalreads` AS `totalreads`,`a`.`alignmentrate` AS `alignmentrate`,`a`.`genes` AS `genes`,`a`.`totalvariants` AS `totalvariants`,`b`.`mappingtool` AS `mappingtool`,`b`.`annfile` AS `annotationfile`,`c`.`date` AS `mapdate`,`d`.`diffexpresstool` AS `diffexpresstool`,`d`.`countstool` AS `countstool`,`d`.`date` AS `genedate`,`e`.`varianttool` AS `varianttool`,`e`.`annversion` AS `variantannotationtool`,`e`.`date` AS `variantdate` from ((((`vw_sampleinfo` `a` join `Metadata` `b` on((`a`.`sampleid` = `b`.`sampleid`))) join `MapStats` `c` on((`a`.`sampleid` = `c`.`sampleid`))) left outer join `GeneStats` `d` on((`a`.`sampleid` = `d`.`sampleid`))) left outer join `VarSummary` `e` on((`a`.`sampleid` = `e`.`sampleid`))) order by `a`.`sampleid`;
 -- -----------------------------------------------------
